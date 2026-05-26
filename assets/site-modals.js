@@ -133,8 +133,10 @@
         <h3>Cobertura sin costo</h3>
         <p><strong>Delivery gratuito</strong> en Av. Perú (SMP), zonas específicas de San Miguel y áreas próximas al Mercado San Antonio.</p>
         <p>Para otras zonas el costo se cotiza según ubicación — nuestros precios son siempre razonables y por debajo del mercado.</p>
+        <h3>Compras grandes</h3>
+        <p>En compras mayores a <strong>S/ 150</strong> y de acuerdo a la ubicación aplicamos descuentos en el delivery.</p>
         <h3>Tiempos de entrega</h3>
-        <p>Entregas <strong>el mismo día</strong> si el pedido es antes de las 6:00 p.m. Caso contrario, al día siguiente.</p>
+        <p>Las entregas se realizan previa coordinación y, como máximo, al día siguiente de la confirmación del pedido.</p>
         <h3>Cómo coordinar</h3>
         <p>Escríbenos por WhatsApp al <a href="https://wa.me/${WA}" target="_blank" rel="noopener">+51 930 122 014</a> con tu dirección y te confirmamos el delivery.</p>
       `,

@@ -266,6 +266,28 @@
   .product-meta .prices .pl{font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum-700);margin-top:6px;font-family:'Jost',sans-serif}
   .product-meta .prices .pblock + .pblock{padding-left:22px;border-left:1px solid rgba(60,47,71,0.14)}
 
+  /* Uniform card style (mirrors catalogo) */
+  .card-uniform{display:flex;flex-direction:column;gap:0;padding:20px}
+  .card-uniform .image{margin-bottom:18px}
+  .card-uniform .cu-body{display:flex;flex-direction:column;gap:12px;flex:1}
+  .card-uniform .cu-name{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--plum);font-weight:500;line-height:1.05;letter-spacing:-0.01em}
+  .card-uniform .cu-insp{font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum-700);margin-top:-6px}
+  .card-uniform .cu-notes{font-size:13px;color:var(--plum-700);line-height:1.55;margin:0}
+  .card-uniform .cu-notes b{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--plum);font-weight:500;font-size:14.5px}
+  .card-uniform .cu-intensity{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--lavender-soft);border-radius:8px;border-left:3px solid var(--gold)}
+  .card-uniform .cu-label{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum-700);font-weight:500}
+  .card-uniform .cu-intensity-val{font-size:13px;color:var(--plum);font-weight:500;flex:1;text-align:right}
+  .card-uniform .cu-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .card-uniform .cu-chip{font-size:10.5px;letter-spacing:0.1em;padding:5px 10px;background:var(--cream);color:var(--plum-700);border-radius:999px}
+  .card-uniform .cu-sizes{display:flex;flex-wrap:wrap;gap:6px;padding-top:12px;border-top:1px solid rgba(60,47,71,0.12)}
+  .card-uniform .cu-size-chip{padding:5px 10px;border-radius:999px;background:var(--ivory);color:var(--plum);font-size:11px;font-weight:500;letter-spacing:0.04em}
+  .card-uniform .cu-cta{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:var(--ivory);border:0;border-radius:999px;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum);font-weight:500;cursor:pointer;transition:all .2s;margin-top:4px;font-family:inherit}
+  .card-uniform .cu-cta:hover{background:var(--plum);color:var(--ivory)}
+  .card-uniform .cu-cta .arr{width:26px;height:26px;border-radius:50%;background:var(--plum);color:var(--ivory);display:grid;place-items:center;transition:all .2s}
+  .card-uniform .cu-cta:hover .arr{background:var(--ivory);color:var(--plum)}
+  .card-uniform .cu-cta svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
+  .card-uniform .gender-mark{position:absolute;top:14px;right:14px;background:var(--ivory);font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;padding:5px 10px;border-radius:999px;color:var(--plum)}
+
   .product-features{
     list-style:none;margin-top:8px;padding-top:18px;border-top:1px solid rgba(60,47,71,0.12);
     display:flex;flex-direction:column;gap:10px;
@@ -499,11 +521,16 @@
     .hero{padding:60px 20px 80px}
     .hero-copy h1{font-size:40px}
     .hero-visual{height:420px}
-    .nav-inner{padding:14px 18px;gap:10px}
-    .nav-right{gap:10px}
+    .nav-inner{padding:14px 18px;gap:10px;grid-template-columns:auto 1fr auto}
+    .nav-right{gap:8px}
     .nav-right .icon-btn{display:none}
     .nav-right .nav-link{display:none}
-    .nav-logo{height:72px}
+    .nav-left{display:flex;gap:0}
+    .nav-left .nav-link{display:none}
+    .nav-left .nav-link.active{display:inline-flex;align-items:center;gap:6px;background:var(--plum);color:var(--ivory);padding:8px 14px;border-radius:999px;font-size:10.5px;letter-spacing:0.18em;border:0}
+    .nav-left .nav-link.active::after{display:none}
+    .nav-left .nav-link.active::before{content:"☰";font-size:14px;line-height:0;letter-spacing:0}
+    .nav-logo{height:60px}
     .announce{padding:8px 14px;gap:18px;font-size:10px;letter-spacing:0.12em}
     .announce .dot{display:none}
     section.block{padding:70px 18px}
@@ -682,7 +709,7 @@
       </div>
       <h2>Pasión<br/><em>en cada gota.</em></h2>
       <p>
-        En Dolce Aroma creemos que oler extraordinario no debería ser algo exclusivo por su alto precio. Por eso trabajamos con esencias importadas de alta calidad desde Francia, inspiradas en las fragancias más icónicas del mundo, para traértelas a un precio justo y accesible.
+        En Dolce Aroma creemos que oler extraordinario no debería ser algo exclusivo por su alto precio. Por eso trabajamos con esencias de alta calidad importadas desde Francia, inspiradas en las fragancias más icónicas del mundo, para ofrecértelas a un precio justo y accesible.
       </p>
       <p>
         Cada perfume se elabora con cuidado y atención al detalle, porque sabemos que el aroma correcto no solo te acompaña — te representa, te da confianza y deja huella en quienes te rodean.
@@ -864,6 +891,7 @@
               <div class="eyebrow" style="margin-bottom:6px">Dónde estamos</div>
               <div style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--plum);line-height:1.2">Jr. Callao 482-A<br/>al lado del Mercado San Antonio, SMP</div>
               <div style="font-size:13px;color:var(--plum-700);margin-top:6px">A unas casas de la Av. Perú · Pregunta por <strong>Tienda Bazar Sport Shirley</strong></div>
+              <div style="font-size:13px;color:var(--plum);margin-top:10px;font-style:italic;padding:8px 12px;background:var(--lavender-soft);border-radius:8px">🎁 Por la compra de cualquier prenda pide un probador de regalo.</div>
             </div>
           </div>
           <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:24px">
@@ -908,7 +936,7 @@
 <footer data-screen-label="Footer">
   <div class="footer-grid">
     <div class="footer-brand">
-      <img class="mark" src="assets/frascos-dolcearoma.png" alt="Frascos Dolce Aroma" style="width:340px;max-width:100%;margin-bottom:18px;border-radius:14px;display:block" />
+      <img class="mark" src="assets/frascos-dolcearoma.png" alt="Frascos Dolce Aroma" style="width:340px;max-width:100%;margin-bottom:18px;border-radius:14px;display:block;background:#f6f4ef;padding:8px" />
       <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:var(--gold);margin-bottom:14px">Perfumería equivalente · Lima, Perú</div>
       <p>Inspiradas en los perfumes más icónicos del mundo, elaboradas con esencias de calidad importadas de Grasse, Francia.</p>
       <div class="footer-social" style="gap:12px;margin-top:22px">
@@ -980,36 +1008,39 @@
       return;
     }
     el.innerHTML = list.map(p => {
-      const sizes = (p.sizes||[]).slice().sort((a,b)=>b.ml - a.ml);
-      const badge = p.tag ? (TAG_LABEL_HOME[p.tag]||p.tag) : 'Destacado';
-      const notes = [...(p.notes_top||[]).slice(0,1), ...(p.notes_heart||[]).slice(0,1), ...(p.notes_base||[]).slice(0,1)];
-      const features = notes.length ? notes : ['Frasco elegante y resistente','Atomizador de 10 ml incluido','2 probadores de cortesía'];
+      const sizesAll = (p.sizes||[]).slice().sort((a,b)=>b.ml-a.ml);
+      const inStock = sizesAll.filter(s=>s.stock>0 && s.price);
+      const allBase = [...(p.notes_top||[]), ...(p.notes_heart||[])].slice(0,3).join(', ');
+      const occList = (p.occasion||[]).slice(0,3);
       const photo = window.DA.resolvePhoto(p);
-      const priceBlocks = sizes.filter(s=>s.stock>0 && s.price).map(s => `
-        <div class="pblock">
-          <div class="pp">S/ ${s.price}<small style="font-family:'Jost',sans-serif;font-size:12px;color:var(--plum-700);margin-left:4px;font-weight:400">/ ${s.ml}ml</small></div>
-          <div class="pl">${s.ml} ml</div>
-        </div>`).join('') || '<div class="pblock"><div class="pp" style="font-size:18px;color:var(--plum-700);font-style:italic">Sin stock</div></div>';
+      const OCC_LABEL = {dia:'🌅 Día',noche:'🌙 Noche',oficina:'💼 Oficina',fiesta:'🎉 Fiesta',cita:'❤️ Cita',diario:'🏠 Uso diario',especial:'✨ Evento especial',verano:'☀️ Verano',invierno:'🧥 Invierno',regalo:'🎁 Para regalar',romantico:'❤️ Romántico',deporte:'🏃 Deporte',viaje:'✈️ Viaje',formal:'👔 Formal',casual:'👕 Casual'};
+      const INTENSITY = {sutil:'🌸 Sutil', moderada:'🌿 Moderada', intensa:'🔥 Intensa'};
+      const tagBadge = p.tag ? (TAG_LABEL_HOME[p.tag]||p.tag) : (p.featured ? '★ Destacado' : 'Atelier');
       return `
-        <article class="product" data-perfume-id="${p.id}">
+        <article class="product card-uniform" data-perfume-id="${p.id}" data-detail="${p.id}">
           <div class="image">
-            <span class="badge">${badge}</span>
+            <span class="badge">${tagBadge}</span>
+            ${!inStock.length ? '<span class="badge" style="background:#a04848;color:var(--ivory);top:46px">Sin stock</span>' : ''}
+            <span class="gender-mark">${p.gender||''}</span>
             <button class="quick" aria-label="Vista rápida" data-detail="${p.id}">
               <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
             <img src="${photo}" alt="${p.name}" onerror="this.src='assets/perfume-110ml.jpg'"/>
           </div>
-          <div class="product-meta">
-            <div class="name">${p.name}<span>${FAMILY_LABEL_HOME[p.family]||''} · ${p.inspiration||'Atelier'}</span></div>
-            <div class="prices">${priceBlocks}</div>
+          <div class="cu-body">
+            <div class="cu-name">${p.name}</div>
+            <div class="cu-insp">${p.inspiration || 'Atelier'}</div>
+            <p class="cu-notes"><b>${FAMILY_LABEL_HOME[p.family]||''}.</b> ${allBase || (p.description||'').slice(0,80)}</p>
+            ${p.intensity ? `<div class="cu-intensity"><span class="cu-label">Intensidad</span><span class="cu-intensity-val">${INTENSITY[p.intensity]||p.intensity}</span></div>` : ''}
+            ${occList.length ? `<div class="cu-chips">${occList.map(o=>`<span class="cu-chip">${OCC_LABEL[o]||o}</span>`).join('')}</div>` : ''}
+            <div class="cu-sizes">
+              ${inStock.length ? inStock.map(s=>`<span class="cu-size-chip">${s.ml} ml · S/${s.price}</span>`).join('') : '<span class="cu-size-chip" style="opacity:.5;font-style:italic">Sin stock</span>'}
+            </div>
+            <button class="cu-cta" data-detail="${p.id}">
+              Ver detalle
+              <span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </button>
           </div>
-          <ul class="product-features">
-            ${features.map(f=>`<li>${f}</li>`).join('')}
-          </ul>
-          <button class="add" data-detail="${p.id}">
-            Ver detalle
-            <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-          </button>
         </article>`;
     }).join('');
   }

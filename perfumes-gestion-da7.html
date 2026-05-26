@@ -329,7 +329,7 @@
   <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap" id="admin-tabs">
     <button class="btn btn-primary admin-tab active" data-section="dashboard">📊 Dashboard</button>
     <button class="btn btn-ghost admin-tab" data-section="catalogo">📚 Catálogo</button>
-    <button class="btn btn-ghost admin-tab" data-section="resenas ">⭐ Reseñas</button>
+    <button class="btn btn-ghost admin-tab" data-section="resenas">⭐ Reseñas</button>
   </div>
 
   <!-- ─────────── DASHBOARD ─────────── -->
@@ -435,6 +435,37 @@
       <tbody id="tbody"></tbody>
     </table>
   </div>
+  </section>
+
+  <!-- ─────────── RESEÑAS ─────────── -->
+  <section class="admin-section" data-section="resenas" style="display:none">
+    <div class="page-head">
+      <div>
+        <h1>Reseñas de <em>clientes</em></h1>
+        <p class="sub">Administra las reseñas que aparecen en el carrusel de la página de inicio. Cada cliente verá las que marques como <strong>visibles</strong>.</p>
+      </div>
+      <button class="btn btn-primary" id="btn-new-resena">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Nueva reseña
+      </button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:48px;text-align:center">#</th>
+            <th>Cliente</th>
+            <th>Reseña</th>
+            <th>★</th>
+            <th>Visible</th>
+            <th style="text-align:right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="resenas-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
 </div>
 
 <!-- Drawer -->
@@ -535,16 +566,16 @@
         <div class="field">
           <label>Ocasión</label>
           <div class="chips" id="chips-occasion" data-name="occasion" data-multi="1">
-            <span class="chip" data-val="diario">Diario</span>
-            <span class="chip" data-val="oficina">Oficina</span>
-            <span class="chip" data-val="noche">Noche</span>
-            <span class="chip" data-val="especial">Especial</span>
-            <span class="chip" data-val="romantico">Romántico</span>
-            <span class="chip" data-val="deporte">Deporte</span>
-            <span class="chip" data-val="viaje">Viaje</span>
-            <span class="chip" data-val="formal">Formal</span>
-            <span class="chip" data-val="casual">Casual</span>
-            <span class="chip" data-val="fiesta">Fiesta</span>
+            <span class="chip" data-val="dia">🌅 Día</span>
+            <span class="chip" data-val="noche">🌙 Noche</span>
+            <span class="chip" data-val="oficina">💼 Oficina</span>
+            <span class="chip" data-val="fiesta">🎉 Fiesta</span>
+            <span class="chip" data-val="cita">❤️ Cita</span>
+            <span class="chip" data-val="diario">🏠 Uso diario</span>
+            <span class="chip" data-val="especial">✨ Evento especial</span>
+            <span class="chip" data-val="verano">☀️ Verano</span>
+            <span class="chip" data-val="invierno">🧥 Invierno</span>
+            <span class="chip" data-val="regalo">🎁 Para regalar</span>
           </div>
         </div>
       </fieldset>
@@ -900,7 +931,8 @@ function renderAll(){
 /* ─── DASHBOARD ─── */
 const FAMILY_COLOR = {floral:'#d9a3b5', oriental:'#a8895a', amaderado:'#7a6448', citrico:'#d8c25a', chipre:'#7a8a5a', aromatico:'#8aa5b5', frutal:'#c97a6a'};
 const GENDER_COLOR = {mujer:'#d9a3b5', hombre:'#7a8a9c', unisex:'#a8895a'};
-const OCCASIONS = ['diario','oficina','noche','especial','romantico','deporte','viaje','formal','casual','fiesta'];
+const OCCASIONS = ['dia','noche','oficina','fiesta','cita','diario','especial','verano','invierno','regalo'];
+const OCC_LABEL_ADMIN = {dia:'🌅 Día',noche:'🌙 Noche',oficina:'💼 Oficina',fiesta:'🎉 Fiesta',cita:'❤️ Cita',diario:'🏠 Uso diario',especial:'✨ Evento especial',verano:'☀️ Verano',invierno:'🧥 Invierno',regalo:'🎁 Para regalar'};
 function unique(arr){ return [...new Set(arr)]; }
 
 function renderDashboard(){
@@ -1010,7 +1042,7 @@ function renderDashboard(){
     OCCASIONS.map(o=>{
       const cnt = p.filter(x=>(x.occasion||[]).includes(o)).length;
       return `<div style="background:var(--lavender-soft);padding:12px 14px;border-radius:8px;display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:12px;color:var(--plum);text-transform:capitalize">${o.replace('romantico','romántico')}</span>
+        <span style="font-size:12px;color:var(--plum)">${OCC_LABEL_ADMIN[o]||o}</span>
         <span style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--plum);font-weight:500">${cnt}</span>
       </div>`;
     }).join('') + `</div>`;
