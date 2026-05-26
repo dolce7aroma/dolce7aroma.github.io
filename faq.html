@@ -128,13 +128,35 @@
     .faq summary{padding:18px 18px}
     .faq-q{font-size:18px}
     .faq-a{padding:0 18px 18px;font-size:14px}
-    .nav-left{display:none}
-    .nav-right .nav-link{font-size:10.5px;letter-spacing:0.16em}
-    .nav-logo{height:42px}
-    .announce{font-size:10px;letter-spacing:0.12em;padding:8px 14px;gap:12px}
+    nav.top .nav-inner{padding:14px 18px;gap:10px;grid-template-columns:auto 1fr auto !important}
+    .nav-right .nav-link{font-size:10.5px;letter-spacing:0.16em;display:none !important}
+    .nav-left{display:flex !important;gap:0}
+    .nav-left .nav-link{display:none}
+    .nav-left #nav-inicio-link{display:inline-flex !important;align-items:center;gap:6px;background:var(--plum);color:var(--ivory);padding:10px 16px;border-radius:999px;font-size:11px;letter-spacing:0.18em;border:0;text-transform:uppercase}
+    .nav-left #nav-inicio-link::after{display:none}
+    .nav-left #nav-inicio-link::before{content:"☰";font-size:16px;line-height:0;letter-spacing:0;margin-right:2px}
+    .nav-logo{height:60px}
+    .announce{font-size:11px;letter-spacing:0.06em;padding:10px 14px;gap:0}
     .announce span:first-child{display:none}
+    .announce-social{display:none !important}
     .help-cta{padding:60px 20px}
   }
+
+/* Modal Inicio (mobile menu) */
+.inicio-modal{position:fixed;inset:0;background:#f6f4ef;z-index:200;display:none;flex-direction:column}
+.inicio-modal.open{display:flex}
+.inicio-modal .imhead{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid rgba(60,47,71,0.18)}
+.inicio-modal h3{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:32px;color:#3c2f47;margin:0;letter-spacing:-0.01em}
+.inicio-modal h3 em{font-style:italic;color:#a8895a}
+.inicio-modal .imclose{width:38px;height:38px;border-radius:50%;background:#e8e3ed;border:0;cursor:pointer;display:grid;place-items:center}
+.inicio-modal .imclose svg{width:14px;height:14px;stroke:#3c2f47;fill:none;stroke-width:1.8}
+.inicio-modal .imlist{padding:14px 18px 30px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.inicio-modal .imitem{padding:16px 18px;background:#fff;border:1px solid rgba(60,47,71,0.18);border-radius:12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-decoration:none;color:inherit;transition:all .15s}
+.inicio-modal .imitem:hover{border-color:#3c2f47;background:#e8e3ed}
+.inicio-modal .imitem .l{font-family:'Cormorant Garamond',serif;font-size:20px;color:#3c2f47}
+.inicio-modal .imitem .s{font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#5a4868;margin-top:3px}
+.inicio-modal .imitem svg{width:16px;height:16px;stroke:#5a4868;fill:none;stroke-width:1.6}
+
 </style>
 </head>
 <body>
@@ -154,7 +176,7 @@
 <nav class="top">
   <div class="nav-inner">
     <div class="nav-left">
-      <a class="nav-link" href="Dolce Aroma - Inicio.html">Inicio</a>
+      <a class="nav-link" id="nav-inicio-link" href="Dolce Aroma - Inicio.html">Inicio</a>
       <a class="nav-link" href="Dolce Aroma - Catalogo.html">Perfumes</a>
       <a class="nav-link" href="Dolce Aroma - Inicio.html#ofertas">Ofertas</a>
       <a class="nav-link" href="Dolce Aroma - Inicio.html#boutique">Boutique</a>
@@ -475,5 +497,54 @@
   // Track open/close for shadow
   allFaqs.forEach(f => f.addEventListener('toggle', () => f.classList.toggle('open', f.open)));
 </script>
+
+<!-- INICIO MODAL (mobile menu) -->
+<div class="inicio-modal" id="inicio-modal" aria-hidden="true">
+  <div class="imhead">
+    <h3>Menú <em>Dolce Aroma</em></h3>
+    <button class="imclose" id="inicio-modal-close" aria-label="Cerrar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="imlist">
+    <a class="imitem" href="Dolce Aroma - Inicio.html"><div><div class="l">Inicio</div><div class="s">Página principal</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="Dolce Aroma - Catalogo.html"><div><div class="l">Perfumes</div><div class="s">Catálogo completo</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="Dolce Aroma - Inicio.html#ofertas"><div><div class="l">Ofertas</div><div class="s">Combos del momento</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="Dolce Aroma - Inicio.html#boutique"><div><div class="l">Boutique</div><div class="s">Punto de venta físico</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="faq.html"><div><div class="l">FAQ</div><div class="s">Preguntas frecuentes</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="#" data-modal="contacto" data-close-im><div><div class="l">Contacto</div><div class="s">WhatsApp, redes y boutique</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</div>
+
+<script>
+  // ── Mobile INICIO menu modal ──
+  function openInicioModal(){
+    const modal = document.getElementById('inicio-modal');
+    if(!modal) return;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  }
+  function closeInicioModal(){
+    const modal = document.getElementById('inicio-modal');
+    if(!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+  document.addEventListener('click', e => {
+    const link = e.target.closest('#nav-inicio-link');
+    if(link){
+      // En desktop, el link navega normal (href). En móvil, abre el menú.
+      if(window.innerWidth <= 640){
+        e.preventDefault();
+        openInicioModal();
+      }
+      return;
+    }
+    if(e.target.closest('#inicio-modal-close')) closeInicioModal();
+    if(e.target.closest('[data-close-im]')) closeInicioModal();
+  });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeInicioModal(); });
+</script>
+
 </body>
 </html>
