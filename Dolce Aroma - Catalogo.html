@@ -173,12 +173,17 @@
     main{padding:30px 18px 80px;gap:30px}
     aside.facets{grid-template-columns:1fr}
     .grid, .grid.dense{grid-template-columns:1fr;gap:18px}
-    nav.top .nav-inner{padding:14px 18px;gap:10px}
+    nav.top .nav-inner{padding:14px 18px;gap:10px;grid-template-columns:auto 1fr auto !important}
     nav.top .nav-link{font-size:10.5px;letter-spacing:0.16em}
-    .nav-left{display:none}
-    .nav-right .nav-link{display:none}
+    .nav-right .nav-link{display:none !important}
+    .nav-left{display:flex !important;gap:0}
+    .nav-left .nav-link{display:none !important}
+    .nav-left #nav-inicio-link{display:inline-flex !important;align-items:center;gap:6px;background:var(--plum);color:var(--ivory);padding:10px 16px;border-radius:999px;font-size:11px;letter-spacing:0.18em;border:0;text-transform:uppercase}
+    .nav-left #nav-inicio-link::after{display:none}
+    .nav-left #nav-inicio-link::before{content:"☰";font-size:16px;line-height:0;letter-spacing:0;margin-right:2px}
     .nav-logo{height:60px}
-    .announce{padding:8px 14px;font-size:10px;letter-spacing:0.12em}
+    .announce{padding:10px 16px !important;font-size:11px !important;letter-spacing:0.06em !important;gap:0 !important}
+    .announce-msg{flex:1 !important;text-align:center !important;font-size:11px !important;letter-spacing:0.05em !important;text-transform:none !important;min-height:20px !important}
     footer{padding:50px 20px}
   }
 

@@ -110,7 +110,7 @@
           <span><span class="l">Correo</span><span class="v">${EMAIL}</span></span>
           <span class="arr">${ICONS.arrow}</span>
         </a>
-        <a class="sm-contact-row" href="#" data-modal="boutique-info">
+        <a class="sm-contact-row" href="Dolce Aroma - Inicio.html#boutique">
           <span class="ico">${ICONS.pin}</span>
           <span><span class="l">Boutique física</span><span class="v">Bazar Sport Shirley · SMP</span></span>
           <span class="arr">${ICONS.arrow}</span>
