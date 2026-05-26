@@ -245,10 +245,16 @@
   .product .image img{width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.2,.7,.2,1)}
   .product:hover .image img{transform:scale(1.06)}
   .product .badge{
-    position:absolute;top:14px;left:14px;
+    position:absolute;top:14px;left:14px;z-index:3;
     background:var(--ivory);color:var(--plum);font-size:10px;
-    letter-spacing:0.2em;text-transform:uppercase;padding:6px 10px;border-radius:999px;
+    letter-spacing:0.2em;text-transform:uppercase;padding:6px 12px;border-radius:999px;
+    font-weight:600;box-shadow:0 4px 14px -2px rgba(60,47,71,0.3);
   }
+  .product .badge.b-mas-vendido{background:linear-gradient(135deg,#c19450,#a8895a);color:#fff}
+  .product .badge.b-nuevo{background:#3c2f47;color:#fff}
+  .product .badge.b-edicion-limitada{background:linear-gradient(135deg,#9c6c44,#7a5a3a);color:#fff}
+  .product .badge.b-agotado{background:#a04848;color:#fff}
+  .product .badge.b-featured{background:linear-gradient(135deg,#e9c270,#a8895a);color:#fff}
   .product .quick{
     position:absolute;top:14px;right:14px;
     width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.9);
@@ -1016,11 +1022,12 @@
       const photo = window.DA.resolvePhoto(p);
       const OCC_LABEL = {dia:'🌅 Día',noche:'🌙 Noche',oficina:'💼 Oficina',fiesta:'🎉 Fiesta',cita:'❤️ Cita',diario:'🏠 Uso diario',especial:'✨ Evento especial',verano:'☀️ Verano',invierno:'🧥 Invierno',regalo:'🎁 Para regalar',romantico:'❤️ Romántico',deporte:'🏃 Deporte',viaje:'✈️ Viaje',formal:'👔 Formal',casual:'👕 Casual'};
       const INTENSITY = {sutil:'🌸 Sutil', moderada:'🌿 Moderada', intensa:'🔥 Intensa'};
+      const tagClass = p.tag ? `b-${p.tag}` : (p.featured ? 'b-featured' : '');
       const tagBadge = p.tag ? (TAG_LABEL_HOME[p.tag]||p.tag) : (p.featured ? '★ Destacado' : 'Atelier');
       return `
         <article class="product card-uniform" data-perfume-id="${p.id}" data-detail="${p.id}">
           <div class="image">
-            <span class="badge">${tagBadge}</span>
+            <span class="badge ${tagClass}">${tagBadge}</span>
             ${!inStock.length ? '<span class="badge" style="background:#a04848;color:var(--ivory);top:46px">Sin stock</span>' : ''}
             <span class="gender-mark">${p.gender||''}</span>
             <button class="quick" aria-label="Vista rápida" data-detail="${p.id}">
