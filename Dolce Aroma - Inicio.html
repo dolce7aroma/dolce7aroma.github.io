@@ -491,7 +491,6 @@
     .testimonios .container{grid-template-columns:1fr}
     .footer-grid{grid-template-columns:1fr 1fr;gap:40px}
     .boutique-grid{grid-template-columns:1fr !important;gap:24px !important}
-    .nav-left{display:none}
   }
   /* search overlay */
   .search-overlay{position:fixed;inset:0;background:rgba(40,30,55,0.55);backdrop-filter:blur(4px);z-index:120;display:flex;align-items:flex-start;justify-content:center;padding:14vh 24px;opacity:0;pointer-events:none;transition:opacity .25s}
@@ -574,12 +573,12 @@
 <nav class="top" data-screen-label="Top Nav">
   <div class="nav-inner">
     <div class="nav-left">
-      <a class="nav-link active" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Inicio</a>
+      <a class="nav-link active" href="#" id="nav-inicio-link">Inicio</a>
       <a class="nav-link" href="Dolce Aroma - Catalogo.html">Perfumes</a>
       <a class="nav-link" href="#ofertas">Ofertas</a>
       <a class="nav-link" href="#boutique">Boutique</a>
     </div>
-    <a href="#"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce Aroma Perfumes" /></a>
+    <a href="#"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce Aroma Perfumes" style="opacity: 0.75; object-fit: cover; width: 200px; height: 90px" /></a>
     <div class="nav-right">
       <a class="nav-link" href="faq.html">FAQ</a>
       <a class="nav-link" href="#" data-modal="contacto">Contacto</a>
@@ -1212,14 +1211,15 @@
 
   // ── Mobile INICIO menu modal ──
   (function(){
-    const homeLink = document.querySelector('.nav-link.active');
+    const homeLink = document.getElementById('nav-inicio-link') || document.querySelector('.nav-link.active');
     const modal = document.getElementById('inicio-modal');
     const closeBtn = document.getElementById('inicio-modal-close');
     if(!homeLink || !modal) return;
     function openModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
     function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
     homeLink.addEventListener('click', e=>{
-      if(window.innerWidth <= 640){ e.preventDefault(); openModal(); }
+      e.preventDefault();
+      if(window.innerWidth <= 640) openModal();
       else window.scrollTo({top:0, behavior:'smooth'});
     });
     closeBtn?.addEventListener('click', closeModal);
