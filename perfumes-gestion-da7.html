@@ -941,22 +941,12 @@ function renderDashboard(){
 
   // Alertas
   const out = p.filter(x => !(x.sizes||[]).some(s => s.stock > 0));
-  const low = p.filter(x => {
-    const totalStock = (x.sizes||[]).reduce((s,sz)=>s+(sz.stock||0),0);
-    return totalStock > 0 && totalStock < 10;
-  });
   const noFeatured = p.filter(x => x.featured && !(x.sizes||[]).some(s => s.stock > 0));
   let alerts = '';
   if(out.length){
     alerts += `<div style="background:#fbe9e9;border:1px solid #e8b8b8;border-left:4px solid #a04848;border-radius:10px;padding:14px 18px;margin-bottom:10px;display:flex;gap:14px;align-items:center">
       <span style="font-size:22px">🔴</span>
       <div style="flex:1"><strong style="color:#7a3838">${out.length} perfume${out.length===1?'':'s'} sin stock</strong><div style="font-size:12px;color:#7a3838;margin-top:2px">${out.slice(0,5).map(x=>x.name).join(', ')}${out.length>5?'…':''}</div></div>
-    </div>`;
-  }
-  if(low.length){
-    alerts += `<div style="background:#fff6e3;border:1px solid #e8d6b0;border-left:4px solid #b07a3a;border-radius:10px;padding:14px 18px;margin-bottom:10px;display:flex;gap:14px;align-items:center">
-      <span style="font-size:22px">🟡</span>
-      <div style="flex:1"><strong style="color:#7a5520">${low.length} perfume${low.length===1?'':'s'} con stock bajo</strong><div style="font-size:12px;color:#7a5520;margin-top:2px">Menos de 10 unidades en total · ${low.slice(0,5).map(x=>x.name).join(', ')}${low.length>5?'…':''}</div></div>
     </div>`;
   }
   if(noFeatured.length){
