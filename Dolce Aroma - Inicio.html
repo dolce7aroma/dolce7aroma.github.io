@@ -520,17 +520,22 @@
     .hero{padding:60px 20px 80px}
     .hero-copy h1{font-size:40px}
     .hero-visual{height:420px}
-    .nav-inner{padding:14px 18px;gap:10px;grid-template-columns:auto 1fr auto}
+    .nav-inner{padding:14px 18px;gap:10px;grid-template-columns:auto 1fr auto !important}
     .nav-right{gap:8px}
-    .nav-right .icon-btn{display:none}
-    .nav-right .nav-link{display:none}
-    .nav-left{display:flex;gap:0}
+    .nav-right .icon-btn{display:none !important}
+    .nav-right .nav-link{display:none !important}
+    .nav-left{display:flex !important;gap:0}
     .nav-left .nav-link{display:none}
-    .nav-left .nav-link.active{display:inline-flex;align-items:center;gap:6px;background:var(--plum);color:var(--ivory);padding:8px 14px;border-radius:999px;font-size:10.5px;letter-spacing:0.18em;border:0}
+    .nav-left .nav-link.active,
+    .nav-left #nav-inicio-link{display:inline-flex !important;align-items:center;gap:6px;background:var(--plum);color:var(--ivory);padding:10px 16px;border-radius:999px;font-size:11px;letter-spacing:0.18em;border:0}
     .nav-left .nav-link.active::after{display:none}
-    .nav-left .nav-link.active::before{content:"☰";font-size:14px;line-height:0;letter-spacing:0}
+    .nav-left .nav-link.active::before,
+    .nav-left #nav-inicio-link::before{content:"☰";font-size:16px;line-height:0;letter-spacing:0;margin-right:2px}
     .nav-logo{height:60px}
-    .announce{padding:8px 14px;gap:18px;font-size:10px;letter-spacing:0.12em}
+    /* Banner: ocultar redes y WhatsApp en móvil para que el mensaje rote con más espacio */
+    .announce{padding:10px 16px !important;font-size:11px !important;letter-spacing:0.08em !important;gap:0 !important}
+    .announce-social, .announce a[href*="wa.me"]{display:none !important}
+    .announce-msg{flex:1 !important;text-align:center !important;font-size:11px !important;letter-spacing:0.05em !important;text-transform:none !important;min-height:20px !important}
     .announce .dot{display:none}
     section.block{padding:70px 18px}
     .section-head{grid-template-columns:1fr;gap:18px}
@@ -1210,22 +1215,34 @@
   })();
 
   // ── Mobile INICIO menu modal ──
-  (function(){
-    const homeLink = document.getElementById('nav-inicio-link') || document.querySelector('.nav-link.active');
+  function openInicioModal(){
     const modal = document.getElementById('inicio-modal');
-    const closeBtn = document.getElementById('inicio-modal-close');
-    if(!homeLink || !modal) return;
-    function openModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
-    function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
-    homeLink.addEventListener('click', e=>{
+    if(!modal) return;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  }
+  function closeInicioModal(){
+    const modal = document.getElementById('inicio-modal');
+    if(!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+  document.addEventListener('click', e => {
+    const link = e.target.closest('#nav-inicio-link');
+    if(link){
       e.preventDefault();
-      if(window.innerWidth <= 640) openModal();
+      if(window.innerWidth <= 640) openInicioModal();
       else window.scrollTo({top:0, behavior:'smooth'});
-    });
-    closeBtn?.addEventListener('click', closeModal);
-    modal.querySelectorAll('[data-close-im]').forEach(a => a.addEventListener('click', closeModal));
-    document.addEventListener('keydown', e=>{ if(e.key==='Escape' && modal.classList.contains('open')) closeModal(); });
-  })();
+      return;
+    }
+    if(e.target.closest('#inicio-modal-close')) closeInicioModal();
+    if(e.target.closest('[data-close-im]')) closeInicioModal();
+  });
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape') closeInicioModal();
+  });
   (function(){
     const btn = document.getElementById('btn-search');
     if(!btn) return;

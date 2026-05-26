@@ -1463,11 +1463,12 @@ function wire(){
     openDrawer(id);
   });
 
-  // search & filters
-  $('#q').addEventListener('input', e=>{ filters.q = e.target.value; renderTable(); });
-  $('#f-family').addEventListener('change', e=>{ filters.family = e.target.value; renderTable(); });
-  $('#f-gender').addEventListener('change', e=>{ filters.gender = e.target.value; renderTable(); });
-  $('#f-tag').addEventListener('change', e=>{ filters.tag = e.target.value; renderTable(); });
+  // search & filters (re-hidrata imágenes después de cada filtro)
+  const refilter = () => { renderTable(); hydrateTableImages(); };
+  $('#q').addEventListener('input', e=>{ filters.q = e.target.value; refilter(); });
+  $('#f-family').addEventListener('change', e=>{ filters.family = e.target.value; refilter(); });
+  $('#f-gender').addEventListener('change', e=>{ filters.gender = e.target.value; refilter(); });
+  $('#f-tag').addEventListener('change', e=>{ filters.tag = e.target.value; refilter(); });
 
   // chips
   ['chips-tag','chips-occasion'].forEach(id => {
