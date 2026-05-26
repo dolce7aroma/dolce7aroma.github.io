@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dolce Aroma — Preguntas Frecuentes</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YXYWYS5LCJ"></script>
+<script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-YXYWYS5LCJ');</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --lavender:#cfc8d8; --lavender-soft:#e8e3ed; --ivory:#f6f2ec; --cream:#efe7d9;
+    --plum:#3c2f47; --plum-700:#5a4868; --ink:#1a1620; --gold:#a8895a;
+    --rule:rgba(60,47,71,0.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--ivory);color:var(--plum);font-family:'Jost',sans-serif;font-size:14.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+  /* announce */
+  .announce{background:var(--plum);color:var(--lavender-soft);font-size:11.5px;letter-spacing:0.22em;text-transform:uppercase;padding:10px 28px;text-align:center;display:flex;justify-content:space-between;align-items:center;gap:24px}
+  .announce-social{display:flex;gap:14px}
+  .announce-social a{color:var(--lavender-soft);opacity:.85}
+  .announce-social svg{width:13px;height:13px;fill:currentColor}
+
+  /* nav */
+  nav.top{position:sticky;top:0;z-index:30;background:var(--ivory);border-bottom:1px solid var(--rule)}
+  .nav-inner{max-width:1440px;margin:0 auto;padding:12px 40px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px}
+  .nav-left,.nav-right{display:flex;gap:34px;align-items:center}
+  .nav-right{justify-content:flex-end}
+  .nav-link{font-size:12.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum);cursor:pointer;position:relative;padding:6px 0}
+  .nav-link.active::after,.nav-link:hover::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--plum)}
+  .nav-logo{height:96px;width:auto;display:block;object-fit:contain}
+
+  /* hero */
+  .hero{
+    background:linear-gradient(180deg, var(--ivory) 0%, var(--lavender-soft) 100%);
+    padding:80px 40px 60px;
+    position:relative;overflow:hidden;
+  }
+  .hero-inner{max-width:1100px;margin:0 auto;text-align:center}
+  .crumb{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum-700);justify-content:center;margin-bottom:18px}
+  .crumb .sep{opacity:0.5}
+  h1.title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(56px,7vw,108px);line-height:0.95;letter-spacing:-0.025em;color:var(--plum)}
+  h1.title em{font-style:italic;color:var(--plum-700)}
+  .hero-lede{max-width:580px;margin:30px auto 0;font-size:16px;line-height:1.7;color:var(--plum-700)}
+  .glyph{position:absolute;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--plum);opacity:0.06;pointer-events:none;font-size:280px;line-height:1;top:-30px;right:46%}
+
+  /* faq search */
+  .faq-toolbar{max-width:780px;margin:30px auto 0;padding:0 40px}
+  .faq-search{display:flex;align-items:center;gap:12px;background:var(--ivory);border:1.5px solid var(--rule);border-radius:999px;padding:14px 22px;transition:border-color .2s}
+  .faq-search:focus-within{border-color:var(--plum)}
+  .faq-search svg{width:18px;height:18px;stroke:var(--plum-700);fill:none;stroke-width:1.6}
+  .faq-search input{flex:1;border:0;background:none;outline:none;font-size:15px;color:var(--plum);font-family:inherit}
+
+  /* faq list */
+  main{max-width:880px;margin:0 auto;padding:60px 40px 100px}
+  .faq{
+    background:var(--ivory);border:1px solid var(--rule);border-radius:14px;
+    margin-bottom:12px;overflow:hidden;transition:box-shadow .25s;
+  }
+  .faq.open{box-shadow:0 14px 40px -20px rgba(60,47,71,0.25)}
+  .faq summary{
+    list-style:none;cursor:pointer;padding:24px 28px;
+    display:flex;justify-content:space-between;align-items:center;gap:18px;
+    transition:background .15s;
+  }
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary:hover{background:var(--lavender-soft)}
+  .faq-q{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--plum);font-weight:400;line-height:1.2;flex:1}
+  .faq-toggle{
+    width:36px;height:36px;border-radius:50%;background:var(--lavender-soft);
+    display:grid;place-items:center;flex-shrink:0;transition:all .25s;
+  }
+  .faq[open] .faq-toggle{background:var(--plum);color:var(--ivory);transform:rotate(45deg)}
+  .faq-toggle svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .faq-a{padding:0 28px 24px;color:var(--plum-700);font-size:14.5px;line-height:1.75}
+  .faq-a p{margin-top:4px}
+  .faq-a strong{color:var(--plum);font-weight:500}
+
+  /* category nav */
+  .cat-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:30px}
+  .cat-pill{
+    padding:8px 18px;border-radius:999px;background:var(--lavender-soft);
+    font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum-700);
+    cursor:pointer;transition:all .2s;
+  }
+  .cat-pill:hover{background:var(--plum);color:var(--ivory)}
+  .cat-pill.active{background:var(--plum);color:var(--ivory)}
+
+  .empty-state{text-align:center;padding:60px 20px;color:var(--plum-700)}
+  .empty-state .ttl{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--plum);font-style:italic;margin-bottom:8px}
+
+  /* cta footer */
+  .help-cta{
+    background:var(--plum);color:var(--ivory);
+    padding:80px 40px;text-align:center;
+  }
+  .help-cta h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(36px,4.5vw,60px);line-height:1;letter-spacing:-0.02em;color:var(--ivory)}
+  .help-cta h2 em{font-style:italic;color:var(--gold)}
+  .help-cta p{margin:18px auto 0;font-size:15px;line-height:1.7;color:rgba(246,242,236,0.7);max-width:520px}
+  .help-cta .btn{margin-top:30px;display:inline-flex;align-items:center;gap:10px;background:#25D366;color:#fff;border:0;padding:16px 28px;border-radius:999px;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;font-weight:500;text-decoration:none;transition:transform .2s}
+  .help-cta .btn:hover{transform:translateY(-2px)}
+  .help-cta .btn svg{width:18px;height:18px;fill:currentColor}
+
+  /* footer */
+  footer{background:var(--ink);color:var(--lavender-soft);padding:60px 40px 30px;text-align:center}
+  footer .logo{width:140px;filter:invert(1) brightness(1.05);margin:0 auto 12px}
+  footer .tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--gold);margin-bottom:18px}
+  footer .links{display:flex;justify-content:center;gap:20px;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;margin-top:20px;flex-wrap:wrap}
+  footer .links a{color:rgba(246,242,236,0.7)}
+  footer .social{display:flex;justify-content:center;gap:12px;margin-top:14px}
+  footer .social a{width:36px;height:36px;border:1px solid rgba(246,242,236,0.15);border-radius:50%;display:grid;place-items:center;color:var(--ivory)}
+  footer .legals{margin-top:20px;display:flex;justify-content:center;gap:24px;font-size:11px;color:rgba(246,242,236,0.4);flex-wrap:wrap}
+  footer .legals a{color:rgba(246,242,236,0.5)}
+
+  @media (max-width:640px){
+    .hero{padding:50px 18px 30px}
+    .hero-lede{font-size:14px}
+    main{padding:40px 18px 60px}
+    .faq summary{padding:18px 18px}
+    .faq-q{font-size:18px}
+    .faq-a{padding:0 18px 18px;font-size:14px}
+    .nav-left{display:none}
+    .nav-right .nav-link{font-size:10.5px;letter-spacing:0.16em}
+    .nav-logo{height:42px}
+    .announce{font-size:10px;letter-spacing:0.12em;padding:8px 14px;gap:12px}
+    .announce span:first-child{display:none}
+    .help-cta{padding:60px 20px}
+  }
+</style>
+</head>
+<body>
+
+<!-- Announcement -->
+<div class="announce">
+  <span>🚚 Delivery gratis · Av. Perú y San Miguel</span>
+  <span>💬 WhatsApp · 930 122 014</span>
+  <span class="announce-social">
+    <a href="https://www.facebook.com/dolce7aroma/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M13 22v-8h3l.5-4H13V7.5c0-1 .3-1.8 1.8-1.8H17V2.2c-.4 0-1.6-.2-3-.2-3 0-5 1.8-5 5v3H6v4h3v8h4z"/></svg></a>
+    <a href="https://www.instagram.com/dolce7aroma/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 2 .3 2.4.5.6.3 1.1.6 1.6 1.1.5.5.8 1 1.1 1.6.2.4.4 1.2.5 2.4.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.3 2-.5 2.4-.3.6-.6 1.1-1.1 1.6-.5.5-1 .8-1.6 1.1-.4.2-1.2.4-2.4.5-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-2-.3-2.4-.5-.6-.3-1.1-.6-1.6-1.1-.5-.5-.8-1-1.1-1.6-.2-.4-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.3-2 .5-2.4.3-.6.6-1.1 1.1-1.6.5-.5 1-.8 1.6-1.1.4-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2zm0 5.3a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zm0 7.4a2.9 2.9 0 1 1 0-5.8 2.9 2.9 0 0 1 0 5.8zm4.7-8.7a1 1 0 1 0 0 2.1 1 1 0 0 0 0-2.1z"/></svg></a>
+    <a href="https://www.tiktok.com/@dolce7aroma" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M16 3v3.4a4.5 4.5 0 0 0 4 2v3.5a7.8 7.8 0 0 1-4-1.2v5.6a6.5 6.5 0 1 1-6.5-6.5c.4 0 .8 0 1.2.1v3.5a3 3 0 1 0 2.1 2.9V3H16z"/></svg></a>
+  </span>
+</div>
+
+<!-- Nav -->
+<nav class="top">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <a class="nav-link" href="Dolce Aroma - Inicio.html">Inicio</a>
+      <a class="nav-link" href="Dolce Aroma - Catalogo.html">Perfumes</a>
+      <a class="nav-link" href="Dolce Aroma - Inicio.html#ofertas">Ofertas</a>
+      <a class="nav-link" href="Dolce Aroma - Inicio.html#boutique">Boutique</a>
+    </div>
+    <a href="Dolce Aroma - Inicio.html"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce Aroma" /></a>
+    <div class="nav-right">
+      <a class="nav-link active">FAQ</a>
+      <a class="nav-link" href="#" data-modal="contacto">Contacto</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <span class="glyph">?</span>
+  <div class="hero-inner">
+    <div class="crumb"><a href="Dolce Aroma - Inicio.html">Inicio</a><span class="sep">/</span><span>Preguntas frecuentes</span></div>
+    <h1 class="title">Preguntas<br/><em>frecuentes</em></h1>
+    <p class="hero-lede">Todo lo que necesitas saber sobre nuestros perfumes, envíos, duración, aplicación y más. Si no encuentras tu respuesta, escríbenos por WhatsApp.</p>
+  </div>
+  <div class="faq-toolbar">
+    <div class="faq-search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="faq-q" placeholder="Buscar pregunta o tema..." autocomplete="off" />
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="cat-nav" id="cat-nav">
+    <span class="cat-pill active" data-cat="">Todas</span>
+    <span class="cat-pill" data-cat="eleccion">Elegir perfume</span>
+    <span class="cat-pill" data-cat="uso">Uso y duración</span>
+    <span class="cat-pill" data-cat="calidad">Calidad y esencias</span>
+    <span class="cat-pill" data-cat="envios">Envíos</span>
+    <span class="cat-pill" data-cat="negocio">Mayoristas y reventa</span>
+    <span class="cat-pill" data-cat="otros">Otros</span>
+  </div>
+
+  <div id="faq-list">
+    <details class="faq" data-cat="eleccion">
+      <summary>
+        <span class="faq-q">¿Cómo elijo mi perfume ideal?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Piensa en la ocasión: trabajo, salida nocturna, uso diario o regalo. Las familias <strong>florales y cítricas</strong> son frescas y versátiles. Las <strong>orientales y amaderadas</strong> son más intensas y duraderas.</p>
+        <p>Y recuerda — es completamente normal tener más de un perfume. Muchas personas tienen dos, cinco o más de diez según el momento. Si buscas regalar, nosotros incluimos la caja.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="uso">
+      <summary>
+        <span class="faq-q">¿Cuánto dura el perfume en el cuerpo?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Nuestras fragancias duran entre <strong>8 y 12 horas</strong> en piel. Para mejores resultados aplícalo en zonas de calor: cuello, muñecas y detrás de las orejas. La piel hidratada retiene mejor el aroma.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="uso">
+      <summary>
+        <span class="faq-q">¿Cuándo es el mejor momento para aplicarlo?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Justo después del baño, con la piel limpia y aún ligeramente húmeda. Los poros abiertos absorben mejor la fragancia.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="uso">
+      <summary>
+        <span class="faq-q">¿El perfume dura más en la ropa que en el cuerpo?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Sí, en la ropa puede durar significativamente más. Usuarios de Dolce Aroma nos han confirmado aromas que perduran <strong>más de 48 horas</strong> en sus prendas. Aplícalo a unos 10 cm de distancia con movimiento suave y uniforme. Si hubiera alguna mancha, desaparece completamente al lavar.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="uso">
+      <summary>
+        <span class="faq-q">¿El perfume mancha la ropa?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Si lo aplicas a <strong>10 cm de distancia</strong> con movimiento uniforme, no mancha. Si por accidente cae muy cerca en un punto específico, la mancha desaparece al lavar.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="uso">
+      <summary>
+        <span class="faq-q">¿Es bueno usar perfume después del ejercicio?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Honestamente, <strong>NO es el mejor momento</strong>. El sudor cambia el pH de tu piel y puede alterar el aroma. Lo ideal es ducharte primero. Si necesitas refrescarte después del gimnasio, el atomizador de 10ml es perfecto para llevar.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="uso">
+      <summary>
+        <span class="faq-q">¿El sudor afecta el perfume?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Puede afectarlo en personas que sudan más. El truco es aplicarlo en zonas que sudan menos: <strong>cuello, parte interna de los codos o detrás de las rodillas</strong>. También ayuda aplicarlo sobre ropa limpia.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="calidad">
+      <summary>
+        <span class="faq-q">¿Los ingredientes son de calidad?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Sí. Usamos esencias importadas desde <strong>Grasse, Francia</strong> — la ciudad del perfume — bajo altos estándares internacionales que garantizan proyección intensa, larga duración y suavidad en la piel.</p>
+        <p>Nuestras fragancias no irritan la piel. <strong>Nota:</strong> si tienes piel muy sensible y sientes irritación, deja de usarlo inmediatamente o aplícalo solo en la ropa.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="calidad">
+      <summary>
+        <span class="faq-q">¿Por qué ofrecen 30% de esencia si otros ofrecen 50%?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>La concentración no lo es todo. Nuestras esencias de Grasse tienen una pureza tan alta que con <strong>30% logras más proyección y duración</strong> que muchos productos con 50% de esencia ordinaria.</p>
+        <p>Menos cantidad, mejor calidad — así funciona la perfumería seria.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="eleccion">
+      <summary>
+        <span class="faq-q">¿Los probadores son suficientes para evaluar el perfume?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Los probadores te permiten oler la fragancia en tu piel. Para una evaluación más completa recomendamos el <strong>Pocket de 10 ml</strong> — úsalo varios días y confirma que es tu aroma antes de elegir el frasco grande.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="calidad">
+      <summary>
+        <span class="faq-q">¿Los perfumes tienen fecha de caducidad?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Sí, conservados correctamente duran entre <strong>3 y 5 años</strong>. Guárdalos en lugar fresco, seco y sin luz solar directa. Siempre con el frasco cerrado cuando no lo uses.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="otros">
+      <summary>
+        <span class="faq-q">¿El frasco es reutilizable?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>El frasco de <strong>110 ml (S/ 90) es recargable por S/ 80</strong>. Los demás frascos son de un solo uso.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="otros">
+      <summary>
+        <span class="faq-q">¿Tienen otros productos además de perfumes?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Sí. Ofrecemos:</p>
+        <ul style="padding-left:18px;margin-top:8px">
+          <li><strong>Frascos premium</strong> similares a los originales por S/ 10 adicionales.</li>
+          <li><strong>Cajas y bolsas de regalo.</strong></li>
+          <li>Probadores y atomizador de 10 ml de cortesía incluido según tu compra.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="envios">
+      <summary>
+        <h3>¿Hacen delivery?</h3>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="negocio">
+      <summary>
+        <span class="faq-q">¿Venden al por mayor?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Sí. Escríbenos por WhatsApp solicitando <strong>cotización mayorista</strong> indicando cantidad y presentaciones.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="negocio">
+      <summary>
+        <span class="faq-q">¿Puedo vender perfumes Dolce Aroma?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Sí. Con una inversión mínima recibes un <strong>kit mixto de perfumes</strong> para ofrecer, más probadores incluidos.</p>
+        <p>También contamos con <strong>combos empresariales para emprendedores</strong> que incluyen generación de marca, logo y papelería: tarjetas, stickers y volantes.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="otros">
+      <summary>
+        <span class="faq-q">¿Tienen ubicación física?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>Contamos con un punto de venta cerca de Av. Perú, en el <strong>Mercado San Antonio — Tienda Bazar Sport Shirley</strong>. Encontrarás una selección de los más vendidos para hombre y mujer. Coordina previamente por WhatsApp para pedidos específicos.</p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="otros">
+      <summary>
+        <span class="faq-q">¿Qué hago si por accidente ingiero perfume?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>No está diseñado para consumo. <strong>Bebe agua abundante y consulta a un médico de inmediato.</strong></p>
+      </div>
+    </details>
+
+    <details class="faq" data-cat="eleccion">
+      <summary>
+        <span class="faq-q">¿Cómo veo los perfumes recomendados de Dolce Aroma?</span>
+        <span class="faq-toggle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+      </summary>
+      <div class="faq-a">
+        <p>En la <a href="Dolce Aroma - Inicio.html" style="color:var(--gold);text-decoration:underline">página de inicio</a> encuentras los destacados del momento. También puedes explorar el <a href="Dolce Aroma - Catalogo.html" style="color:var(--gold);text-decoration:underline">catálogo completo</a> filtrando por familia, precio o género.</p>
+        <p>Para recomendación personalizada escríbenos por WhatsApp.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="empty-state" id="empty-state" style="display:none">
+    <div class="ttl">Sin coincidencias</div>
+    <p>Intenta con otra palabra o escríbenos por WhatsApp para una respuesta personalizada.</p>
+  </div>
+</main>
+
+<!-- Help CTA -->
+<section class="help-cta">
+  <h2>¿Aún tienes <em>dudas?</em></h2>
+  <p>Atendemos por WhatsApp todos los días. Te ayudamos a elegir tu fragancia ideal según tu estilo y ocasión.</p>
+  <a class="btn" href="https://wa.me/51930122014" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9s-.5-.1-.6.1-.7.9-.9 1.1-.3.2-.6.1c-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5-.6-1.4-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2 0 1.3 1 2.6 1.1 2.8.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.2-.2-.5-.3zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.3c1.4.8 3.1 1.3 4.8 1.3 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+    Escribir por WhatsApp
+  </a>
+</section>
+
+<!-- Footer -->
+<footer>
+  <img class="logo" src="assets/logo-perfumes.png" alt="Dolce Aroma" />
+  <div class="tagline">Perfumería contratipo · Lima, Perú</div>
+  <p style="font-size:13px;color:rgba(246,242,236,0.6);max-width:540px;margin:0 auto;line-height:1.7">Atelier de perfumería en Lima. Cada frasco se embotella a mano y se entrega con probadores de cortesía.</p>
+  <div class="social">
+    <a href="https://www.facebook.com/dolce7aroma/" target="_blank" rel="noopener" aria-label="Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M13 22v-8h3l.5-4H13V7.5c0-1 .3-1.8 1.8-1.8H17V2.2c-.4 0-1.6-.2-3-.2-3 0-5 1.8-5 5v3H6v4h3v8h4z"/></svg></a>
+    <a href="https://www.instagram.com/dolce7aroma/" target="_blank" rel="noopener" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 2 .3 2.4.5.6.3 1.1.6 1.6 1.1.5.5.8 1 1.1 1.6.2.4.4 1.2.5 2.4.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.3 2-.5 2.4-.3.6-.6 1.1-1.1 1.6-.5.5-1 .8-1.6 1.1-.4.2-1.2.4-2.4.5-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-2-.3-2.4-.5-.6-.3-1.1-.6-1.6-1.1-.5-.5-.8-1-1.1-1.6-.2-.4-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.3-2 .5-2.4.3-.6.6-1.1 1.1-1.6.5-.5 1-.8 1.6-1.1.4-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2zm0 5.3a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zm0 7.4a2.9 2.9 0 1 1 0-5.8 2.9 2.9 0 0 1 0 5.8zm4.7-8.7a1 1 0 1 0 0 2.1 1 1 0 0 0 0-2.1z"/></svg></a>
+    <a href="https://www.tiktok.com/@dolce7aroma" target="_blank" rel="noopener" aria-label="TikTok"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3v3.4a4.5 4.5 0 0 0 4 2v3.5a7.8 7.8 0 0 1-4-1.2v5.6a6.5 6.5 0 1 1-6.5-6.5c.4 0 .8 0 1.2.1v3.5a3 3 0 1 0 2.1 2.9V3H16z"/></svg></a>
+    <a href="https://www.mercadolibre.com.pe/pagina/dolce7aroma" target="_blank" rel="noopener" aria-label="Mercado Libre"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6 2 11c0 2.4 1 4.4 2.7 6L12 22l7.3-5c1.7-1.6 2.7-3.6 2.7-6 0-5-4.5-9-10-9zm0 14a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/></svg></a>
+  </div>
+  <div class="links">
+    <a href="Dolce Aroma - Inicio.html">Inicio</a>
+    <a href="Dolce Aroma - Catalogo.html">Catálogo</a>
+    <a href="#" data-modal="envios">Envíos</a>
+    <a href="#" data-modal="contacto">Contacto</a>
+    <a href="https://wa.me/51930122014" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+  <div class="legals">
+    <span>© 2024 Dolce Aroma · Lima, Perú</span>
+    <a href="#" data-modal="terminos">Términos</a>
+    <a href="#" data-modal="privacidad">Privacidad</a>
+    <a href="#" data-modal="cookies">Cookies</a>
+  </div>
+</footer>
+
+<script src="assets/site-modals.js"></script>
+<script>
+  const list = document.getElementById('faq-list');
+  const empty = document.getElementById('empty-state');
+  const allFaqs = [...list.querySelectorAll('.faq')];
+  let curCat = '';
+  let curQ = '';
+
+  function applyFilter(){
+    const q = curQ.toLowerCase().trim();
+    let visible = 0;
+    allFaqs.forEach(f => {
+      const matchCat = !curCat || f.dataset.cat === curCat;
+      const text = f.textContent.toLowerCase();
+      const matchQ = !q || text.includes(q);
+      const show = matchCat && matchQ;
+      f.style.display = show ? '' : 'none';
+      if(show) visible++;
+    });
+    empty.style.display = visible ? 'none' : '';
+  }
+
+  document.getElementById('faq-q').addEventListener('input', e => { curQ = e.target.value; applyFilter(); });
+  document.getElementById('cat-nav').addEventListener('click', e => {
+    const p = e.target.closest('.cat-pill'); if(!p) return;
+    document.querySelectorAll('.cat-pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    curCat = p.dataset.cat;
+    applyFilter();
+  });
+
+  // Track open/close for shadow
+  allFaqs.forEach(f => f.addEventListener('toggle', () => f.classList.toggle('open', f.open)));
+</script>
+</body>
+</html>

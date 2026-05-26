@@ -1,0 +1,59 @@
+INICIO
+FOTO 1
+
+- Quiero que el logo sea mas grande y que no tenga color de fondo adjunto logo.
+
+FOTO 3
+- Las letras inferiores de familia olfativa y demás están descentrados en la imagen principal.
+- Debe ser carrusel con los 3 primeros destacados
+-  Inspiración de calidad de los mejores perfumes del mundo y precio justo. cambiar por: "Inspiración de calidad de los mejores perfumes del mundo y a precio justo."
+- Dolce Aroma nace en Lima con una idea clara: traerte las mejores esencias del mundo a un precio increíble. Trabajamos con esencias importadas de alta calidad, inspiradas en las fragancias más icónicas, embotelladas a mano con cuidado y atención en cada detalle. Porque oler extraordinario no debería costar una fortuna — y tú te lo mereces. CAMBIAR POR
+"Dolce Aroma nació hace 3 años en Lima con una idea clara: traerte las mejores esencias del mundo a un precio increíble. Trabajamos con esencias importadas desde Francia de alta calidad, inspiradas en las fragancias más icónicas, embotelladas con cuidado y con atención en cada detalle. Porque oler extraordinario no debería costar una fortuna — y tú te lo mereces."
+- DESCUBRIR COLECCIO  suena a CATALOGO debe linkear con elcatalogo, a su izquierda agrega un botón con "LOS MAS PEDIDOS" que te envia hacia abajo donde esta los destacados.
+
+FOTO 4
+- cambiar CATALOGO · 2026 por DESTACADOS · 2026
+- Cambia Nuestros
+perfumes por 
+Nuestros
+perfumes mas destacados
+- Cambia Todos los perfumes vienen con probadores de cortesía. Además, con el frasco de 110 ml incluye un atomizador de 10 ml, listo para que tu perfume te acompañe donde sea que vayas. por 
+Listamos los perfumes mas solicitados. Todos los perfumes vienen con probadores de cortesía. Además, con el frasco de 110 ml incluye un atomizador de 10 ml, listo para que tu perfume te acompañe donde sea que vayas.
+
+FOTO 5
+- Podemos actualizar esa imagen por la foto 6.
+- Cambiar la frase por: 
+"El perfume es la forma más intensa del recuerdo."
+Jean-Paul Guerlain
+
+FOTO 7
+- Quita el mes MAYO.
+- Delivery gratis dentro de Av. Perú. actualiz por Delivery gratis dentro de Av. Perú y zonas de San Miguel o Metropolitano UNI.
+- Estas promociones deben reflejarse en el carrioto cuando seleccionen 3 perfumes a mas de diferentes tamaños de perfumes el descuento debe hacerse efectivo.
+- Actualizar los nombres de las ofertas.
+- Trío Pocket - Ideal para llevar en el bolso, retocar el aroma en cualquier lugar y tener variedad antes de elegir tu perfume ideal. El tercero, diez soles menos.
+- Trío Esencial - El tamaño perfecto y equilibrado que también entra en tu bolso. perfectos para diferentes ocasiones. Quince soles menos al sumar el tercer frasco.
+- Trío Premium  - Para los verdaderos amantes del perfume. Máxima duración, el formato más exclusivo y la mejor inversión para tus fragancias favoritas. El tercero llega con 50% de descuento.
+- Las letras de las ofertas mas grandes y mejor vistas que atraiga le ojo del comprador.
+- Las letras mas grandes en general tiene mucho espacio disponible.
+
+FOTO 8 
+- Encuentra tu firma cambiar por "Encuentra el aroma que nadie olvidará"
+
+FOTO 9 
+- Cambiar Voces de la casa por "Ellos ya encontraron su aroma y comparten su opinión"
+- La parte inferior cambia por: "Reseñas reales de quienes ya usan Dolce Aroma. Atendemos por WhatsApp todos los días — escríbenos al 930 122 014.
+
+Foto 10
+- Encuéntranos dentro del Mercado San Antonio, cerca de Av. Perú. actualízalo por "Encuéntranos al lado del Mercado San Antonio, Jr Callao 482-A, a unas casas de la Av. Perú en SMP. Tenemos en stock una selección de los más vendidos para hombre y mujer. Coordina previamente por WhatsApp para pedidos específicos."
+
+FOTO 11
+_ Podemos agregar los precios de los frascos disponibles si no hay espacio vertical que sea horizontal. Mantender el formato del S/ 90.
+
+- Las letras mas grandes se nota vacío en la parte inferior
+
+BOLSA
+- NO esta aplicando las ofertas de trio. Agregar una fila sobre el TOTAL que cuando las cantidades lleguen a la oferta muestre cuanto se le va descontando. Y el Total es el precio por la cantidad menos el descuento. Sobre descuento una fila mas que sea subtotal podes mejorar en los nombres pero me entiendes la idea.
+
+
+

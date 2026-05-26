@@ -1,0 +1,95 @@
+INICIO
+FOTO 1
+- Actualizar la lista del medio por:
+🎁 Atomizador 10ml + 2 probadores de regalo
+🚚 Delivery gratis · Av. Perú (S.M.P) y San Miguel
+⭐ +150 perfumes vendidos · Clientes satisfechos
+💎 Esencias importadas desde Francia · Alta calidad
+
+- Al ponerse en mitad de ventana no salen todas las pestañas solo esas 2 que salen en la foto.
+
+
+FOTO 2:
+- En el recuadro están figurando 2 veces el tamaño del envase, corregir debe verse solo 1 vez. 
+- Debe figurar también la ocasión.  
+
+FOTO 3
+- Actualizar solo una oracion:
+Por eso trabajamos con esencias de alta calidad importadas desde Francia, inspiradas en las fragancias más icónicas del mundo, para ofrecértelas a un precio justo y accesible.
+
+FOTO 4
+Agrega: 
+- Por la compra de cualquier prenda pide un probador de regalo. 
+
+FOTO 5
+- Mejorar la foto no sale como la adjunte.
+
+FOTO 6
+- Actualizar Compras grandes:
+En compras mayores a S/ 150 y de acuerdo a la ubicación aplicamos descuentos en el delivery.
+- Actualizar Tiempos de entrega:
+Las entregas se realizar previa coordinación y máximo al día de la confirmación del pedido. 
+- Identificar si estas actualizaciones ameritan tmb actualización en FAQ o donde se mencionen lo mismo.
+
+FOTO 7
+- Actualizar Productos:
+Dolce Aroma comercializa perfumes equivalentes de alta calidad, inspirados en fragancias icónicas. No representamos ni somos distribuidores oficiales de las marcas originales mencionadas a modo de referencia olfativa.
+
+PERFUMES
+FOTO 8
+- Homologar con la pantalla inicio, aquí si se ve las pestañas peor es diferente la franja con el de inicio.
+
+FOTO 9
+- Eliminar el precio de la derecha se repite con los recuadros de abajo. 
+- Me gusta el estilo como aparece la ocasión, podría replicarse en el recuadro del inicio. 
+
+MEJORAS ADMIN
+
+Necesito mejorar el panel Admin con los siguientes cambios:
+DASHBOARD — agregar encima de la tabla actual:
+Fila 1 — Resumen general (ya existe, mantener):
+Total fragancias · Destacadas en home · Familias activas · Stock total
+Fila 2 — Alertas de stock (nuevo):
+
+Perfumes con stock bajo (menos de 2 unidades) — badge rojo
+Perfumes agotados en alguna presentación — badge naranja
+Perfumes sin foto cargada — badge amarillo
+
+Fila 3 — Stock por precio (nuevo):
+
+Unidades disponibles de 110ml · 50ml · 10ml por separado
+Valor estimado del inventario total (unidades x precio de cada presentación)
+
+Fila 4 — Composición del catálogo con gráficos (nuevo):
+
+Gráfico de dona: % por familia olfativa (Floral, Oriental, Amaderado, Cítrico, Chipre, Frutal)
+Gráfico de barras: % Mujer / Hombre / Unisex
+Conteo por etiqueta: Más vendido / Nuevo / Destacado / Edición limitada
+
+TABLA DEL CATÁLOGO — agregar columna Ocasión:
+Mostrar los badges de ocasión de cada perfume visibles directamente en la tabla, entre las columnas Género y Precio/Stock.
+FORMULARIO DE EDICIÓN — reemplazar campo Ocasión:
+Reemplazar las ocasiones actuales por esta lista completa con selección múltiple (un perfume puede tener varias ocasiones simultáneas):
+
+🌅 Día
+🌙 Noche
+💼 Oficina
+🎉 Fiesta
+❤️ Cita
+🏠 Uso diario
+✨ Evento especial
+☀️ Verano
+🧥 Invierno
+🎁 Para regalar
+
+CATÁLOGO PÚBLICO — agregar filtro por Ocasión:
+Agregar en los filtros del catálogo público la opción de filtrar por ocasión usando la misma lista de 10 opciones.
+SECCIÓN RESEÑAS — nueva sección en el Admin:
+Agregar pestaña o sección "Reseñas" con:
+
+Tabla con todas las reseñas existentes
+Campos: nombre del cliente, texto de la reseña, calificación 1-5 estrellas, fecha, activa/inactiva, destacada
+Botón agregar nueva reseña
+Opciones por reseña: editar / activar / desactivar / destacar / eliminar
+Las reseñas marcadas como activas se muestran automáticamente en la web
+Las marcadas como destacadas aparecen primero 
