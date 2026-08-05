@@ -51,15 +51,19 @@
       return s + (sz?.price||0) * i.qty;
     }, 0);
   }
-  // ─ Ofertas de trío ─
-  // 3 frascos de la misma presentación → descuento sobre el 3.º
-  //   110 ml: -50% sobre el más barato del trío (Trío Premium)
-  //   50 ml : -S/ 15 plano por trío (Trío Esencial)
-  //   10 ml : -S/ 10 plano por trío (Trío Pocket)
+  // ─ Ofertas de trío y dúo ─
+  // Varios frascos de la misma presentación → descuento
+  //   110 ml: trío -50% sobre el más barato (Trío Premium) · dúo -S/ 30 plano (Dúo Premium)
+  //   50 ml : trío -S/ 15 plano (Trío Esencial) · dúo -S/ 19 plano (Dúo Esencial)
+  //   10 ml : trío -S/ 10 plano (Trío Pocket) · sin oferta de dúo
   const TRIO_TIERS = {
     110: { label: 'Trío Premium · 110 ml', perTrio: (cheapest) => Math.round(cheapest * 0.5) },
     50:  { label: 'Trío Esencial · 50 ml',  perTrio: () => 15 },
     10:  { label: 'Trío Pocket · 10 ml',    perTrio: () => 10 }
+  };
+  const DUO_TIERS = {
+    110: { label: 'Dúo Premium · 110 ml', amount: 30 },
+    50:  { label: 'Dúo Esencial · 50 ml',  amount: 19 }
   };
   function computeOffers(){
     const groups = {}; // ml -> [unit price, ...]
@@ -72,17 +76,40 @@
     });
     const subtotal = Object.values(groups).reduce((s,arr)=> s + arr.reduce((a,b)=>a+b,0), 0);
     const discounts = [];
-    const progress = []; // tiers donde aún no se llega al trío
-    Object.entries(groups).forEach(([ml, prices]) => {
-      const tier = TRIO_TIERS[+ml]; if(!tier) return;
+    const progress = []; // tiers donde aún no se completa la oferta, o donde conviene sumar una más
+    Object.entries(groups).forEach(([mlStr, prices]) => {
+      const ml = +mlStr;
+      const trioTier = TRIO_TIERS[ml];
+      const duoTier = DUO_TIERS[ml];
       const sorted = prices.slice().sort((a,b)=>a-b);
-      const trios = Math.floor(sorted.length / 3);
-      let amount = 0;
-      for(let i=0;i<trios;i++) amount += tier.perTrio(sorted[i]);
-      if(amount > 0){
-        discounts.push({ ml:+ml, label: tier.label, amount, trios });
-      } else if(sorted.length > 0 && sorted.length < 3){
-        progress.push({ ml:+ml, label: tier.label, qty: sorted.length, missing: 3 - sorted.length });
+      const n = sorted.length;
+
+      let trios = trioTier ? Math.floor(n / 3) : 0;
+      let resto = n - trios * 3;
+      // Si sobra justo 1 y hay oferta de dúo, soltamos un trío para armar 2 dúos y cubrir más unidades
+      if(resto === 1 && trios > 0 && duoTier){ trios -= 1; resto += 3; }
+      const duos = duoTier ? Math.floor(resto / 2) : 0;
+
+      let idx = 0, trioAmount = 0, duoAmount = 0;
+      for(let t=0;t<trios;t++){ trioAmount += trioTier.perTrio(sorted[idx]); idx += 3; }
+      for(let d=0;d<duos;d++){ duoAmount += duoTier.amount; idx += 2; }
+      if(trioAmount > 0) discounts.push({ ml, label: trioTier.label, amount: trioAmount, count: trios, kind: 'trio' });
+      if(duoAmount > 0) discounts.push({ ml, label: duoTier.label, amount: duoAmount, count: duos, kind: 'duo' });
+
+      const leftover = n - idx;
+      if(idx === 0 && leftover > 0 && leftover < 3){
+        // nada tiene descuento todavía: falta para el próximo escalón
+        if(duoTier) progress.push({ ml, kind: 'duo', label: duoTier.label, missing: 1, amount: duoTier.amount });
+        else if(trioTier) progress.push({ ml, kind: 'trio', label: trioTier.label, missing: 3 - leftover, amount: trioTier.perTrio(sorted[0]) });
+      } else if(leftover === 1 && idx > 0 && trioTier && !duoTier){
+        // quedó 1 unidad suelta tras un trío (solo aplica a tamaños sin dúo, ej. 10 ml)
+        progress.push({ ml, kind: 'trio', label: trioTier.label, missing: 2, amount: trioTier.perTrio(sorted[n-1]) });
+      } else if(leftover === 0 && duos === 1 && trios === 0 && trioTier){
+        // ya tiene un dúo activo: solo sugerimos subir a trío si de verdad deja más ahorro
+        const potentialTrio = trioTier.perTrio(sorted[0]);
+        if(potentialTrio > duoAmount){
+          progress.push({ ml, kind: 'upgrade', label: trioTier.label, missing: 1, amount: potentialTrio - duoAmount });
+        }
       }
     });
     const totalDiscount = discounts.reduce((a,b)=>a+b.amount, 0);
@@ -95,7 +122,16 @@
     else cart.push({id:item.id, ml:item.ml, qty:item.qty||1});
     saveCart();
     bumpCount();
-    showToast('Agregado a la bolsa');
+    showToast(buildAddToast(item.ml));
+  }
+  // Mensaje del toast: induce a completar la oferta o celebra que ya está activa
+  function buildAddToast(ml){
+    const offers = computeOffers();
+    const hint = offers.progress.find(p => p.ml === ml);
+    if(hint) return `Agregado · Sumá ${hint.missing} más de ${ml} ml y ahorra S/ ${hint.amount}`;
+    const applied = offers.discounts.find(d => d.ml === ml);
+    if(applied) return `Agregado · ¡${applied.label} activo! Ahorras S/ ${applied.amount}`;
+    return 'Agregado a la bolsa';
   }
   function removeFromCart(id, ml){ cart = cart.filter(c => !(c.id===id && c.ml===ml)); saveCart(); renderCart(); }
   function changeQty(id, ml, d){
@@ -418,13 +454,13 @@
     const progressHtml = offers.progress.length
       ? `<div class="da-trio-hint">
            ${offers.progress.map(p =>
-             `<div class="da-trio-row"><span>${p.label}</span><span>Suma ${p.missing} más para activar</span></div>`
+             `<div class="da-trio-row"><span>${p.label}</span><span>Sumá ${p.missing} más · ahorra S/ ${p.amount}</span></div>`
            ).join('')}
          </div>`
       : '';
     const subtotalRow = `<div class="da-line"><span>Subtotal</span><b>S/ ${offers.subtotal}</b></div>`;
     const discountRows = offers.discounts.map(d =>
-      `<div class="da-line da-line-dis"><span>${d.label} · ×${d.trios}</span><b>− S/ ${d.amount}</b></div>`
+      `<div class="da-line da-line-dis"><span>${d.label} · ×${d.count}</span><b>− S/ ${d.amount}</b></div>`
     ).join('');
     foot.innerHTML = `
       <div class="da-totals">
@@ -470,7 +506,7 @@
       if(offers.discounts.length){
         lines.push(`Subtotal: S/ ${offers.subtotal}`);
         offers.discounts.forEach(d => {
-          lines.push(`Oferta ${d.label} (×${d.trios}): − S/ ${d.amount}`);
+          lines.push(`Oferta ${d.label} (×${d.count}): − S/ ${d.amount}`);
         });
         lines.push(`*Total con ofertas: S/ ${offers.total}*`);
       } else {

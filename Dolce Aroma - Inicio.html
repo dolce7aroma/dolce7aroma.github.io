@@ -427,6 +427,11 @@
   .oferta-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:24px;border-top:1px solid var(--rule);gap:14px;flex-wrap:wrap}
   .oferta-price{font-family:'Cormorant Garamond',serif;font-size:48px;color:var(--plum);font-weight:500;line-height:1;display:flex;align-items:baseline;gap:10px}
   .oferta-price small{font-size:13px;color:var(--plum-700);font-family:'Jost',sans-serif;font-weight:400;text-decoration:line-through;text-decoration-color:rgba(60,47,71,0.4)}
+  .oferta-tier-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--plum-700);margin-bottom:2px}
+  .oferta-tiers{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+  .oferta-tier{display:flex;align-items:baseline;gap:8px;font-size:12.5px;color:var(--plum-700)}
+  .oferta-tier b{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--plum);font-weight:500}
+  .oferta-tier small{font-size:11px;font-family:'Jost',sans-serif;text-decoration:line-through;text-decoration-color:rgba(60,47,71,0.4)}
   .oferta-cta{font-size:12px;letter-spacing:0.24em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;color:var(--plum);cursor:pointer;font-weight:500;padding:12px 0;border-bottom:1px solid var(--plum)}
   .oferta-cta svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;transition:transform .25s}
   .oferta-cta:hover svg{transform:translateX(4px)}
@@ -786,11 +791,11 @@
         <div class="section-eyebrow">
           <span class="line"></span><span class="eyebrow">Promociones</span>
         </div>
-        <h2>Lleva tres,<br/><em>celebra el tercero.</em></h2>
+        <h2>Lleva dos o tres,<br/><em>ahorra en cada uno.</em></h2>
       </div>
       <p class="right">
-        Combina cualquiera de nuestras presentaciones. El precio del tercer frasco se ajusta automáticamente
-        en tu bolsa. Delivery gratis dentro de Av. Perú y zonas de San Miguel o Metropolitano UNI.
+        Combina cualquiera de nuestras presentaciones. El precio se ajusta automáticamente en tu bolsa
+        desde el segundo frasco. Delivery gratis dentro de Av. Perú y zonas de San Miguel o Metropolitano UNI.
       </p>
     </div>
 
@@ -815,10 +820,16 @@
           <span class="oferta-tag">-S/ 15 en el 3°</span>
         </div>
         <h3 class="oferta-title">Trío <em>Esencial</em><br/>50 ml</h3>
-        <p class="oferta-desc">El tamaño perfecto y equilibrado que también entra en tu bolso, perfectos para diferentes ocasiones. <strong>Quince soles menos al sumar el tercer frasco.</strong></p>
+        <p class="oferta-desc">El tamaño perfecto y equilibrado que también entra en tu bolso, perfectos para diferentes ocasiones. <strong>Ahorra desde el segundo frasco.</strong></p>
         <div class="oferta-foot">
-          <div class="oferta-price">S/ 150<small>antes S/ 165</small></div>
-          <a class="oferta-cta" href="Dolce Aroma - Catalogo.html?ml=50">Armar trío <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <div>
+            <div class="oferta-tiers">
+              <div class="oferta-tier"><span>2 unidades</span><span><b>S/ 100</b><small>antes S/ 119</small></span></div>
+            </div>
+            <div class="oferta-tier-label">3 unidades</div>
+            <div class="oferta-price">S/ 150<small>antes S/ 165</small></div>
+          </div>
+          <a class="oferta-cta" href="Dolce Aroma - Catalogo.html?ml=50">Armar dúo o trío <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
       </article>
 
@@ -830,8 +841,14 @@
         <h3 class="oferta-title">Trío <em>Premium</em><br/>110 ml</h3>
         <p class="oferta-desc">Para los verdaderos amantes del perfume. Máxima duración, el formato más exclusivo y la mejor inversión para tus fragancias favoritas. <strong>El tercero llega con 50% de descuento.</strong></p>
         <div class="oferta-foot">
-          <div class="oferta-price">S/ 225<small>antes S/ 270</small></div>
-          <a class="oferta-cta" href="Dolce Aroma - Catalogo.html?ml=110">Armar trío <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <div>
+            <div class="oferta-tiers">
+              <div class="oferta-tier"><span>2 unidades</span><span><b>S/ 150</b><small>antes S/ 180</small></span></div>
+            </div>
+            <div class="oferta-tier-label">3 unidades</div>
+            <div class="oferta-price">S/ 225<small>antes S/ 270</small></div>
+          </div>
+          <a class="oferta-cta" href="Dolce Aroma - Catalogo.html?ml=110">Armar dúo o trío <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
       </article>
 
