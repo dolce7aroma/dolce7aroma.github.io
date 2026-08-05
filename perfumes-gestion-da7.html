@@ -1266,13 +1266,14 @@ function readForm(){
 function savePerfume(){
   const p = readForm();
   if(!p.name){ toast('Falta el nombre del perfume', 'warn'); return; }
-  // If a pending photo blob was stashed, rebind it under the real perfume id
+  // Si la foto ya se publicó de verdad (ruta assets/perfumes/...), la dejamos tal cual.
+  // Solo si sigue como blob local (el Worker no la publicó, ej. sin API_BASE) la rebindeamos bajo el id real.
   const pending = $('#f-preview').dataset.pendingId;
-  if(pending && pending.startsWith('p-pending-')){
+  if(pending && pending.startsWith('p-pending-') && (!p.photo || p.photo.startsWith('idb:'))){
     idbGet(pending).then(blob => { if(blob){ idbPut(p.id, blob); photoCache[p.id] && URL.revokeObjectURL(photoCache[p.id]); delete photoCache[p.id]; } });
     p.photo = 'idb:' + p.id;
-    $('#f-preview').dataset.pendingId = '';
   }
+  $('#f-preview').dataset.pendingId = '';
   const idx = state.perfumes.findIndex(x=>x.id===p.id);
   if(idx>=0) state.perfumes[idx] = p; else state.perfumes.unshift(p);
   save().then(() => { renderAll(); closeDrawer(); toast(idx>=0 ? 'Perfume actualizado' : 'Perfume agregado'); });
@@ -1513,8 +1514,11 @@ function handlePhoto(file){
   const url = URL.createObjectURL(file);
   $('#f-preview').src = url;
   $('#f-photo-label').textContent = file.name;
+  // El guardado en IDB y la publicación al Worker corren en paralelo; esta bandera evita
+  // que el guardado local (más lento a veces) pise la ruta real si termina después.
+  let published = false;
   idbPut(pendingId, file).then(()=>{
-    $('#f-preview').dataset.path = 'idb:' + pendingId;
+    if(!published) $('#f-preview').dataset.path = 'idb:' + pendingId;
   }).catch(err => toast('Error guardando foto: ' + err.message, 'warn'));
 
   // Publicación real al repo vía el Worker (si está configurado).
@@ -1524,10 +1528,15 @@ function handlePhoto(file){
   }
   const nameGuess = ($('#f-name').value || file.name.replace(/\.[^.]+$/, '')).trim();
   const ext = (file.name.match(/\.[^.]+$/) || ['.jpg'])[0];
-  const suggestedName = (nameGuess + ext).replace(/[\\/]/g, '-');
+  // Espacios → "_" para que el archivo quede con un nombre corto y sin problemas de codificación en el link.
+  const suggestedName = (nameGuess.replace(/\s+/g, '_') + ext).replace(/[\\/]/g, '-');
   $('#f-photo-label').textContent = `Subiendo ${suggestedName}…`;
+  // Bloqueamos "Guardar" mientras se publica, para no guardar la referencia temporal por error.
+  const saveBtn = $('#btn-save');
+  if(saveBtn) saveBtn.disabled = true;
   fileToBase64(file).then(dataUrl => uploadPhotoToWorker(suggestedName, dataUrl)).then(res => {
     if(res.ok){
+      published = true;
       $('#f-preview').dataset.path = res.path;
       $('#f-photo-label').textContent = res.path.split('/').pop() + ' · publicada ✓';
       toast('Foto publicada en el repo');
@@ -1538,7 +1547,7 @@ function handlePhoto(file){
   }).catch(err => {
     toast('No se pudo publicar la foto: ' + err.message, 'warn');
     $('#f-photo-label').textContent = file.name + ' (solo local, sin publicar)';
-  });
+  }).finally(() => { if(saveBtn) saveBtn.disabled = false; });
 }
 function fileToBase64(file){
   return new Promise((resolve, reject) => {
