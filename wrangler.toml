@@ -1,0 +1,3 @@
+name = "dolce7aroma-github-io"
+main = "worker/dolce-aroma-admin-worker.js"
+compatibility_date = "2024-11-01"

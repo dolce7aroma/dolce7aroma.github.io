@@ -248,6 +248,9 @@
   //    podría leer el código fuente. Para seguridad real necesitas un backend.
   const ADMIN_PASSWORD_HASH = '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4'; // hash de "1234" — CÁMBIALO
   const GATE_KEY = 'da-admin-session-v1';
+  // Hash de la sesión activa — se reutiliza como credencial al publicar fotos/catálogo
+  // en el Worker (así no hace falta guardar la contraseña en texto plano en ningún lado).
+  let adminKeyHash = null;
   async function sha256(s){
     const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
     return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -261,7 +264,7 @@
     // ¿sesión recordada?
     try{
       const saved = localStorage.getItem(GATE_KEY);
-      if(saved === ADMIN_PASSWORD_HASH){ gateUnlock(); return; }
+      if(saved === ADMIN_PASSWORD_HASH){ adminKeyHash = saved; gateUnlock(); return; }
     }catch(e){}
     document.getElementById('da-gate-form').addEventListener('submit', async e => {
       e.preventDefault();
@@ -271,6 +274,7 @@
       errEl.textContent = '';
       const h = await sha256(pwd);
       if(h === ADMIN_PASSWORD_HASH){
+        adminKeyHash = h;
         if(remember){ try{ localStorage.setItem(GATE_KEY, h); }catch(e){} }
         gateUnlock();
       } else {
@@ -308,6 +312,10 @@
     <button class="btn btn-ghost" id="btn-export" title="Descarga el archivo productos.json para subir a GitHub">
       <svg viewBox="0 0 24 24"><path d="M12 21V9M7 14l5-5 5 5M5 3h14"/></svg>
       Exportar productos.json
+    </button>
+    <button class="btn btn-primary" id="btn-publish" title="Publica el catálogo directo a la web, sin pasos manuales">
+      <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
+      Publicar cambios
     </button>
     <button class="btn btn-primary" id="btn-new">
       <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
@@ -712,6 +720,9 @@
    ───────────────────────────────────────────── */
 const STORAGE_KEY = 'dolce-aroma-perfumes-v1';
 const SEED_URL = 'data/perfumes.json';
+// URL del Worker que publica fotos/catálogo directo al repo (ver worker/dolce-aroma-admin-worker.js).
+// Déjalo vacío ('') mientras no esté desplegado: el Admin sigue funcionando en modo local/manual.
+const API_BASE = '';
 
 const FAMILY_LABEL = {floral:'Floral', oriental:'Oriental', amaderado:'Amaderado', citrico:'Cítrico', chipre:'Chipre', aromatico:'Aromático', frutal:'Frutal'};
 const TAG_LABEL = {'mas-vendido':'Más vendido', 'nuevo':'Nuevo', 'edicion-limitada':'Edición limitada', 'agotado':'Agotado'};
@@ -1426,6 +1437,7 @@ function applyBulk(mode){
 function wire(){
   $('#btn-new').addEventListener('click', ()=> openDrawer());
   $('#btn-export').addEventListener('click', exportJson);
+  $('#btn-publish').addEventListener('click', publishCatalog);
   $('#btn-import').addEventListener('click', ()=> $('#import-file').click());
   $('#import-file').addEventListener('change', e=> e.target.files[0] && importJson(e.target.files[0]));
   $('#btn-bulk').addEventListener('click', openBulk);
@@ -1494,7 +1506,7 @@ function wire(){
   });
 }
 function handlePhoto(file){
-  // Stash blob in IDB right away under a pending id; the form will commit on Guardar.
+  // Preview instantáneo vía IDB (funciona aunque el Worker no esté configurado todavía).
   const pendingId = editingId || ('p-pending-' + Math.random().toString(36).slice(2,8));
   $('#f-preview').dataset.pendingId = pendingId;
   $('#f-preview').dataset.path = '';
@@ -1504,6 +1516,62 @@ function handlePhoto(file){
   idbPut(pendingId, file).then(()=>{
     $('#f-preview').dataset.path = 'idb:' + pendingId;
   }).catch(err => toast('Error guardando foto: ' + err.message, 'warn'));
+
+  // Publicación real al repo vía el Worker (si está configurado).
+  if(!API_BASE){
+    toast('Foto guardada localmente. Configura API_BASE para publicarla automáticamente.', 'warn');
+    return;
+  }
+  const nameGuess = ($('#f-name').value || file.name.replace(/\.[^.]+$/, '')).trim();
+  const ext = (file.name.match(/\.[^.]+$/) || ['.jpg'])[0];
+  const suggestedName = (nameGuess + ext).replace(/[\\/]/g, '-');
+  $('#f-photo-label').textContent = `Subiendo ${suggestedName}…`;
+  fileToBase64(file).then(dataUrl => uploadPhotoToWorker(suggestedName, dataUrl)).then(res => {
+    if(res.ok){
+      $('#f-preview').dataset.path = res.path;
+      $('#f-photo-label').textContent = res.path.split('/').pop() + ' · publicada ✓';
+      toast('Foto publicada en el repo');
+    } else {
+      toast('No se pudo publicar la foto: ' + res.error, 'warn');
+      $('#f-photo-label').textContent = file.name + ' (solo local, sin publicar)';
+    }
+  }).catch(err => {
+    toast('No se pudo publicar la foto: ' + err.message, 'warn');
+    $('#f-photo-label').textContent = file.name + ' (solo local, sin publicar)';
+  });
+}
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(r.error || new Error('No se pudo leer el archivo'));
+    r.readAsDataURL(file);
+  });
+}
+async function uploadPhotoToWorker(filename, imageDataUrl){
+  const res = await fetch(`${API_BASE}/api/upload-photo`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ key: adminKeyHash, filename, imageBase64: imageDataUrl })
+  });
+  return res.json();
+}
+async function publishCatalog(){
+  if(!API_BASE){ toast('Configura API_BASE en el código para poder publicar', 'warn'); return; }
+  const data = { schema:{version:1}, perfumes: state.perfumes };
+  toast('Publicando catálogo…');
+  try{
+    const res = await fetch(`${API_BASE}/api/save-catalog`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ key: adminKeyHash, productos: data })
+    });
+    const out = await res.json();
+    if(out.ok) toast('Catálogo publicado en la web');
+    else toast('No se pudo publicar: ' + out.error, 'warn');
+  }catch(err){
+    toast('No se pudo publicar: ' + err.message, 'warn');
+  }
 }
 
 /* ─── boot ─── */
