@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /perfumes-gestion-da7.html
-Disallow: /uploads/
 
 Sitemap: https://dolce7aroma.github.io/sitemap.xml
