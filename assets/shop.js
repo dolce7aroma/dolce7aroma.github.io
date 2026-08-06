@@ -99,16 +99,18 @@
       const leftover = n - idx;
       if(idx === 0 && leftover > 0 && leftover < 3){
         // nada tiene descuento todavía: falta para el próximo escalón
-        if(duoTier) progress.push({ ml, kind: 'duo', label: duoTier.label, missing: 1, amount: duoTier.amount });
-        else if(trioTier) progress.push({ ml, kind: 'trio', label: trioTier.label, missing: 3 - leftover, amount: trioTier.perTrio(sorted[0]) });
+        if(duoTier) progress.push({ ml, kind: 'duo', label: duoTier.label, missing: 1, amount: duoTier.amount, total: duoTier.amount });
+        else if(trioTier){ const amt = trioTier.perTrio(sorted[0]); progress.push({ ml, kind: 'trio', label: trioTier.label, missing: 3 - leftover, amount: amt, total: amt }); }
       } else if(leftover === 1 && idx > 0 && trioTier && !duoTier){
         // quedó 1 unidad suelta tras un trío (solo aplica a tamaños sin dúo, ej. 10 ml)
-        progress.push({ ml, kind: 'trio', label: trioTier.label, missing: 2, amount: trioTier.perTrio(sorted[n-1]) });
+        const amt = trioTier.perTrio(sorted[n-1]);
+        progress.push({ ml, kind: 'trio', label: trioTier.label, missing: 2, amount: amt, total: amt });
       } else if(leftover === 0 && duos === 1 && trios === 0 && trioTier){
-        // ya tiene un dúo activo: solo sugerimos subir a trío si de verdad deja más ahorro
+        // ya tiene un dúo activo: solo sugerimos subir a trío si de verdad el TOTAL del trío es mayor
         const potentialTrio = trioTier.perTrio(sorted[0]);
         if(potentialTrio > duoAmount){
-          progress.push({ ml, kind: 'upgrade', label: trioTier.label, missing: 1, amount: potentialTrio - duoAmount });
+          // "amount" = lo que ya ahorra hoy con el dúo, "total" = a cuánto sube el ahorro total con el trío
+          progress.push({ ml, kind: 'upgrade', label: trioTier.label, missing: 1, amount: duoAmount, total: potentialTrio });
         }
       }
     });
@@ -128,7 +130,10 @@
   function buildAddToast(ml){
     const offers = computeOffers();
     const hint = offers.progress.find(p => p.ml === ml);
-    if(hint) return `Agregado · Sumá ${hint.missing} más de ${ml} ml y ahorra S/ ${hint.amount}`;
+    if(hint){
+      if(hint.kind === 'upgrade') return `Agregado · Sumá 1 más de ${ml} ml y tu ahorro sube a S/ ${hint.total}`;
+      return `Agregado · Sumá ${hint.missing} más de ${ml} ml y ahorra S/ ${hint.total}`;
+    }
     const applied = offers.discounts.find(d => d.ml === ml);
     if(applied) return `Agregado · ¡${applied.label} activo! Ahorras S/ ${applied.amount}`;
     return 'Agregado a la bolsa';
@@ -232,8 +237,20 @@
       .da-line-total{padding-top:10px;border-top:1px dashed rgba(60,47,71,0.18);margin-top:4px}
       .da-line-total span{color:#3c2f47;font-weight:500}
       .da-line-total b{font-size:34px}
-      .da-trio-hint{background:#fff;border:1px dashed rgba(168,137,90,0.4);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;flex-direction:column;gap:6px}
-      .da-trio-row{display:flex;justify-content:space-between;gap:10px;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#a8895a}
+      .da-trio-hint{
+        background:linear-gradient(135deg, rgba(168,137,90,0.22), rgba(207,200,216,0.28));
+        border:1.5px solid #a8895a;border-radius:12px;padding:14px 16px;margin-bottom:14px;
+        display:flex;flex-direction:column;gap:8px;
+        box-shadow:0 6px 20px -8px rgba(168,137,90,0.5);
+        animation:da-hint-in .35s cubic-bezier(.2,.7,.2,1);
+      }
+      @keyframes da-hint-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+      .da-trio-note{font-size:11px;color:#3c2f47;line-height:1.5;padding-bottom:8px;border-bottom:1px dashed rgba(168,137,90,0.45)}
+      .da-trio-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+      .da-trio-row .l{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3c2f47;font-weight:500}
+      .da-trio-row .r{font-size:12.5px;color:#5d4c70}
+      .da-trio-row .r b{font-family:'Cormorant Garamond',serif;font-size:19px;color:#a8895a;font-weight:600}
+      .da-keep-shopping{display:block;width:100%;margin-bottom:10px}
 
       .da-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:#3c2f47;color:#f6f4ef;padding:14px 24px;border-radius:999px;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;z-index:200;transition:transform .3s cubic-bezier(.2,.7,.2,1);box-shadow:0 14px 40px -10px rgba(0,0,0,0.4)}
       .da-toast.show{transform:translateX(-50%) translateY(0)}
@@ -453,10 +470,17 @@
     const hasDiscount = offers.discounts.length > 0;
     const progressHtml = offers.progress.length
       ? `<div class="da-trio-hint">
-           ${offers.progress.map(p =>
-             `<div class="da-trio-row"><span>${p.label}</span><span>Sumá ${p.missing} más · ahorra S/ ${p.amount}</span></div>`
-           ).join('')}
+           <div class="da-trio-note">✨ Sumá cualquier perfume de la colección en ese tamaño — no hace falta que sea el mismo.</div>
+           ${offers.progress.map(p => {
+             const msg = p.kind === 'upgrade'
+               ? `Sumá 1 más → tu ahorro sube a <b>S/ ${p.total}</b>`
+               : `Sumá ${p.missing} más → ahorra <b>S/ ${p.total}</b>`;
+             return `<div class="da-trio-row"><span class="l">${p.label}</span><span class="r">${msg}</span></div>`;
+           }).join('')}
          </div>`
+      : '';
+    const keepShoppingHtml = offers.progress.length
+      ? `<button class="da-btn da-btn-ghost da-keep-shopping" id="da-keep-shopping">+ Seguir comprando</button>`
       : '';
     const subtotalRow = `<div class="da-line"><span>Subtotal</span><b>S/ ${offers.subtotal}</b></div>`;
     const discountRows = offers.discounts.map(d =>
@@ -469,6 +493,7 @@
         <div class="da-line da-line-total"><span>Total</span><b>S/ ${offers.total}</b></div>
       </div>
       ${progressHtml}
+      ${keepShoppingHtml}
       <button class="da-btn da-btn-wa" style="width:100%" id="da-checkout">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9s-.5-.1-.6.1-.7.9-.9 1.1-.3.2-.6.1c-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5-.6-1.4-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2 0 1.3 1 2.6 1.1 2.8.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.2-.2-.5-.3zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.3c1.4.8 3.1 1.3 4.8 1.3 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
         Hacer pedido por WhatsApp
@@ -482,6 +507,7 @@
     document.getElementById('da-clear').addEventListener('click', ()=>{
       if(confirm('¿Vaciar la bolsa?')){ cart=[]; saveCart(); renderCart(); }
     });
+    document.getElementById('da-keep-shopping')?.addEventListener('click', closeCart);
   }
 
   // ─── WhatsApp ───
