@@ -730,6 +730,7 @@ const TAG_LABEL = {'mas-vendido':'Más vendido', 'nuevo':'Nuevo', 'edicion-limit
 let state = { perfumes: [] };
 let editingId = null;
 let filters = { q:'', family:'', gender:'', tag:'' };
+let pendingPhotoFile = null; // File recién soltado, se publica recién al hacer clic en Guardar
 const photoCache = {}; // id → blob URL
 
 /* ─── IndexedDB for photo blobs (keeps localStorage small) ─── */
@@ -1174,6 +1175,7 @@ function bootAdmin(){
 /* ─── drawer / form ─── */
 function openDrawer(id=null){
   editingId = id;
+  pendingPhotoFile = null;
   const p = id ? state.perfumes.find(x=>x.id===id) : null;
   $('#drawer-title').innerHTML = id ? `Editar <em>${p.name}</em>` : `Nuevo <em>perfume</em>`;
   $('#btn-delete').style.display = id ? 'inline-flex' : 'none';
@@ -1220,6 +1222,7 @@ function closeDrawer(){
   $('#backdrop').classList.remove('open');
   $('#drawer').setAttribute('aria-hidden','true');
   editingId = null;
+  pendingPhotoFile = null;
 }
 function setChipsValue(containerId, value){
   const c = document.getElementById(containerId);
@@ -1263,17 +1266,46 @@ function readForm(){
   };
 }
 
-function savePerfume(){
+async function savePerfume(){
   const p = readForm();
   if(!p.name){ toast('Falta el nombre del perfume', 'warn'); return; }
-  // Si la foto ya se publicó de verdad (ruta assets/perfumes/...), la dejamos tal cual.
-  // Solo si sigue como blob local (el Worker no la publicó, ej. sin API_BASE) la rebindeamos bajo el id real.
-  const pending = $('#f-preview').dataset.pendingId;
-  if(pending && pending.startsWith('p-pending-') && (!p.photo || p.photo.startsWith('idb:'))){
-    idbGet(pending).then(blob => { if(blob){ idbPut(p.id, blob); photoCache[p.id] && URL.revokeObjectURL(photoCache[p.id]); delete photoCache[p.id]; } });
-    p.photo = 'idb:' + p.id;
+
+  // Si hay una foto recién soltada, se publica recién ahora — así el nombre del
+  // archivo usa el nombre del perfume ya confirmado, no el de WhatsApp/cámara.
+  if(pendingPhotoFile){
+    const file = pendingPhotoFile;
+    const saveBtn = $('#btn-save');
+    if(saveBtn) saveBtn.disabled = true;
+    $('#f-photo-label').textContent = 'Publicando foto…';
+    try{
+      if(API_BASE){
+        const ext = (file.name.match(/\.[^.]+$/) || ['.jpg'])[0];
+        const suggestedName = (p.name.replace(/\s+/g, '_') + ext).replace(/[\\/]/g, '-');
+        const dataUrl = await fileToBase64(file);
+        const res = await uploadPhotoToWorker(suggestedName, dataUrl);
+        if(res.ok){
+          p.photo = res.path;
+          $('#f-photo-label').textContent = res.path.split('/').pop() + ' · publicada ✓';
+          toast('Foto publicada en el repo');
+        } else {
+          await idbPut(p.id, file);
+          p.photo = 'idb:' + p.id;
+          toast('No se pudo publicar la foto (' + res.error + '). Se guardó solo local.', 'warn');
+        }
+      } else {
+        await idbPut(p.id, file);
+        p.photo = 'idb:' + p.id;
+        toast('Foto guardada localmente. Configura API_BASE para publicarla automáticamente.', 'warn');
+      }
+    }catch(err){
+      try{ await idbPut(p.id, file); p.photo = 'idb:' + p.id; }catch(e2){}
+      toast('No se pudo publicar la foto: ' + err.message, 'warn');
+    }finally{
+      if(saveBtn) saveBtn.disabled = false;
+      pendingPhotoFile = null;
+    }
   }
-  $('#f-preview').dataset.pendingId = '';
+
   const idx = state.perfumes.findIndex(x=>x.id===p.id);
   if(idx>=0) state.perfumes[idx] = p; else state.perfumes.unshift(p);
   save().then(() => { renderAll(); closeDrawer(); toast(idx>=0 ? 'Perfume actualizado' : 'Perfume agregado'); });
@@ -1507,47 +1539,13 @@ function wire(){
   });
 }
 function handlePhoto(file){
-  // Preview instantáneo vía IDB (funciona aunque el Worker no esté configurado todavía).
-  const pendingId = editingId || ('p-pending-' + Math.random().toString(36).slice(2,8));
-  $('#f-preview').dataset.pendingId = pendingId;
+  // Solo guardamos el archivo y mostramos la vista previa. La publicación real
+  // (con el nombre del perfume ya confirmado) pasa recién al hacer clic en Guardar.
+  pendingPhotoFile = file;
   $('#f-preview').dataset.path = '';
   const url = URL.createObjectURL(file);
   $('#f-preview').src = url;
-  $('#f-photo-label').textContent = file.name;
-  // El guardado en IDB y la publicación al Worker corren en paralelo; esta bandera evita
-  // que el guardado local (más lento a veces) pise la ruta real si termina después.
-  let published = false;
-  idbPut(pendingId, file).then(()=>{
-    if(!published) $('#f-preview').dataset.path = 'idb:' + pendingId;
-  }).catch(err => toast('Error guardando foto: ' + err.message, 'warn'));
-
-  // Publicación real al repo vía el Worker (si está configurado).
-  if(!API_BASE){
-    toast('Foto guardada localmente. Configura API_BASE para publicarla automáticamente.', 'warn');
-    return;
-  }
-  const nameGuess = ($('#f-name').value || file.name.replace(/\.[^.]+$/, '')).trim();
-  const ext = (file.name.match(/\.[^.]+$/) || ['.jpg'])[0];
-  // Espacios → "_" para que el archivo quede con un nombre corto y sin problemas de codificación en el link.
-  const suggestedName = (nameGuess.replace(/\s+/g, '_') + ext).replace(/[\\/]/g, '-');
-  $('#f-photo-label').textContent = `Subiendo ${suggestedName}…`;
-  // Bloqueamos "Guardar" mientras se publica, para no guardar la referencia temporal por error.
-  const saveBtn = $('#btn-save');
-  if(saveBtn) saveBtn.disabled = true;
-  fileToBase64(file).then(dataUrl => uploadPhotoToWorker(suggestedName, dataUrl)).then(res => {
-    if(res.ok){
-      published = true;
-      $('#f-preview').dataset.path = res.path;
-      $('#f-photo-label').textContent = res.path.split('/').pop() + ' · publicada ✓';
-      toast('Foto publicada en el repo');
-    } else {
-      toast('No se pudo publicar la foto: ' + res.error, 'warn');
-      $('#f-photo-label').textContent = file.name + ' (solo local, sin publicar)';
-    }
-  }).catch(err => {
-    toast('No se pudo publicar la foto: ' + err.message, 'warn');
-    $('#f-photo-label').textContent = file.name + ' (solo local, sin publicar)';
-  }).finally(() => { if(saveBtn) saveBtn.disabled = false; });
+  $('#f-photo-label').textContent = file.name + ' (se publicará al guardar)';
 }
 function fileToBase64(file){
   return new Promise((resolve, reject) => {
