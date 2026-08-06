@@ -32,6 +32,26 @@
   function injectCSS(){
     if(document.getElementById('sm-style')) return;
     const css = `
+      .sm-wa-float{
+        position:fixed;right:20px;bottom:20px;z-index:80;
+        display:flex;align-items:center;gap:10px;text-decoration:none;
+      }
+      .sm-wa-float .sm-wa-label{
+        background:#fff;color:#1a1620;font-size:13px;font-weight:600;font-family:sans-serif;
+        padding:10px 16px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:nowrap;
+      }
+      .sm-wa-float .sm-wa-icon{
+        width:54px;height:54px;border-radius:50%;background:#25D366;flex-shrink:0;
+        display:grid;place-items:center;box-shadow:0 8px 24px rgba(37,211,102,0.5);transition:transform .2s;
+      }
+      .sm-wa-float:hover .sm-wa-icon{transform:scale(1.06)}
+      .sm-wa-float .sm-wa-icon svg{width:28px;height:28px;fill:#fff}
+      @media (max-width:480px){
+        .sm-wa-float{right:14px;bottom:14px}
+        .sm-wa-float .sm-wa-label{font-size:12px;padding:8px 12px}
+        .sm-wa-float .sm-wa-icon{width:48px;height:48px}
+        .sm-wa-float .sm-wa-icon svg{width:24px;height:24px}
+      }
       .sm-bd{position:fixed;inset:0;background:rgba(40,30,55,0.55);backdrop-filter:blur(4px);z-index:130;opacity:0;pointer-events:none;transition:opacity .25s}
       .sm-bd.open{opacity:1;pointer-events:auto}
       .sm-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:140;padding:24px;pointer-events:none;visibility:hidden}
@@ -219,9 +239,14 @@
   // ───── Inyectar contenedores ─────
   function injectChrome(){
     if(document.getElementById('sm-bd')) return;
+    const waMsg = encodeURIComponent('Hola, tengo una consulta sobre perfumes');
     document.body.insertAdjacentHTML('beforeend', `
       <div class="sm-bd" id="sm-bd"></div>
       <div class="sm-modal" id="sm-modal"><div class="sm-card" id="sm-card"></div></div>
+      <a class="sm-wa-float" href="https://wa.me/${WA}?text=${waMsg}" target="_blank" rel="noopener" aria-label="Consulta con un asesor por WhatsApp">
+        <span class="sm-wa-label">Consulta con un asesor</span>
+        <span class="sm-wa-icon">${ICONS.whatsapp}</span>
+      </a>
     `);
     document.getElementById('sm-bd').addEventListener('click', close);
     document.addEventListener('keydown', e => { if(e.key === 'Escape') close(); });
