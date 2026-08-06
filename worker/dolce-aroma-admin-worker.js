@@ -14,7 +14,11 @@
  *        GITHUB_TOKEN → un Personal Access Token de GitHub (fine-grained),
  *                        con acceso SOLO al repo dolce7aroma.github.io y
  *                        permiso "Contents: Read and write".
- *        ADMIN_KEY    → la misma contraseña que usas para entrar al Admin.
+ *        ADMIN_KEY    → tu contraseña de Admin EN TEXTO PLANO (ej. "MiClave123"),
+ *                        NO el hash largo que aparece en ADMIN_PASSWORD_HASH dentro
+ *                        de perfumes-gestion-da7.html. Ese hash es público (cualquiera
+ *                        puede verlo con "ver código fuente"); si lo usaras acá, cualquiera
+ *                        podría publicar en tu repo sin saber la contraseña real.
  *   6. Copia la URL pública del Worker (algo como
  *        https://dolce-aroma-admin.TU-SUBDOMINIO.workers.dev )
  *      y pégala en perfumes-gestion-da7.html en la constante API_BASE.

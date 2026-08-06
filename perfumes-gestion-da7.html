@@ -246,14 +246,24 @@
   // Copia el hash resultante y pégalo en ADMIN_PASSWORD_HASH abajo.
   // ⚠️ Esta protección es "client-side": disuade el acceso casual pero un usuario técnico
   //    podría leer el código fuente. Para seguridad real necesitas un backend.
-  const ADMIN_PASSWORD_HASH = '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4'; // hash de "1234" — CÁMBIALO
+  const ADMIN_PASSWORD_HASH = 'ceb51dcaf98654194afca2b44f599e6873b20429b9c3df77f2fca278fa6c04a0'; // CÁMBIALA cuando quieras (ver instrucciones abajo)
   const GATE_KEY = 'da-admin-session-v1';
-  // Hash de la sesión activa — se reutiliza como credencial al publicar fotos/catálogo
-  // en el Worker (así no hace falta guardar la contraseña en texto plano en ningún lado).
-  let adminKeyHash = null;
+  // Contraseña en texto plano de la sesión activa, SOLO en memoria (nunca se guarda ni se escribe
+  // en el HTML). Es lo que se manda al Worker para autenticar — así, aunque alguien vea el código
+  // fuente y copie ADMIN_PASSWORD_HASH, no puede publicar nada sin conocer la contraseña real.
+  let adminAuthKey = null;
   async function sha256(s){
     const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
     return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  }
+  // Confirma (o pide de nuevo) la contraseña antes de cualquier acción que escriba en el repo.
+  async function getAuthKey(){
+    if(adminAuthKey) return adminAuthKey;
+    const pwd = prompt('Confirmá tu contraseña de Admin para publicar:');
+    if(!pwd) return null;
+    if(await sha256(pwd) !== ADMIN_PASSWORD_HASH){ toast('Contraseña incorrecta', 'warn'); return null; }
+    adminAuthKey = pwd;
+    return adminAuthKey;
   }
   function gateUnlock(){
     document.getElementById('da-gate').style.display = 'none';
@@ -261,10 +271,11 @@
   }
   (function gateInit(){
     document.body.style.overflow = 'hidden';
-    // ¿sesión recordada?
+    // ¿sesión recordada? (solo recuerda el acceso a la vista, no la contraseña real —
+    // para publicar va a pedirla de nuevo la primera vez, vía getAuthKey())
     try{
       const saved = localStorage.getItem(GATE_KEY);
-      if(saved === ADMIN_PASSWORD_HASH){ adminKeyHash = saved; gateUnlock(); return; }
+      if(saved === ADMIN_PASSWORD_HASH){ gateUnlock(); return; }
     }catch(e){}
     document.getElementById('da-gate-form').addEventListener('submit', async e => {
       e.preventDefault();
@@ -274,7 +285,7 @@
       errEl.textContent = '';
       const h = await sha256(pwd);
       if(h === ADMIN_PASSWORD_HASH){
-        adminKeyHash = h;
+        adminAuthKey = pwd;
         if(remember){ try{ localStorage.setItem(GATE_KEY, h); }catch(e){} }
         gateUnlock();
       } else {
@@ -1573,30 +1584,36 @@ function fileToBase64(file){
   });
 }
 async function uploadPhotoToWorker(filename, imageDataUrl){
+  const key = await getAuthKey();
+  if(!key) return { ok:false, error:'Falta confirmar la contraseña' };
   const res = await fetch(`${API_BASE}/api/upload-photo`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ key: adminKeyHash, filename, imageBase64: imageDataUrl })
+    body: JSON.stringify({ key, filename, imageBase64: imageDataUrl })
   });
   return res.json();
 }
 async function deletePhotoFromWorker(filename){
+  const key = await getAuthKey();
+  if(!key) return { ok:false, error:'Falta confirmar la contraseña' };
   const res = await fetch(`${API_BASE}/api/delete-photo`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ key: adminKeyHash, filename })
+    body: JSON.stringify({ key, filename })
   });
   return res.json();
 }
 async function publishCatalog(){
   if(!API_BASE){ toast('Configura API_BASE en el código para poder publicar', 'warn'); return; }
+  const key = await getAuthKey();
+  if(!key) return;
   const data = { schema:{version:1}, perfumes: state.perfumes };
   toast('Publicando catálogo…');
   try{
     const res = await fetch(`${API_BASE}/api/save-catalog`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ key: adminKeyHash, productos: data })
+      body: JSON.stringify({ key, productos: data })
     });
     const out = await res.json();
     if(out.ok) toast('Catálogo publicado en la web');
