@@ -18,6 +18,7 @@
   const FAMILY_LABEL = {floral:'Floral', oriental:'Oriental', amaderado:'Amaderado', citrico:'Cítrico', chipre:'Chipre', aromatico:'Aromático', frutal:'Frutal'};
   const TAG_LABEL    = {'mas-vendido':'Más vendido','nuevo':'Nuevo','edicion-limitada':'Edición limitada','agotado':'Agotado'};
   const GENDER_LABEL = {mujer:'Mujer', hombre:'Hombre', unisex:'Unisex'};
+  const ICON_SHARE = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>`;
 
   let catalog = [];
   let cart = [];   // [{id, ml, qty}]
@@ -203,6 +204,7 @@
       .da-btn-wa{background:#25D366;color:#fff}
       .da-btn-wa:hover{background:#1ebe5a}
       .da-btn-ghost{background:transparent;color:#3c2f47;border:1px solid rgba(60,47,71,0.2)}
+      .da-btn-icon{flex:0 0 auto;width:52px;padding:16px 0}
       .da-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;background:#f6f4ef;border:0;cursor:pointer;display:grid;place-items:center;z-index:5;box-shadow:0 4px 14px rgba(0,0,0,0.15)}
       .da-close svg{width:16px;height:16px;stroke:#3c2f47;fill:none;stroke-width:1.8}
 
@@ -293,7 +295,10 @@
       <aside class="da-cart" id="da-cart" aria-hidden="true">
         <div class="da-cart-head">
           <h3>Tu <em style="color:#a8895a;font-style:italic">bolsa</em></h3>
-          <button class="da-close" id="da-cart-close" style="position:static;box-shadow:none;background:transparent"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          <div style="display:flex;gap:6px;align-items:center">
+            <button class="da-close" id="da-cart-share" style="position:static;box-shadow:none;background:transparent" title="Compartir bolsa">${ICON_SHARE}</button>
+            <button class="da-close" id="da-cart-close" style="position:static;box-shadow:none;background:transparent"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
         </div>
         <div class="da-cart-list" id="da-cart-list"></div>
         <div class="da-cart-foot" id="da-cart-foot"></div>
@@ -302,6 +307,7 @@
     `);
     document.getElementById('da-bd').addEventListener('click', ()=>{ closeModal(); closeCart(); });
     document.getElementById('da-cart-close').addEventListener('click', closeCart);
+    document.getElementById('da-cart-share').addEventListener('click', shareCart);
     document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); closeCart(); } });
   }
 
@@ -372,6 +378,7 @@
         </div>
         <div class="da-cta-row">
           <button class="da-btn da-btn-primary" id="da-add-cart">Añadir a la bolsa · <span id="da-tot">S/ ${firstAvailable?.price||0}</span></button>
+          <button class="da-btn da-btn-ghost da-btn-icon" id="da-share" title="Compartir este perfume">${ICON_SHARE}</button>
           <button class="da-btn da-btn-wa" id="da-buy-wa" title="Pedir solo este por WhatsApp">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9s-.5-.1-.6.1-.7.9-.9 1.1-.3.2-.6.1c-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5-.6-1.4-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2 0 1.3 1 2.6 1.1 2.8.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.2-.2-.5-.3zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.3c1.4.8 3.1 1.3 4.8 1.3 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
           </button>
@@ -407,6 +414,7 @@
       const msg = buildWhatsAppMessage([{id:p.id, ml:targetMl, qty}], true);
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
     });
+    document.getElementById('da-share').addEventListener('click', ()=> shareProduct(p));
 
     document.getElementById('da-bd').classList.add('open');
     document.getElementById('da-modal').classList.add('open');
@@ -561,6 +569,45 @@
     return lines.join('\n');
   }
 
+  // ─── Compartir ───
+  function buildShareUrl(params){
+    const base = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')+1);
+    const qs = new URLSearchParams(params).toString();
+    return base + 'Dolce%20Aroma%20-%20Catalogo.html' + (qs ? '?' + qs : '');
+  }
+  async function shareViaClipboard(text){
+    try{ await navigator.clipboard.writeText(text); showToast('Enlace copiado'); }
+    catch(e){ showToast('No se pudo copiar el enlace'); }
+  }
+  async function shareProduct(p){
+    const sz = (p.sizes||[]).find(s=>s.stock>0 && s.price) || (p.sizes||[]).find(s=>s.price) || {};
+    const url = buildShareUrl({ p: p.id });
+    const text = `${p.name} — inspirado en ${p.inspiration||'Atelier'}. Desde S/ ${sz.price||''} en Dolce Aroma.`;
+    if(navigator.share){
+      try{ await navigator.share({ title: p.name, text, url }); }catch(e){ /* el usuario canceló */ }
+    } else {
+      shareViaClipboard(`${text} ${url}`);
+    }
+  }
+  async function shareCart(){
+    if(cart.length === 0){ showToast('Tu bolsa está vacía'); return; }
+    const offers = computeOffers();
+    const lines = ['Mi bolsa en Dolce Aroma:'];
+    cart.forEach(it => {
+      const p = catalog.find(x=>x.id===it.id);
+      if(!p) return;
+      lines.push(`• ${p.name} (${it.ml} ml) ×${it.qty}`);
+    });
+    lines.push(`Total: S/ ${offers.total}`);
+    const text = lines.join('\n');
+    const url = buildShareUrl();
+    if(navigator.share){
+      try{ await navigator.share({ title: 'Mi bolsa Dolce Aroma', text, url }); }catch(e){ /* el usuario canceló */ }
+    } else {
+      shareViaClipboard(`${text}\n${url}`);
+    }
+  }
+
   // ─── Helpers ───
   function resolvePhoto(p){
     if(!p.photo) return 'assets/perfume-110ml.jpg';
@@ -580,6 +627,9 @@
       refreshBadges();
       document.querySelectorAll('[data-cart-open]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); openCart(); }));
       if(opts?.onReady) opts.onReady(catalog);
+      // Link compartido (?p=id) → abre directo el detalle de ese perfume
+      const sharedId = new URLSearchParams(location.search).get('p');
+      if(sharedId && catalog.find(x=>x.id===sharedId)) openDetail(sharedId);
     },
     getCatalog: () => catalog,
     openDetail,
