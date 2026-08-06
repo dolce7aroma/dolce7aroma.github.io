@@ -204,7 +204,11 @@
       .da-btn-wa{background:#25D366;color:#fff}
       .da-btn-wa:hover{background:#1ebe5a}
       .da-btn-ghost{background:transparent;color:#3c2f47;border:1px solid rgba(60,47,71,0.2)}
-      .da-btn-icon{flex:0 0 auto;width:52px;padding:16px 0}
+      .da-share-top{
+        flex:0 0 auto;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+        background:#fff;border:1.5px solid rgba(60,47,71,0.15);color:#3c2f47;cursor:pointer;transition:all .2s;
+      }
+      .da-share-top:hover{border-color:#a8895a;color:#a8895a}
       .da-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;background:#f6f4ef;border:0;cursor:pointer;display:grid;place-items:center;z-index:5;box-shadow:0 4px 14px rgba(0,0,0,0.15)}
       .da-close svg{width:16px;height:16px;stroke:#3c2f47;fill:none;stroke-width:1.8}
 
@@ -347,14 +351,17 @@
         <img src="${photo}" alt="${escapeHtml(p.name)}" onerror="this.style.opacity='.4';this.src='assets/perfume-110ml.jpg'"/>
       </div>
       <div class="da-modal-body">
-        <div>
-          <div class="insp">Inspirado en · ${escapeHtml(p.inspiration||'Atelier')}</div>
-          <h2>${escapeHtml(p.name)}</h2>
-          <div class="sub">
-            <span><i class="d"></i>${FAMILY_LABEL[p.family]||p.family||''}</span>
-            <span><i class="d"></i>${GENDER_LABEL[p.gender]||p.gender||''}</span>
-            ${p.intensity ? `<span><i class="d"></i>${p.intensity}</span>`:''}
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px">
+          <div>
+            <div class="insp">Inspirado en · ${escapeHtml(p.inspiration||'Atelier')}</div>
+            <h2>${escapeHtml(p.name)}</h2>
+            <div class="sub">
+              <span><i class="d"></i>${FAMILY_LABEL[p.family]||p.family||''}</span>
+              <span><i class="d"></i>${GENDER_LABEL[p.gender]||p.gender||''}</span>
+              ${p.intensity ? `<span><i class="d"></i>${p.intensity}</span>`:''}
+            </div>
           </div>
+          <button class="da-share-top" id="da-share" title="Compartir este perfume">${ICON_SHARE}</button>
         </div>
         ${p.description ? `<p class="desc">${escapeHtml(p.description)}</p>`:''}
         ${notesRows ? `<div class="da-pyramid"><h4>Pirámide olfativa</h4>${notesRows}</div>`:''}
@@ -378,7 +385,6 @@
         </div>
         <div class="da-cta-row">
           <button class="da-btn da-btn-primary" id="da-add-cart">Añadir a la bolsa · <span id="da-tot">S/ ${firstAvailable?.price||0}</span></button>
-          <button class="da-btn da-btn-ghost da-btn-icon" id="da-share" title="Compartir este perfume">${ICON_SHARE}</button>
           <button class="da-btn da-btn-wa" id="da-buy-wa" title="Pedir solo este por WhatsApp">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9s-.5-.1-.6.1-.7.9-.9 1.1-.3.2-.6.1c-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5-.6-1.4-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2 0 1.3 1 2.6 1.1 2.8.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.2-.2-.5-.3zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.3c1.4.8 3.1 1.3 4.8 1.3 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
           </button>
