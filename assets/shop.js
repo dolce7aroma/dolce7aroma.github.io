@@ -592,7 +592,7 @@
   async function shareCart(){
     if(cart.length === 0){ showToast('Tu bolsa está vacía'); return; }
     const offers = computeOffers();
-    const lines = ['Mi bolsa en Dolce Aroma:'];
+    const lines = ['Mi bolsa en Dolce Aroma (abrí el link para agregarla a la tuya):'];
     cart.forEach(it => {
       const p = catalog.find(x=>x.id===it.id);
       if(!p) return;
@@ -600,12 +600,28 @@
     });
     lines.push(`Total: S/ ${offers.total}`);
     const text = lines.join('\n');
-    const url = buildShareUrl();
+    const cartParam = cart.map(it => `${it.id}:${it.ml}:${it.qty}`).join(',');
+    const url = buildShareUrl({ cart: cartParam });
     if(navigator.share){
       try{ await navigator.share({ title: 'Mi bolsa Dolce Aroma', text, url }); }catch(e){ /* el usuario canceló */ }
     } else {
       shareViaClipboard(`${text}\n${url}`);
     }
+  }
+  // Carga en la bolsa actual los perfumes de un link compartido (?cart=id:ml:qty,...), sumando sin borrar lo que ya había.
+  function loadSharedCart(raw){
+    const items = raw.split(',').map(s => {
+      const [id, ml, qty] = s.split(':');
+      return { id, ml:+ml, qty:+qty };
+    }).filter(it => it.id && it.ml>0 && it.qty>0 && catalog.find(x=>x.id===it.id));
+    if(!items.length) return;
+    items.forEach(it => {
+      const ex = cart.find(c=>c.id===it.id && c.ml===it.ml);
+      if(ex) ex.qty += it.qty; else cart.push({id:it.id, ml:it.ml, qty:it.qty});
+    });
+    saveCart();
+    showToast(`Se agregaron ${items.length} perfume${items.length===1?'':'s'} de la bolsa compartida`);
+    openCart();
   }
 
   // ─── Helpers ───
@@ -627,9 +643,13 @@
       refreshBadges();
       document.querySelectorAll('[data-cart-open]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); openCart(); }));
       if(opts?.onReady) opts.onReady(catalog);
+      const shareParams = new URLSearchParams(location.search);
       // Link compartido (?p=id) → abre directo el detalle de ese perfume
-      const sharedId = new URLSearchParams(location.search).get('p');
+      const sharedId = shareParams.get('p');
       if(sharedId && catalog.find(x=>x.id===sharedId)) openDetail(sharedId);
+      // Link de bolsa compartida (?cart=id:ml:qty,...) → suma esos perfumes a la bolsa actual
+      const sharedCart = shareParams.get('cart');
+      if(sharedCart) loadSharedCart(sharedCart);
     },
     getCatalog: () => catalog,
     openDetail,
