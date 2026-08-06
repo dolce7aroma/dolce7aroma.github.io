@@ -211,9 +211,18 @@
       .da-cart-head{padding:24px 26px;border-bottom:1px solid rgba(60,47,71,0.1);display:flex;justify-content:space-between;align-items:center}
       .da-cart-head h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:28px;color:#3c2f47;margin:0}
       .da-cart-list{flex:1;overflow-y:auto;padding:18px 26px;display:flex;flex-direction:column;gap:14px}
-      .da-cart-empty{text-align:center;padding:60px 20px;color:#5d4c70}
+      .da-cart-empty{text-align:center;padding:60px 20px 40px;color:#5d4c70}
       .da-cart-empty .icon{font-size:40px;margin-bottom:14px}
       .da-cart-empty h4{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:22px;color:#3c2f47;margin:0 0 8px}
+      .da-empty-links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:26px}
+      .da-empty-chip{
+        display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:999px;
+        border:1.5px solid rgba(60,47,71,0.18);color:#3c2f47;font-size:11px;letter-spacing:0.14em;
+        text-transform:uppercase;text-decoration:none;transition:all .2s;background:#fff;
+      }
+      .da-empty-chip:hover{border-color:#a8895a;background:#f6e9d8;color:#3c2f47}
+      .da-empty-chip.gold{background:#a8895a;border-color:#a8895a;color:#f6f4ef}
+      .da-empty-chip.gold:hover{background:#8f7449}
       .da-cart-item{display:grid;grid-template-columns:72px 1fr auto;gap:14px;align-items:center;background:#fff;border-radius:12px;padding:12px}
       .da-cart-item img{width:72px;height:72px;border-radius:8px;object-fit:cover;background:#dcd4e0}
       .da-cart-item .n{font-family:'Cormorant Garamond',serif;font-size:18px;color:#3c2f47;line-height:1.1}
@@ -433,6 +442,12 @@
         <div class="icon">🛍️</div>
         <h4>Tu bolsa está vacía</h4>
         <p style="font-size:13px">Explora la colección y elige tus aromas favoritos.</p>
+        <div class="da-empty-links">
+          <a class="da-empty-chip gold" href="Dolce Aroma - Inicio.html#ofertas">🎁 Ver ofertas</a>
+          <a class="da-empty-chip" href="Dolce Aroma - Catalogo.html?gender=mujer">Perfumes mujer</a>
+          <a class="da-empty-chip" href="Dolce Aroma - Catalogo.html?gender=hombre">Perfumes hombre</a>
+          <a class="da-empty-chip" href="Dolce Aroma - Catalogo.html?tag=mas-vendido">Más vendidos</a>
+        </div>
       </div>`;
       foot.innerHTML = '';
       return;
