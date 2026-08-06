@@ -120,6 +120,34 @@ async function handleUploadPhoto(request, env) {
   }
 }
 
+async function handleDeletePhoto(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+
+  const { key, filename } = body;
+  if (key !== env.ADMIN_KEY) return json({ ok: false, error: 'Contraseña incorrecta' }, 401);
+
+  const safeName = sanitizeFilename(filename);
+  if (!safeName) return json({ ok: false, error: 'Nombre de archivo no válido' }, 400);
+
+  const path = `assets/perfumes/${safeName}`;
+  try {
+    const sha = await getFileSha(path, env);
+    if (!sha) return json({ ok: true, note: 'El archivo ya no existía en el repo' });
+    const res = await githubRequest(path, null, {
+      method: 'DELETE',
+      body: JSON.stringify({ message: `Admin: borrar foto ${safeName}`, sha, branch: BRANCH }),
+    }, env);
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`GitHub DELETE ${path} → ${res.status}: ${errText}`);
+    }
+    return json({ ok: true });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 502);
+  }
+}
+
 async function handleSaveCatalog(request, env) {
   const body = await request.json().catch(() => null);
   if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
@@ -147,6 +175,9 @@ export default {
     const url = new URL(request.url);
     if (request.method === 'POST' && url.pathname === '/api/upload-photo') {
       return handleUploadPhoto(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/delete-photo') {
+      return handleDeletePhoto(request, env);
     }
     if (request.method === 'POST' && url.pathname === '/api/save-catalog') {
       return handleSaveCatalog(request, env);
