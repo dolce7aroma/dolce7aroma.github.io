@@ -79,17 +79,22 @@ Guárdalo en tus favoritos.
 
 ## 🔐 Contraseña del Admin
 
-- Por defecto: **`1234`**
-- **Cámbiala antes de publicar al público.** En la consola del navegador (F12), ejecuta:
+Para cambiarla hay que actualizarla en **dos lugares** (si tenés el Worker de publicación configurado — ver más abajo):
+
+**1. El candado del panel** (`perfumes-gestion-da7.html`): en la consola del navegador (F12), ejecuta:
 
 ```js
 await crypto.subtle.digest('SHA-256', new TextEncoder().encode('MI_NUEVA_CLAVE'))
   .then(b => [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''))
 ```
 
-Copia el hash y pégalo en `perfumes-gestion-da7.html` en la constante `ADMIN_PASSWORD_HASH`.
+Copia el hash resultante y pégalo en `perfumes-gestion-da7.html`, en la constante `ADMIN_PASSWORD_HASH`.
 
-> ⚠️ Esta protección es del lado del cliente: oculta el panel a usuarios casuales pero alguien con conocimientos técnicos podría leer el código. Para seguridad real necesitas un backend (no aplica a sitios estáticos en GitHub Pages).
+**2. El Worker** (si publicás fotos/catálogo automáticamente): en Cloudflare → tu Worker → Configuración → Variables y secretos → editá `ADMIN_KEY` y poné la contraseña **en texto plano** (no el hash del paso 1). Estos dos valores son intencionalmente distintos: el hash es público (cualquiera puede verlo con "ver código fuente" de la página), mientras que `ADMIN_KEY` en Cloudflare es privado y es lo único que realmente protege que alguien pueda escribir en tu repo.
+
+Si cambiás uno sin el otro, el candado de la página y la publicación real quedan con contraseñas distintas — asegurate de actualizar ambos con la misma clave.
+
+> ⚠️ El candado de la página (paso 1) es solo del lado del cliente: oculta el panel a visitantes casuales, pero cualquiera que sepa mirar el código fuente puede verlo. La protección real contra escrituras no autorizadas al repo es el secreto `ADMIN_KEY` del Worker (paso 2), que nunca se expone en el HTML.
 
 ---
 
