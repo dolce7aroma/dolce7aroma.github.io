@@ -11,6 +11,7 @@
    ─────────────────────────────────────────────────────────── */
 (function(){
   const WHATSAPP_NUMBER = '51930122014'; // +51 930 122 014
+  const EMAIL = 'Dolce7aroma@gmail.com';
   const STORAGE_CATALOG = 'dolce-aroma-perfumes-v1'; // (compat: edits del admin)
   const STORAGE_CART    = 'dolce-aroma-cart-v1';
   const CATALOG_URLS    = ['data/productos.json', 'data/perfumes.json'];
@@ -266,6 +267,10 @@
       .da-trio-row .r{font-size:12.5px;color:#5d4c70;line-height:1.4}
       .da-trio-row .r b{font-family:'Cormorant Garamond',serif;font-size:19px;color:#a8895a;font-weight:600;white-space:nowrap}
       .da-keep-shopping{display:block;width:100%;margin-bottom:10px}
+      .da-wa-fallback{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;margin-top:10px;font-size:11px;color:#5d4c70}
+      .da-wa-fallback .sep{opacity:.5}
+      .da-wa-fallback button{background:none;border:0;padding:0;color:#a8895a;text-decoration:underline;cursor:pointer;font-size:11px;font-family:inherit}
+      .da-wa-fallback button:hover{color:#8f7449}
 
       .da-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:#3c2f47;color:#f6f4ef;padding:14px 24px;border-radius:999px;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;z-index:200;transition:transform .3s cubic-bezier(.2,.7,.2,1);box-shadow:0 14px 40px -10px rgba(0,0,0,0.4)}
       .da-toast.show{transform:translateX(-50%) translateY(0)}
@@ -389,6 +394,7 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9s-.5-.1-.6.1-.7.9-.9 1.1-.3.2-.6.1c-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5-.6-1.4-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2 0 1.3 1 2.6 1.1 2.8.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.2-.2-.5-.3zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.3c1.4.8 3.1 1.3 4.8 1.3 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
           </button>
         </div>
+        ${waFallbackHtml('da-detail')}
       </div>
     `;
     document.getElementById('da-modal-close').addEventListener('click', closeModal);
@@ -421,6 +427,11 @@
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
     });
     document.getElementById('da-share').addEventListener('click', ()=> shareProduct(p));
+    wireWaFallback('da-detail', () => {
+      const qty = parseInt(document.getElementById('da-qty-input')?.value,10)||1;
+      const targetMl = currentDetail.ml || (p.sizes||[]).find(s=>s.price)?.ml || 0;
+      return [{id:p.id, ml:targetMl, qty}];
+    }, true);
 
     document.getElementById('da-bd').classList.add('open');
     document.getElementById('da-modal').classList.add('open');
@@ -527,6 +538,7 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9s-.5-.1-.6.1-.7.9-.9 1.1-.3.2-.6.1c-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5-.6-1.4-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2 0 1.3 1 2.6 1.1 2.8.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.2-.2-.5-.3zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.3c1.4.8 3.1 1.3 4.8 1.3 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
         Hacer pedido por WhatsApp
       </button>
+      ${waFallbackHtml('da-cart')}
       <button class="da-btn da-btn-ghost" style="width:100%;margin-top:8px" id="da-clear">Vaciar bolsa</button>
     `;
     document.getElementById('da-checkout').addEventListener('click', ()=>{
@@ -537,9 +549,37 @@
       if(confirm('¿Vaciar la bolsa?')){ cart=[]; saveCart(); renderCart(); }
     });
     document.getElementById('da-keep-shopping')?.addEventListener('click', closeCart);
+    wireWaFallback('da-cart', () => cart, false);
   }
 
   // ─── WhatsApp ───
+  // Respaldo para quien no tiene WhatsApp instalado/logueado en ese dispositivo (ej. tablets):
+  // deja copiar el pedido o mandarlo por correo, para que el pedido nunca quede sin salida.
+  function waFallbackHtml(idPrefix){
+    return `<div class="da-wa-fallback">
+      <span>¿No tenés WhatsApp acá?</span>
+      <button type="button" id="${idPrefix}-copy">Copiar pedido</button>
+      <span class="sep">·</span>
+      <button type="button" id="${idPrefix}-mail">Enviar por correo</button>
+    </div>`;
+  }
+  function wireWaFallback(idPrefix, getItems, single){
+    const copyBtn = document.getElementById(`${idPrefix}-copy`);
+    const mailBtn = document.getElementById(`${idPrefix}-mail`);
+    if(copyBtn) copyBtn.addEventListener('click', async ()=>{
+      const items = getItems();
+      if(!items.length){ showToast('Tu bolsa está vacía'); return; }
+      const text = `${buildWhatsAppMessage(items, single)}\n\nEnvialo a: +51 930 122 014 (WhatsApp o SMS) o ${EMAIL}`;
+      try{ await navigator.clipboard.writeText(text); showToast('Pedido copiado — pegalo donde puedas escribirnos'); }
+      catch(e){ showToast('No se pudo copiar el pedido'); }
+    });
+    if(mailBtn) mailBtn.addEventListener('click', ()=>{
+      const items = getItems();
+      if(!items.length){ showToast('Tu bolsa está vacía'); return; }
+      const body = encodeURIComponent(buildWhatsAppMessage(items, single));
+      window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent('Pedido Dolce Aroma')}&body=${body}`;
+    });
+  }
   function buildWhatsAppMessage(items, single){
     const lines = [];
     lines.push('Hola Dolce Aroma 👋,');
