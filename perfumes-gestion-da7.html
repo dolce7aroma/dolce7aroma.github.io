@@ -1310,9 +1310,26 @@ async function savePerfume(){
   if(idx>=0) state.perfumes[idx] = p; else state.perfumes.unshift(p);
   save().then(() => { renderAll(); closeDrawer(); toast(idx>=0 ? 'Perfume actualizado' : 'Perfume agregado'); });
 }
-function deletePerfume(){
+async function deletePerfume(){
   if(!editingId) return;
+  const p = state.perfumes.find(x => x.id === editingId);
   if(!confirm('¿Eliminar este perfume del catálogo? Esta acción no se puede deshacer.')) return;
+
+  // Si tiene una foto ya publicada en el repo, preguntamos aparte si también hay que borrarla.
+  if(p?.photo && p.photo.startsWith('assets/perfumes/') && API_BASE){
+    const filename = p.photo.split('/').pop();
+    const borrarFoto = confirm(`¿También borrar la foto publicada "${filename}" del repositorio?\n\nSi cancelás, el perfume se elimina igual pero la foto queda en GitHub (podés borrarla a mano después).`);
+    if(borrarFoto){
+      try{
+        const res = await deletePhotoFromWorker(filename);
+        if(res.ok) toast('Foto eliminada del repo');
+        else toast('No se pudo borrar la foto: ' + res.error, 'warn');
+      }catch(err){
+        toast('No se pudo borrar la foto: ' + err.message, 'warn');
+      }
+    }
+  }
+
   state.perfumes = state.perfumes.filter(x=>x.id!==editingId);
   save().then(() => { renderAll(); closeDrawer(); toast('Perfume eliminado', 'warn'); });
 }
@@ -1560,6 +1577,14 @@ async function uploadPhotoToWorker(filename, imageDataUrl){
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ key: adminKeyHash, filename, imageBase64: imageDataUrl })
+  });
+  return res.json();
+}
+async function deletePhotoFromWorker(filename){
+  const res = await fetch(`${API_BASE}/api/delete-photo`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ key: adminKeyHash, filename })
   });
   return res.json();
 }
