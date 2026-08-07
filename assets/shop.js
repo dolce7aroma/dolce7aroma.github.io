@@ -23,6 +23,8 @@
   const TAG_LABEL    = {'mas-vendido':'Más vendido','nuevo':'Nuevo','edicion-limitada':'Edición limitada','agotado':'Agotado'};
   const GENDER_LABEL = {mujer:'Mujer', hombre:'Hombre', unisex:'Unisex'};
   const ICON_SHARE = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>`;
+  const ICON_EXPAND = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"/></svg>`;
+  const ICON_COLLAPSE = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9h5V4M20 9h-5V4M4 15h5v5M20 15h-5v5"/></svg>`;
 
   // Lima Metropolitana + Callao — para el autocompletado de distrito en el formulario de pedido
   const LIMA_DISTRITOS = [
@@ -273,8 +275,11 @@
       .da-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;background:#f6f4ef;border:0;cursor:pointer;display:grid;place-items:center;z-index:5;box-shadow:0 4px 14px rgba(0,0,0,0.15)}
       .da-close svg{width:16px;height:16px;stroke:#3c2f47;fill:none;stroke-width:1.8}
 
-      .da-cart{position:fixed;top:0;right:-460px;width:440px;max-width:100vw;height:100vh;background:#f6f4ef;z-index:100;display:flex;flex-direction:column;transition:right .3s cubic-bezier(.2,.7,.2,1);box-shadow:-30px 0 80px -20px rgba(0,0,0,0.3)}
-      .da-cart.open{right:0}
+      .da-cart{position:fixed;top:0;right:0;width:440px;max-width:100vw;height:100vh;background:#f6f4ef;z-index:100;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.2,.7,.2,1), width .3s cubic-bezier(.2,.7,.2,1);box-shadow:-30px 0 80px -20px rgba(0,0,0,0.3)}
+      .da-cart.open{transform:translateX(0)}
+      .da-cart.expanded{width:760px}
+      .da-cart-expand{background:transparent}
+      .da-cart-expand.active{color:#a8895a}
       .da-cart-head{padding:24px 26px;border-bottom:1px solid rgba(60,47,71,0.1);display:flex;justify-content:space-between;align-items:center}
       .da-cart-head h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:28px;color:#3c2f47;margin:0}
       .da-cart-list{flex:1;overflow-y:auto;padding:18px 26px;display:flex;flex-direction:column;gap:14px}
@@ -381,7 +386,8 @@
         .da-cta-row{flex-direction:column;gap:8px;position:sticky;bottom:0;background:#f6f4ef;padding-top:14px;padding-bottom:6px;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px}
         .da-cta-row .da-btn-primary{width:100%}
         .da-cta-row .da-btn-wa{width:100%}
-        .da-cart{width:100vw;right:-100vw}
+        .da-cart, .da-cart.expanded{width:100vw}
+        .da-cart-expand{display:none}
       }
     `;
     const s = document.createElement('style');
@@ -400,6 +406,7 @@
         <div class="da-cart-head">
           <h3>Tu <em style="color:#a8895a;font-style:italic">bolsa</em></h3>
           <div style="display:flex;gap:6px;align-items:center">
+            <button class="da-close da-cart-expand" id="da-cart-expand" style="position:static;box-shadow:none" title="Expandir bolsa">${ICON_EXPAND}</button>
             <button class="da-close" id="da-cart-share" style="position:static;box-shadow:none;background:transparent" title="Compartir bolsa">${ICON_SHARE}</button>
             <button class="da-close" id="da-cart-close" style="position:static;box-shadow:none;background:transparent"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
           </div>
@@ -412,6 +419,7 @@
     document.getElementById('da-bd').addEventListener('click', ()=>{ closeModal(); closeCart(); });
     document.getElementById('da-cart-close').addEventListener('click', closeCart);
     document.getElementById('da-cart-share').addEventListener('click', shareCart);
+    document.getElementById('da-cart-expand').addEventListener('click', toggleCartExpand);
     document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); closeCart(); } });
   }
 
@@ -548,6 +556,15 @@
 
   // ─── Carrito UI ───
   function openCart(){ renderCart(); document.getElementById('da-bd').classList.add('open'); document.getElementById('da-cart').classList.add('open'); }
+  // Panel más ancho para pedidos con varios productos — útil en pantallas grandes
+  function toggleCartExpand(){
+    const cart = document.getElementById('da-cart');
+    const btn = document.getElementById('da-cart-expand');
+    const expanded = cart.classList.toggle('expanded');
+    btn.classList.toggle('active', expanded);
+    btn.title = expanded ? 'Contraer bolsa' : 'Expandir bolsa';
+    btn.innerHTML = expanded ? ICON_COLLAPSE : ICON_EXPAND;
+  }
   function closeCart(){
     document.getElementById('da-cart')?.classList.remove('open');
     if(!document.getElementById('da-modal')?.classList.contains('open')){
