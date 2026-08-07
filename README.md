@@ -122,6 +122,10 @@ Sin esto el sitio funciona igual, pero el pedido solo viaja por correo/Telegram 
 
 Y en **Workers & Pages → Storage & Databases → KV**, crea un namespace (ej. `dolce-aroma-pedidos`) y pide que se enlace como binding `ORDERS` en `wrangler.toml` — con eso, los pedidos quedan guardados y aparecen en la pestaña "Pedidos".
 
+> 📧 **Resend — primer correo cae en spam.** Es normal: `onboarding@resend.dev` es un remitente compartido por miles de cuentas, sin reputación previa con tu Gmail. Abre el primer correo y marca **"No es spam"** — los siguientes ya llegan directo a la bandeja de entrada. Solución permanente (opcional, a futuro): verificar un dominio propio en Resend y usar `ORDER_EMAIL_FROM` con ese dominio.
+>
+> 📲 **Telegram — el bot no necesita el número de Dolce Aroma.** El bot de Telegram no está atado a ningún número de teléfono del negocio; se crea con @BotFather desde cualquier cuenta de Telegram y manda las alertas a quien sea el `TELEGRAM_CHAT_ID`. Lo más simple es usar tu Telegram personal (el que ya tienes instalado) como receptor de las alertas — no hace falta instalar Telegram en el chip 2 ni verificarlo con el número del negocio.
+
 ---
 
 ## 🔐 Contraseña del Admin
