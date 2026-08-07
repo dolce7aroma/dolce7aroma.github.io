@@ -239,71 +239,25 @@ function generateOrderId() {
 
 const ORDER_STATUSES = ['nuevo', 'pagado', 'en_camino', 'entregado', 'cancelado'];
 
-// Pedido enviado por un CLIENTE (no requiere ADMIN_KEY — es público, pero no toca el repo,
-// solo dispara avisos por correo/Telegram si esos secretos están configurados y lo guarda
-// en KV si el binding ORDERS está enlazado).
-async function handleSubmitOrder(request, env) {
-  const body = await request.json().catch(() => null);
-  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
-
-  const { nombre, telefono, distrito, direccion, referencia, items, subtotal, total, metodoPago } = body;
-  if (!nombre || !telefono || !distrito || !direccion) {
-    return json({ ok: false, error: 'Faltan datos del pedido' }, 400);
-  }
-  if (!Array.isArray(items) || !items.length) {
-    return json({ ok: false, error: 'El pedido no tiene productos' }, 400);
-  }
-
-  const orderId = generateOrderId();
-  const itemsText = items.map(it => `- ${it.name} (${it.ml} ml) x${it.qty} — S/ ${it.subtotal}`).join('\n');
-  const summary = `🌸 Nuevo pedido — Dolce Aroma
-
-Pedido: #${orderId}
-Cliente: ${nombre}
-Teléfono: ${telefono}
-Distrito: ${distrito}
-Dirección: ${direccion}
-Referencia: ${referencia || '-'}
-Método de pago: ${metodoPago || '-'}
-
-Productos:
-${itemsText}
-
-Subtotal: S/ ${subtotal}
-Total: S/ ${total}`;
-
-  if (env.ORDERS) {
-    try {
-      const record = {
-        id: orderId, nombre, telefono, distrito, direccion, referencia,
-        items, subtotal, total, metodoPago: metodoPago || null,
-        estado: 'nuevo', creadoEn: new Date().toISOString(),
-      };
-      await env.ORDERS.put(`order:${orderId}`, JSON.stringify(record));
-    } catch (e) { /* si falla el guardado, igual seguimos con los avisos */ }
-  }
-
+// Avisa al dueño del negocio (vos) por correo y/o Telegram — best-effort, nunca bloquea
+// la respuesta al cliente. Compartido entre pedidos normales y regalos ya resueltos.
+async function notifyOwner(subject, summary, env) {
   const notified = { email: false, telegram: false };
-
   if (env.RESEND_API_KEY && env.ORDER_EMAIL_TO) {
     try {
       const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${env.RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: env.ORDER_EMAIL_FROM || 'Dolce Aroma <onboarding@resend.dev>',
           to: [env.ORDER_EMAIL_TO],
-          subject: `Nuevo pedido de ${nombre}`,
+          subject,
           text: summary,
         }),
       });
       notified.email = res.ok;
-    } catch (e) { /* el correo es best-effort, no bloquea la respuesta */ }
+    } catch (e) { /* best-effort */ }
   }
-
   if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
     try {
       const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -312,9 +266,58 @@ Total: S/ ${total}`;
         body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: summary }),
       });
       notified.telegram = res.ok;
-    } catch (e) { /* Telegram también es best-effort */ }
+    } catch (e) { /* best-effort */ }
+  }
+  return notified;
+}
+
+function orderSummaryText(record) {
+  const itemsText = record.items.map(it => `- ${it.name} (${it.ml} ml) x${it.qty}${it.premium ? ' + frasco premium' : ''} — S/ ${it.subtotal}`).join('\n');
+  return `${record.esRegalo ? '🎁' : '🌸'} Nuevo pedido${record.esRegalo ? ' (REGALO)' : ''} — Dolce Aroma
+
+Pedido: #${record.id}
+Cliente: ${record.nombre}
+Teléfono: ${record.telefono}
+Distrito: ${record.distrito}
+Dirección: ${record.direccion}
+Referencia: ${record.referencia || '-'}
+Método de pago: ${record.metodoPago || '-'}
+
+Productos:
+${itemsText}
+
+Subtotal: S/ ${record.subtotal}
+Total: S/ ${record.total}`;
+}
+
+// Pedido enviado por un CLIENTE (no requiere ADMIN_KEY — es público, pero no toca el repo,
+// solo dispara avisos por correo/Telegram si esos secretos están configurados y lo guarda
+// en KV si el binding ORDERS está enlazado).
+async function handleSubmitOrder(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+
+  const { nombre, telefono, distrito, direccion, referencia, items, subtotal, total, metodoPago, esRegalo } = body;
+  if (!nombre || !telefono || !distrito || !direccion) {
+    return json({ ok: false, error: 'Faltan datos del pedido' }, 400);
+  }
+  if (!Array.isArray(items) || !items.length) {
+    return json({ ok: false, error: 'El pedido no tiene productos' }, 400);
   }
 
+  const orderId = generateOrderId();
+  const record = {
+    id: orderId, nombre, telefono, distrito, direccion, referencia,
+    items, subtotal, total, metodoPago: metodoPago || null, esRegalo: !!esRegalo,
+    estado: 'nuevo', creadoEn: new Date().toISOString(),
+  };
+
+  if (env.ORDERS) {
+    try { await env.ORDERS.put(`order:${orderId}`, JSON.stringify(record)); }
+    catch (e) { /* si falla el guardado, igual seguimos con los avisos */ }
+  }
+
+  const notified = await notifyOwner(`Nuevo pedido de ${nombre}`, orderSummaryText(record), env);
   return json({ ok: true, orderId, notified });
 }
 
@@ -356,6 +359,146 @@ async function handleUpdateOrderStatus(request, env) {
     record.actualizadoEn = new Date().toISOString();
     await env.ORDERS.put(`order:${orderId}`, JSON.stringify(record));
     return json({ ok: true, order: record });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 502);
+  }
+}
+
+// ─── Regalar un perfume ───
+// Un "regalo" vive aparte de los pedidos (gift:<id> en vez de order:<id>) mientras está
+// sin resolver — recién se convierte en un pedido real (visible en la pestaña Pedidos)
+// cuando las DOS cosas son ciertas: alguien lo pagó Y la persona regalada ya eligió.
+// Si el comprador entrega el regalo a sí mismo, no pasa por acá — usa /api/submit-order
+// directo (con esRegalo:true), porque no hay nada que "elegir" del otro lado.
+function generateGiftId() {
+  const t = Date.now().toString(36).toUpperCase();
+  const r = Math.random().toString(36).slice(2, 4).toUpperCase();
+  return `RG-${t.slice(-5)}${r}`;
+}
+
+// Si el regalo ya está pagado Y ya fue elegido, lo convierte en un pedido real y avisa.
+// Devuelve el orderId si lo convirtió, o null si todavía falta algo.
+async function promoteGiftIfComplete(record, env) {
+  if (!record.pagado || !record.elegido || record.orderId) return record.orderId || null;
+  const chosen = record.items[record.eleccionIndex];
+  const orderId = generateOrderId();
+  const order = {
+    id: orderId,
+    nombre: record.direccion.nombre, telefono: record.direccion.telefono,
+    distrito: record.direccion.distrito, direccion: record.direccion.direccion,
+    referencia: record.direccion.referencia || '',
+    items: [chosen], subtotal: record.total, total: record.total,
+    metodoPago: record.metodoPago || null, esRegalo: true,
+    estado: 'pagado', creadoEn: new Date().toISOString(),
+  };
+  if (env.ORDERS) {
+    try { await env.ORDERS.put(`order:${orderId}`, JSON.stringify(order)); } catch (e) { /* sigue igual */ }
+  }
+  await notifyOwner(`Regalo pagado y elegido — ${order.nombre}`, orderSummaryText(order), env);
+  record.orderId = orderId;
+  record.estado = 'convertido';
+  return orderId;
+}
+
+// El comprador arma la lista curada. Pública — sin ADMIN_KEY, cualquier cliente arma un regalo.
+async function handleCreateGift(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+  const { items, compradorTelefono, total } = body;
+  if (!Array.isArray(items) || !items.length) return json({ ok: false, error: 'Elige al menos un perfume para el regalo' }, 400);
+  if (!compradorTelefono) return json({ ok: false, error: 'Falta tu WhatsApp para avisarte' }, 400);
+  if (!env.ORDERS) return json({ ok: false, error: 'Aún no está activo el guardado de regalos (falta el KV en Cloudflare).' }, 400);
+
+  const giftId = generateGiftId();
+  const record = {
+    id: giftId, tipo: 'regalo',
+    items, compradorTelefono, total: total || 0,
+    direccion: null, eleccionIndex: null,
+    pagado: false, elegido: false, orderId: null,
+    estado: 'pendiente_eleccion', creadoEn: new Date().toISOString(),
+  };
+  try {
+    await env.ORDERS.put(`gift:${giftId}`, JSON.stringify(record));
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 502);
+  }
+  return json({ ok: true, giftId });
+}
+
+// La persona regalada (o el propio comprador, para ver el estado) carga el regalo. Pública.
+// No devuelve el teléfono del comprador salvo que se pida explícitamente (para armar el link de aviso).
+async function handleGetGift(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body || !body.giftId) return json({ ok: false, error: 'Falta el ID del regalo' }, 400);
+  if (!env.ORDERS) return json({ ok: false, error: 'No disponible' }, 400);
+  try {
+    const raw = await env.ORDERS.get(`gift:${body.giftId}`);
+    if (!raw) return json({ ok: false, error: 'Este link de regalo no existe o ya expiró' }, 404);
+    const record = JSON.parse(raw);
+    return json({
+      ok: true,
+      gift: {
+        id: record.id, items: record.items, total: record.total,
+        estado: record.estado, elegido: record.elegido, pagado: record.pagado,
+        compradorTelefono: record.compradorTelefono,
+      },
+    });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 502);
+  }
+}
+
+// La persona regalada elige su perfume (y, si hace falta, deja su dirección). Pública.
+async function handleClaimGift(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body || !body.giftId) return json({ ok: false, error: 'Falta el ID del regalo' }, 400);
+  const { giftId, eleccionIndex, nombre, telefono, distrito, direccion, referencia } = body;
+  if (!env.ORDERS) return json({ ok: false, error: 'No disponible' }, 400);
+
+  try {
+    const raw = await env.ORDERS.get(`gift:${giftId}`);
+    if (!raw) return json({ ok: false, error: 'Este link de regalo no existe o ya expiró' }, 404);
+    const record = JSON.parse(raw);
+    if (record.elegido) return json({ ok: false, error: 'Este regalo ya fue elegido antes' }, 400);
+    if (typeof eleccionIndex !== 'number' || !record.items[eleccionIndex]) {
+      return json({ ok: false, error: 'Elige un perfume válido' }, 400);
+    }
+    if (!record.direccion) {
+      if (!nombre || !telefono || !distrito || !direccion) {
+        return json({ ok: false, error: 'Faltan tus datos de entrega' }, 400);
+      }
+      record.direccion = { nombre, telefono, distrito, direccion, referencia: referencia || '' };
+    }
+    record.eleccionIndex = eleccionIndex;
+    record.elegido = true;
+    record.estado = record.pagado ? 'convertido' : 'pendiente_pago';
+    record.actualizadoEn = new Date().toISOString();
+
+    const orderId = await promoteGiftIfComplete(record, env);
+    await env.ORDERS.put(`gift:${giftId}`, JSON.stringify(record));
+    return json({ ok: true, orderId, compradorTelefono: record.compradorTelefono });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 502);
+  }
+}
+
+// El comprador confirma que ya pagó (Yape) — mismo nivel de confianza que un pedido normal:
+// no hay verificación automática, vos confirmás por WhatsApp igual que siempre. Pública.
+async function handleMarkGiftPaid(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body || !body.giftId) return json({ ok: false, error: 'Falta el ID del regalo' }, 400);
+  if (!env.ORDERS) return json({ ok: false, error: 'No disponible' }, 400);
+
+  try {
+    const raw = await env.ORDERS.get(`gift:${body.giftId}`);
+    if (!raw) return json({ ok: false, error: 'Este link de regalo no existe o ya expiró' }, 404);
+    const record = JSON.parse(raw);
+    record.pagado = true;
+    record.estado = record.elegido ? 'convertido' : 'pendiente_eleccion';
+    record.actualizadoEn = new Date().toISOString();
+    const orderId = await promoteGiftIfComplete(record, env);
+    await env.ORDERS.put(`gift:${body.giftId}`, JSON.stringify(record));
+    return json({ ok: true, orderId });
   } catch (e) {
     return json({ ok: false, error: String(e.message || e) }, 502);
   }
@@ -438,6 +581,18 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/api/charge-culqi') {
       return handleChargeCulqi(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/create-gift') {
+      return handleCreateGift(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/get-gift') {
+      return handleGetGift(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/claim-gift') {
+      return handleClaimGift(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/mark-gift-paid') {
+      return handleMarkGiftPaid(request, env);
     }
     return json({ ok: false, error: 'Ruta no encontrada' }, 404);
   },

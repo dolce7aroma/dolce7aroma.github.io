@@ -52,6 +52,16 @@
   let lastOrder = null; // datos del último pedido confirmado (para el paso de pago)
   let orderForm = { nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
 
+  // ─── Regalar un perfume ───
+  let giftMode = false;             // true = el panel de la derecha muestra el armador de regalo
+  let giftStep = 'armar';           // 'armar' | 'detalles' | 'compartir' | 'pagar'
+  let giftList = [];                // [{id, ml, name, price, premium}] — lista curada del comprador
+  let giftDraft = { entregaPara: 'regalada', compradorTelefono: '', pagarAhora: false,
+    nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
+  let currentGift = null;           // el regalo cargado vía ?regalo= o ?pagar_regalo=
+  let giftClaimStep = 'elegir';     // 'elegir' | 'gracias' (vista de la persona regalada)
+  let giftClaimChoice = null;       // índice elegido por la persona regalada
+
   // ─── Zonas de envío (editable desde el Admin) ───
   async function loadZonas(){
     try{
@@ -361,6 +371,34 @@
       .da-hint-headline b{font-size:28px;color:#a8895a;font-weight:600}
       .da-confirm-id{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#a8895a;font-weight:600;margin-top:-6px}
 
+      .da-gift-open{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid rgba(60,47,71,0.18);border-radius:999px;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#3c2f47;text-decoration:none;margin-right:8px;transition:all .2s;cursor:pointer}
+      .da-gift-open:hover{background:#a8895a;color:#f6f4ef;border-color:#a8895a}
+      .da-gift-banner{background:linear-gradient(135deg, rgba(168,137,90,0.18), rgba(207,200,216,0.28));border:1.5px solid #a8895a;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#3c2f47}
+      .da-gift-banner b{color:#a8895a}
+      .da-gift-item{background:#fff;border:1.5px solid rgba(60,47,71,0.15);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+      .da-gift-item.selected{border-color:#3c2f47}
+      .da-gift-item-top{display:flex;align-items:center;gap:12px;cursor:pointer}
+      .da-gift-item-top input[type=checkbox]{width:18px;height:18px;accent-color:#a8895a;flex:0 0 auto}
+      .da-gift-item img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#dcd4e0;flex:0 0 auto}
+      .da-gift-item .n{font-family:'Cormorant Garamond',serif;font-size:17px;color:#3c2f47;line-height:1.1;flex:1}
+      .da-gift-item .m{font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#5d4c70}
+      .da-gift-item .px{font-size:12.5px;color:#a8895a;font-weight:600;white-space:nowrap}
+      .da-gift-premium{margin-left:56px;margin-top:8px;font-size:12.5px;color:#3c2f47;display:flex;align-items:center;gap:8px}
+      .da-gift-premium input[type=checkbox]{accent-color:#a8895a}
+      .da-gift-radio{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;background:#fff;border:1.5px solid rgba(60,47,71,0.15);border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer}
+      .da-gift-radio.selected{border-color:#3c2f47;background:#e8e3ed}
+      .da-gift-radio img{width:52px;height:52px;border-radius:8px;object-fit:cover;background:#dcd4e0}
+      .da-gift-radio .n{font-family:'Cormorant Garamond',serif;font-size:18px;color:#3c2f47;line-height:1.1}
+      .da-gift-radio .m{font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#5d4c70}
+      .da-radio-dot{width:20px;height:20px;border-radius:50%;border:2px solid rgba(60,47,71,0.2);display:grid;place-items:center}
+      .da-gift-radio.selected .da-radio-dot{border-color:#3c2f47}
+      .da-gift-radio.selected .da-radio-dot::after{content:'';width:10px;height:10px;border-radius:50%;background:#3c2f47}
+      .da-gift-total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px;background:#efe9e0;border-radius:12px;margin:14px 0}
+      .da-gift-total span{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#5d4c70}
+      .da-gift-total b{font-family:'Cormorant Garamond',serif;font-size:26px;color:#3c2f47}
+      .da-gift-link-box{background:#fff;border:1.5px dashed rgba(60,47,71,0.3);border-radius:10px;padding:12px;font-size:12px;color:#5d4c70;word-break:break-all;margin-bottom:14px}
+      .da-gift-toggle-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#5d4c70;font-weight:500;display:block;margin-bottom:8px}
+
       .da-confirm{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:6px 4px 20px}
       .da-confirm-check{width:56px;height:56px;border-radius:50%;background:#a8895a;color:#fff;display:grid;place-items:center;font-size:26px;margin-bottom:4px}
       .da-confirm h4{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:26px;color:#3c2f47;margin:0}
@@ -404,7 +442,7 @@
       <div class="da-modal" id="da-modal"><div class="da-modal-card" id="da-modal-card"></div></div>
       <aside class="da-cart" id="da-cart" aria-hidden="true">
         <div class="da-cart-head">
-          <h3>Tu <em style="color:#a8895a;font-style:italic">bolsa</em></h3>
+          <h3 id="da-cart-title">Tu <em style="color:#a8895a;font-style:italic">bolsa</em></h3>
           <div style="display:flex;gap:6px;align-items:center">
             <button class="da-close da-cart-expand" id="da-cart-expand" style="position:static;box-shadow:none" title="Expandir bolsa">${ICON_EXPAND}</button>
             <button class="da-close" id="da-cart-share" style="position:static;box-shadow:none;background:transparent" title="Compartir bolsa">${ICON_SHARE}</button>
@@ -555,7 +593,14 @@
   }
 
   // ─── Carrito UI ───
-  function openCart(){ renderCart(); document.getElementById('da-bd').classList.add('open'); document.getElementById('da-cart').classList.add('open'); }
+  function openCart(){ giftMode = false; renderCart(); document.getElementById('da-bd').classList.add('open'); document.getElementById('da-cart').classList.add('open'); }
+  function openGiftBuilder(){
+    giftRole = 'comprador'; giftMode = true; giftStep = 'armar';
+    giftList = []; giftDraft = { entregaPara:'regalada', compradorTelefono:'', pagarAhora:false, nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
+    renderCart();
+    document.getElementById('da-bd').classList.add('open');
+    document.getElementById('da-cart').classList.add('open');
+  }
   // Panel más ancho para pedidos con varios productos — útil en pantallas grandes
   function toggleCartExpand(){
     const cart = document.getElementById('da-cart');
@@ -574,6 +619,13 @@
   function renderCart(){
     const list = document.getElementById('da-cart-list');
     const foot = document.getElementById('da-cart-foot');
+    const title = document.getElementById('da-cart-title');
+    if(title){
+      if(giftMode && giftRole === 'regalada') title.innerHTML = '🎁 <em style="color:#a8895a;font-style:italic">Tu regalo</em>';
+      else if(giftMode) title.innerHTML = 'Arma tu <em style="color:#a8895a;font-style:italic">regalo</em>';
+      else title.innerHTML = 'Tu <em style="color:#a8895a;font-style:italic">bolsa</em>';
+    }
+    if(giftMode) return renderGiftFlow(list, foot);
     if(checkoutStep === 'form') return renderCheckoutForm(list, foot);
     if(checkoutStep === 'confirm') return renderCheckoutConfirm(list, foot);
     return renderCartStep(list, foot);
@@ -933,6 +985,410 @@
     }
   };
 
+  // ─── Regalar un perfume (Fase 1) ───
+  let giftRole = 'comprador'; // 'comprador' (arma/paga) | 'regalada' (elige, vía ?regalo=)
+  let giftClaimResult = null; // { orderId } una vez que la persona regalada confirma
+
+  function giftItemPhoto(it){
+    const p = catalog.find(x=>x.id===it.id);
+    return p ? resolvePhoto(p) : 'assets/perfume-110ml.jpg';
+  }
+
+  function renderGiftFlow(list, foot){
+    if(giftRole === 'regalada') return renderGiftClaim(list, foot);
+    if(giftStep === 'detalles') return renderGiftDetalles(list, foot);
+    if(giftStep === 'compartir') return renderGiftCompartir(list, foot);
+    if(giftStep === 'pagar') return renderGiftPagar(list, foot);
+    return renderGiftArmar(list, foot);
+  }
+
+  // Paso 1 (comprador): elige uno o varios perfumes para la lista curada
+  function renderGiftArmar(list, foot){
+    list.innerHTML = `
+      <div class="da-gift-banner">🎁 Arma un regalo — elige uno o varios perfumes para que la persona elija el que más le guste.</div>
+      <input type="text" id="gift-filter" placeholder="Buscar perfume..." style="width:100%;padding:10px 14px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;margin-bottom:12px;font-family:inherit;font-size:13px;color:#3c2f47"/>
+      <div id="gift-catalog-list"></div>
+    `;
+    renderGiftCatalogList('');
+    renderGiftArmarFoot(foot);
+    document.getElementById('gift-filter').addEventListener('input', e => renderGiftCatalogList(e.target.value));
+  }
+  function renderGiftArmarFoot(foot){
+    const total = giftList.reduce((s,it)=> s + it.price + (it.premium ? it.premiumPrecio : 0), 0);
+    foot.innerHTML = `
+      <div class="da-gift-total"><span>${giftList.length} elegido${giftList.length===1?'':'s'}</span><b>S/ ${total}</b></div>
+      <button class="da-btn da-btn-ghost" style="width:100%;margin-bottom:8px" id="da-gift-cancel">Cancelar</button>
+      <button class="da-btn da-btn-primary" style="width:100%" id="da-gift-next" ${giftList.length ? '' : 'disabled'}>Siguiente</button>
+    `;
+    document.getElementById('da-gift-cancel').addEventListener('click', ()=>{ giftMode = false; renderCart(); });
+    document.getElementById('da-gift-next').addEventListener('click', ()=>{
+      if(!giftList.length) return;
+      giftStep = 'detalles'; renderCart();
+    });
+  }
+  function renderGiftCatalogList(filter){
+    const box = document.getElementById('gift-catalog-list');
+    if(!box) return;
+    const f = normText(filter);
+    const items = catalog.filter(p => (p.sizes||[]).some(s=>s.stock>0 && s.price) && (!f || normText(p.name).includes(f) || normText(p.inspiration||'').includes(f)));
+    box.innerHTML = items.map(p => {
+      const sizes = (p.sizes||[]).filter(s=>s.stock>0 && s.price).sort((a,b)=>b.ml-a.ml);
+      const sz = sizes[0];
+      if(!sz) return '';
+      const inList = giftList.find(g=>g.id===p.id && g.ml===sz.ml);
+      const hasPremium = !!p.frascoPremium?.disponible;
+      return `
+        <div class="da-gift-item ${inList?'selected':''}" data-row="${p.id}:${sz.ml}">
+          <label class="da-gift-item-top">
+            <input type="checkbox" data-id="${p.id}" data-ml="${sz.ml}" data-name="${escapeHtml(p.name)}" data-price="${sz.price}" ${inList?'checked':''}>
+            <img src="${resolvePhoto(p)}" alt="" onerror="this.style.visibility='hidden'"/>
+            <span style="flex:1">
+              <span class="n" style="display:block">${escapeHtml(p.name)}</span>
+              <span class="m">${sz.ml} ml</span>
+            </span>
+            <span class="px">S/ ${sz.price}</span>
+          </label>
+          ${hasPremium ? `<label class="da-gift-premium" style="display:${inList?'flex':'none'}">
+            <input type="checkbox" data-premium-for="${p.id}:${sz.ml}" ${inList?.premium?'checked':''}>
+            Agregar frasco premium <b style="color:#a8895a">+ S/ ${p.frascoPremium.precio}</b>
+          </label>` : ''}
+        </div>`;
+    }).join('');
+    box.querySelectorAll('input[type=checkbox][data-id]').forEach(cb => cb.addEventListener('change', e=>{
+      const id = e.target.dataset.id, ml = +e.target.dataset.ml;
+      const row = box.querySelector(`.da-gift-item[data-row="${id}:${ml}"]`);
+      if(e.target.checked){
+        giftList.push({ id, ml, name: e.target.dataset.name, price: +e.target.dataset.price, premium:false, premiumPrecio: catalog.find(x=>x.id===id)?.frascoPremium?.precio||0 });
+        row?.classList.add('selected');
+        const premiumRow = row?.querySelector('.da-gift-premium');
+        if(premiumRow) premiumRow.style.display = 'flex';
+      } else {
+        giftList = giftList.filter(g=>!(g.id===id && g.ml===ml));
+        row?.classList.remove('selected');
+        const premiumRow = row?.querySelector('.da-gift-premium');
+        if(premiumRow){ premiumRow.style.display = 'none'; const cb2 = premiumRow.querySelector('input'); if(cb2) cb2.checked = false; }
+      }
+      renderGiftArmarFoot(document.getElementById('da-cart-foot'));
+    }));
+    box.querySelectorAll('input[data-premium-for]').forEach(cb => cb.addEventListener('change', e=>{
+      const [id, mlStr] = e.target.dataset.premiumFor.split(':'); const ml = +mlStr;
+      const g = giftList.find(x=>x.id===id && x.ml===ml);
+      if(g) g.premium = e.target.checked;
+      renderGiftArmarFoot(document.getElementById('da-cart-foot'));
+    }));
+  }
+
+  // Paso 2 (comprador): ¿para quién es la entrega? + contacto / dirección según corresponda
+  function renderGiftDetalles(list, foot){
+    const isComprador = giftDraft.entregaPara === 'comprador';
+    list.innerHTML = `
+      <div class="da-checkout-head">
+        <button class="da-back" type="button" id="da-gift-back">← Volver a elegir perfumes</button>
+        <h4>Datos del regalo</h4>
+      </div>
+      <div style="margin-bottom:18px">
+        <span class="da-gift-toggle-label">¿Se te entregará el regalo a ti?</span>
+        <div style="display:flex;gap:10px">
+          <button type="button" class="da-btn ${isComprador?'da-btn-primary':'da-btn-ghost'}" id="gift-entrega-si" style="flex:1">Sí, a mí</button>
+          <button type="button" class="da-btn ${!isComprador?'da-btn-primary':'da-btn-ghost'}" id="gift-entrega-no" style="flex:1">No, a otra persona</button>
+        </div>
+      </div>
+      <div id="gift-detalles-body" class="da-order-form"></div>
+      <button class="da-btn da-btn-primary" style="width:100%;margin-top:14px;flex:none" id="da-gift-submit">${isComprador ? 'Continuar' : 'Generar link de regalo'}</button>
+    `;
+    foot.innerHTML = '';
+    renderGiftDetallesBody();
+    document.getElementById('da-gift-back').addEventListener('click', ()=>{ giftStep = 'armar'; renderCart(); });
+    document.getElementById('gift-entrega-si').addEventListener('click', ()=>{ giftDraft.entregaPara = 'comprador'; renderGiftDetalles(list, foot); });
+    document.getElementById('gift-entrega-no').addEventListener('click', ()=>{ giftDraft.entregaPara = 'regalada'; renderGiftDetalles(list, foot); });
+    document.getElementById('da-gift-submit').addEventListener('click', ()=>{
+      if(giftDraft.entregaPara === 'comprador') submitGiftSelf(); else submitGiftForOther();
+    });
+  }
+  function renderGiftDetallesBody(){
+    const body = document.getElementById('gift-detalles-body');
+    if(!body) return;
+    if(giftDraft.entregaPara === 'comprador'){
+      body.innerHTML = `
+        <label>Nombre completo
+          <input type="text" id="gof-nombre" value="${escapeHtml(giftDraft.nombre)}" placeholder="Tu nombre"/>
+        </label>
+        <label>Teléfono / WhatsApp
+          <input type="tel" id="gof-telefono" inputmode="numeric" value="${escapeHtml(giftDraft.telefono)}" placeholder="987654321"/>
+        </label>
+        <label>Distrito
+          <input type="text" id="gof-distrito" value="${escapeHtml(giftDraft.distrito)}" placeholder="Tu distrito"/>
+        </label>
+        <label>Dirección
+          <input type="text" id="gof-direccion" value="${escapeHtml(giftDraft.direccion)}" placeholder="Calle, número, referencia"/>
+        </label>
+        <label>Referencia (opcional)
+          <input type="text" id="gof-referencia" value="${escapeHtml(giftDraft.referencia)}" placeholder="Ej. cerca al parque"/>
+        </label>
+      `;
+      document.getElementById('gof-telefono').addEventListener('input', e=>{ e.target.value = e.target.value.replace(/\D/g,'').slice(-9); });
+    } else {
+      body.innerHTML = `
+        <label>Tu WhatsApp (para avisarte cuando elijan tu regalo)
+          <input type="tel" id="gof-comprador-tel" inputmode="numeric" value="${escapeHtml(giftDraft.compradorTelefono)}" placeholder="987654321"/>
+        </label>
+        <label class="da-gift-premium" style="margin-left:0">
+          <input type="checkbox" id="gof-pagar-ahora" ${giftDraft.pagarAhora?'checked':''}>
+          Quiero pagar ahora mismo (si no, pagas cuando la persona elija su regalo)
+        </label>
+      `;
+      document.getElementById('gof-comprador-tel').addEventListener('input', e=>{ e.target.value = e.target.value.replace(/\D/g,'').slice(-9); });
+    }
+  }
+
+  // Envío directo: el regalo es para el propio comprador → reusa el checkout normal
+  async function submitGiftSelf(){
+    const nombre = document.getElementById('gof-nombre').value.trim();
+    const telefono = document.getElementById('gof-telefono').value.trim();
+    const distrito = document.getElementById('gof-distrito').value.trim();
+    const direccion = document.getElementById('gof-direccion').value.trim();
+    const referencia = document.getElementById('gof-referencia').value.trim();
+    if(!nombre || !telefono || !distrito || !direccion){ showToast('Completa los campos obligatorios'); return; }
+    giftDraft = { ...giftDraft, nombre, telefono, distrito, direccion, referencia };
+    const items = giftList.map(g => ({ name: g.name, ml: g.ml, qty: 1, premium: g.premium, subtotal: g.price + (g.premium ? g.premiumPrecio : 0) }));
+    const total = items.reduce((s,it)=>s+it.subtotal, 0);
+    const btn = document.getElementById('da-gift-submit');
+    if(btn){ btn.disabled = true; btn.textContent = 'Enviando...'; }
+    try{
+      const r = await fetch(`${ORDER_API_BASE}/api/submit-order`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, telefono, distrito, direccion, referencia, items, subtotal: total, total, esRegalo: true })
+      });
+      const data = await r.json().catch(()=>({ok:false}));
+      if(!r.ok || !data.ok) throw new Error(data.error || 'No se pudo registrar el regalo');
+      giftMode = false;
+      lastOrder = { orderId: data.orderId || null, nombre, telefono, distrito, direccion, referencia, items, subtotal: total, total };
+      checkoutStep = 'confirm';
+      renderCart();
+    }catch(e){
+      showToast('No se pudo enviar el regalo. Intenta de nuevo.');
+      if(btn){ btn.disabled = false; btn.textContent = 'Continuar'; }
+    }
+  }
+
+  // Regalo para otra persona: crea el regalo y pasa a compartir o a pagar, según elija
+  async function submitGiftForOther(){
+    const compradorTelefono = document.getElementById('gof-comprador-tel').value.trim();
+    if(!compradorTelefono){ showToast('Déjanos tu WhatsApp para avisarte'); return; }
+    const pagarAhora = document.getElementById('gof-pagar-ahora').checked;
+    giftDraft = { ...giftDraft, compradorTelefono, pagarAhora };
+    const items = giftList.map(g => ({ id: g.id, ml: g.ml, name: g.name, qty: 1, premium: g.premium, subtotal: g.price + (g.premium ? g.premiumPrecio : 0) }));
+    const total = items.reduce((s,it)=>s+it.subtotal, 0);
+    const btn = document.getElementById('da-gift-submit');
+    if(btn){ btn.disabled = true; btn.textContent = 'Generando...'; }
+    try{
+      const r = await fetch(`${ORDER_API_BASE}/api/create-gift`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, compradorTelefono, total })
+      });
+      const data = await r.json().catch(()=>({ok:false}));
+      if(!r.ok || !data.ok) throw new Error(data.error || 'No se pudo generar el regalo');
+      currentGift = { id: data.giftId, items, total, compradorTelefono, elegido: false, pagado: false };
+      giftStep = pagarAhora ? 'pagar' : 'compartir';
+      renderCart();
+    }catch(e){
+      showToast('No se pudo generar el link de regalo. Intenta de nuevo.');
+      if(btn){ btn.disabled = false; btn.textContent = 'Generar link de regalo'; }
+    }
+  }
+
+  // Paso 3a (comprador): compartir el link generado con la persona regalada
+  function renderGiftCompartir(list, foot){
+    const url = buildShareUrl({ regalo: currentGift.id });
+    list.innerHTML = `
+      <div class="da-confirm">
+        <div class="da-confirm-check">✓</div>
+        <h4>¡Regalo listo!</h4>
+        <div class="da-confirm-id">Regalo #${currentGift.id}</div>
+        <p>Comparte este link con la persona a quien quieres regalarle — ella va a elegir su perfume favorito de tu lista.</p>
+        <div class="da-gift-link-box">${url}</div>
+        <button class="da-btn da-btn-primary" style="width:100%;margin-bottom:8px;flex:none" id="gift-share-btn">Compartir link</button>
+        <button class="da-btn da-btn-ghost" style="width:100%" id="gift-copy-btn">Copiar link</button>
+        ${!currentGift.pagado ? `<p class="da-pay-note" style="margin-top:14px">Cuando la persona elija, te avisamos para que pagues. <button type="button" class="da-hint-back" id="gift-go-pagar">o paga ahora mismo</button></p>` : `<p class="da-pay-note" style="margin-top:14px">Ya está pagado — cuando la persona elija, nos llega directo a nosotros.</p>`}
+        <button class="da-btn da-btn-ghost" style="width:100%;margin-top:14px" id="da-gift-close">Listo, cerrar</button>
+      </div>
+    `;
+    foot.innerHTML = '';
+    document.getElementById('gift-share-btn').addEventListener('click', async ()=>{
+      if(navigator.share){ try{ await navigator.share({ title: 'Un regalo para ti 🎁', text: 'Te dejo un link para que elijas tu perfume de regalo en Dolce Aroma', url }); }catch(e){ /* canceló */ } }
+      else shareViaClipboard(url);
+    });
+    document.getElementById('gift-copy-btn').addEventListener('click', ()=> shareViaClipboard(url));
+    document.getElementById('gift-go-pagar')?.addEventListener('click', ()=>{ giftStep = 'pagar'; renderCart(); });
+    document.getElementById('da-gift-close').addEventListener('click', ()=>{ giftMode = false; closeCart(); });
+  }
+
+  // Paso 3b (comprador): pagar el regalo (ahora, o al volver desde el link ?pagar_regalo=)
+  function renderGiftPagar(list, foot){
+    const g = currentGift;
+    const orderTag = ` #${g.id}`;
+    const waMsg = `Buenos días, estoy pagando el regalo${orderTag}, adjunto la constancia 🧾`;
+    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
+    list.innerHTML = `
+      <div class="da-confirm">
+        <div class="da-confirm-check">✓</div>
+        <h4>Paga tu regalo</h4>
+        <div class="da-confirm-id">Regalo #${g.id}</div>
+        <p>Total: <b>S/ ${g.total}</b>${g.elegido ? ' · la persona regalada ya eligió' : ' · aún no eligen el perfume'}</p>
+        <div class="da-pay-card">
+          <div class="da-pay-title">Yape</div>
+          <img src="assets/pago-yape.jpg" alt="Código QR para pagar por Yape" class="da-pay-qr"/>
+          <div class="da-pay-name">${escapeHtml(pago.nombreYape)}</div>
+          <a class="da-btn da-btn-wa" style="width:100%" href="${waUrl}" target="_blank" rel="noopener" id="da-gift-pay-wa">Ya pagué, avisar por WhatsApp</a>
+          <p class="da-pay-note">Al abrirse WhatsApp, adjunta la captura de tu pago como segundo mensaje.</p>
+        </div>
+        ${giftRole==='comprador' && giftStep==='pagar' && !g.elegido ? `<button class="da-btn da-btn-ghost" style="width:100%;margin-top:6px" id="da-gift-to-share">Ver / compartir el link del regalo</button>` : ''}
+      </div>
+    `;
+    foot.innerHTML = '';
+    document.getElementById('da-gift-pay-wa').addEventListener('click', ()=> markGiftPaid(g.id));
+    document.getElementById('da-gift-to-share')?.addEventListener('click', ()=>{ giftStep = 'compartir'; renderCart(); });
+  }
+  async function markGiftPaid(giftId){
+    try{
+      const r = await fetch(`${ORDER_API_BASE}/api/mark-gift-paid`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ giftId })
+      });
+      const data = await r.json().catch(()=>({ok:false}));
+      if(data.ok){ if(currentGift) currentGift.pagado = true; showToast('¡Pago registrado, gracias!'); }
+    }catch(e){ /* best-effort: igual se abrió WhatsApp para avisar */ }
+  }
+
+  // Entrada del comprador que vuelve a pagar un regalo pendiente (?pagar_regalo=id)
+  async function openGiftPayLink(giftId){
+    try{
+      const r = await fetch(`${ORDER_API_BASE}/api/get-gift`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ giftId })
+      });
+      const data = await r.json().catch(()=>({ok:false}));
+      if(!data.ok){ showToast('No encontramos ese regalo'); return; }
+      currentGift = data.gift;
+      giftRole = 'comprador'; giftMode = true; giftStep = 'pagar';
+      renderCart();
+      document.getElementById('da-bd').classList.add('open');
+      document.getElementById('da-cart').classList.add('open');
+    }catch(e){ showToast('No se pudo cargar el regalo'); }
+  }
+
+  // ─── Entrada de la persona regalada (?regalo=id) ───
+  async function openGiftClaim(giftId){
+    try{
+      const r = await fetch(`${ORDER_API_BASE}/api/get-gift`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ giftId })
+      });
+      const data = await r.json().catch(()=>({ok:false}));
+      if(!data.ok){ showToast('Este link de regalo no existe o ya expiró'); return; }
+      currentGift = data.gift;
+      giftClaimStep = data.gift.elegido ? 'gracias' : 'elegir';
+      giftClaimChoice = null; giftClaimResult = null;
+      giftRole = 'regalada'; giftMode = true;
+      renderCart();
+      document.getElementById('da-bd').classList.add('open');
+      document.getElementById('da-cart').classList.add('open');
+    }catch(e){ showToast('No se pudo cargar el regalo'); }
+  }
+  function renderGiftClaim(list, foot){
+    const g = currentGift;
+    if(giftClaimStep === 'gracias'){
+      const compradorTel = g.compradorTelefono;
+      const orderId = giftClaimResult?.orderId;
+      const msg = orderId
+        ? `¡Hola! Ya elegí mi regalo 🎁 (pedido #${orderId}). ¡Gracias!`
+        : `¡Hola! Ya elegí mi regalo 🎁 — falta pagarlo para coordinar el envío. Aquí puedes hacerlo: ${buildShareUrl({ pagar_regalo: g.id })}`;
+      const waUrl = compradorTel ? `https://wa.me/51${compradorTel}?text=${encodeURIComponent(msg)}` : null;
+      list.innerHTML = `
+        <div class="da-confirm">
+          <div class="da-confirm-check">✓</div>
+          <h4>¡Ya elegiste tu regalo!</h4>
+          <p>${orderId ? 'Ya está todo pagado — pronto coordinamos la entrega contigo.' : 'Avísale a quien te lo regaló para que complete el pago.'}</p>
+          ${waUrl ? `<a class="da-btn da-btn-wa" style="width:100%" href="${waUrl}" target="_blank" rel="noopener">Avisar por WhatsApp</a>` : ''}
+        </div>`;
+      foot.innerHTML = '';
+      return;
+    }
+    list.innerHTML = `
+      <div class="da-gift-banner">🎁 <b>¡Es un regalo para ti!</b> Elige el que más te guste.</div>
+      <div id="gift-claim-options">
+        ${g.items.map((it,i)=>`
+          <div class="da-gift-radio ${giftClaimChoice===i?'selected':''}" data-idx="${i}">
+            <img src="${giftItemPhoto(it)}" alt="" onerror="this.style.visibility='hidden'"/>
+            <div><div class="n">${escapeHtml(it.name)}</div><div class="m">${it.ml} ml${it.premium?' · frasco premium incluido':''}</div></div>
+            <div class="da-radio-dot"></div>
+          </div>`).join('')}
+      </div>
+      <div id="gift-claim-address" class="da-order-form" style="margin-top:16px"></div>
+      <button class="da-btn da-btn-primary" style="width:100%;margin-top:14px;flex:none" id="gift-claim-confirm" disabled>Confirmar mi elección</button>
+    `;
+    foot.innerHTML = '';
+    document.getElementById('gift-claim-options').querySelectorAll('.da-gift-radio').forEach(row => row.addEventListener('click', ()=>{
+      giftClaimChoice = +row.dataset.idx;
+      document.querySelectorAll('#gift-claim-options .da-gift-radio').forEach(r=>r.classList.remove('selected'));
+      row.classList.add('selected');
+      renderGiftClaimAddressAndButton();
+    }));
+    renderGiftClaimAddressAndButton();
+  }
+  function renderGiftClaimAddressAndButton(){
+    const addrBox = document.getElementById('gift-claim-address');
+    const btn = document.getElementById('gift-claim-confirm');
+    if(!addrBox || !btn) return;
+    if(giftClaimChoice === null){ btn.disabled = true; return; }
+    if(!addrBox.dataset.rendered){
+      addrBox.dataset.rendered = '1';
+      addrBox.innerHTML = `
+        <label>Tu nombre
+          <input type="text" id="gcf-nombre" placeholder="Tu nombre completo"/>
+        </label>
+        <label>Tu WhatsApp
+          <input type="tel" id="gcf-telefono" inputmode="numeric" placeholder="987654321"/>
+        </label>
+        <label>Distrito
+          <input type="text" id="gcf-distrito" placeholder="Tu distrito"/>
+        </label>
+        <label>Dirección
+          <input type="text" id="gcf-direccion" placeholder="Calle, número, referencia"/>
+        </label>
+        <label>Referencia (opcional)
+          <input type="text" id="gcf-referencia" placeholder="Ej. cerca al parque"/>
+        </label>
+      `;
+      document.getElementById('gcf-telefono').addEventListener('input', e=>{ e.target.value = e.target.value.replace(/\D/g,'').slice(-9); });
+    }
+    btn.disabled = false;
+    btn.onclick = claimGift;
+  }
+  async function claimGift(){
+    if(giftClaimChoice === null) return;
+    const nombre = document.getElementById('gcf-nombre').value.trim();
+    const telefono = document.getElementById('gcf-telefono').value.trim();
+    const distrito = document.getElementById('gcf-distrito').value.trim();
+    const direccion = document.getElementById('gcf-direccion').value.trim();
+    const referencia = document.getElementById('gcf-referencia').value.trim();
+    if(!nombre || !telefono || !distrito || !direccion){ showToast('Completa tus datos de entrega'); return; }
+    const btn = document.getElementById('gift-claim-confirm');
+    if(btn){ btn.disabled = true; btn.textContent = 'Guardando...'; }
+    try{
+      const r = await fetch(`${ORDER_API_BASE}/api/claim-gift`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ giftId: currentGift.id, eleccionIndex: giftClaimChoice, nombre, telefono, distrito, direccion, referencia })
+      });
+      const data = await r.json().catch(()=>({ok:false}));
+      if(!r.ok || !data.ok) throw new Error(data.error || 'No se pudo guardar tu elección');
+      currentGift.compradorTelefono = data.compradorTelefono || currentGift.compradorTelefono;
+      giftClaimResult = { orderId: data.orderId };
+      giftClaimStep = 'gracias';
+      renderCart();
+    }catch(e){
+      showToast('No se pudo guardar tu elección: ' + e.message);
+      if(btn){ btn.disabled = false; btn.textContent = 'Confirmar mi elección'; }
+    }
+  }
+
   // ─── WhatsApp ───
   // Respaldo para quien no tiene WhatsApp instalado/logueado en ese dispositivo (ej. tablets):
   // deja copiar el pedido o mandarlo por correo, para que el pedido nunca quede sin salida.
@@ -1070,7 +1526,13 @@
       await Promise.all([loadCatalog(), loadZonas(), loadPago()]);
       loadCart();
       refreshBadges();
-      document.querySelectorAll('[data-cart-open]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); openCart(); }));
+      document.querySelectorAll('[data-cart-open]').forEach(el => {
+        el.addEventListener('click', e => { e.preventDefault(); openCart(); });
+        const giftBtn = document.createElement('a');
+        giftBtn.href = '#'; giftBtn.className = 'da-gift-open'; giftBtn.textContent = '🎁 Regalar';
+        giftBtn.addEventListener('click', e => { e.preventDefault(); openGiftBuilder(); });
+        el.parentNode.insertBefore(giftBtn, el);
+      });
       if(opts?.onReady) opts.onReady(catalog);
       const shareParams = new URLSearchParams(location.search);
       // Link compartido (?p=id) → abre directo el detalle de ese perfume
@@ -1079,6 +1541,12 @@
       // Link de bolsa compartida (?cart=id:ml:qty,...) → suma esos perfumes a la bolsa actual
       const sharedCart = shareParams.get('cart');
       if(sharedCart) loadSharedCart(sharedCart);
+      // Link de regalo (?regalo=id) → la persona regalada elige su perfume
+      const giftId = shareParams.get('regalo');
+      if(giftId) openGiftClaim(giftId);
+      // Link para que el comprador vuelva a pagar un regalo (?pagar_regalo=id)
+      const payGiftId = shareParams.get('pagar_regalo');
+      if(payGiftId) openGiftPayLink(payGiftId);
     },
     getCatalog: () => catalog,
     openDetail,

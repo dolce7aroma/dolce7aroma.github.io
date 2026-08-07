@@ -132,6 +132,39 @@ Y en **Workers & Pages → Storage & Databases → KV**, crea un namespace (ej. 
 
 ---
 
+## 🎁 Regalar un perfume (Fase 1)
+
+Botón **"🎁 Regalar"** junto al de la bolsa, en todas las páginas. Flujo:
+
+1. **Comprador**: elige uno o varios perfumes de una lista curada (con buscador). Si un perfume tiene "Frasco premium" activado en el Admin, puede sumarlo a un precio extra.
+2. Elige si el regalo **se le entrega a él mismo** (llena su dirección ahí mismo y listo, va directo por el checkout normal) o **a otra persona** (deja su WhatsApp para que le avisen, y decide si paga de inmediato o cuando la otra persona elija — el total no cambia en ningún caso, porque el catálogo tiene precios uniformes).
+3. Si es para otra persona, se genera un link (`catalogo.html?regalo=<id>`) que el comprador comparte él mismo.
+4. La persona regalada abre el link, ve solo esa lista curada, elige uno, llena su propia dirección de entrega y confirma.
+5. El pedido **solo llega a la pestaña Pedidos una vez que está pagado** — sin excepción, sea que el comprador pagó antes o después de que la otra persona eligiera.
+
+### Frasco premium (Admin → Catálogo → editar perfume)
+
+Nuevo campo "Regalo": casilla "Frasco premium disponible" + precio editable, **por perfume** — no todos lo tienen, y cada uno puede tener un precio distinto. Sin fotos ni variantes múltiples todavía (fase futura).
+
+### Limitación real: no hay aviso automático push al comprador
+
+No existe (todavía) una forma de enviarle un WhatsApp a un número arbitrario sin que esa persona lo inicie desde su propio teléfono — ni Resend (sin dominio propio verificado) ni Telegram (necesitaría que el comprador ya tenga chat con nuestro bot) lo permiten para un contacto cualquiera. Por eso, cuando la persona regalada confirma su elección, se le muestra a **ella** un botón de WhatsApp pre-armado para avisarle al comprador — reutiliza el mismo patrón de "click para abrir WhatsApp" que ya usa todo el sitio, solo que en sentido inverso (la persona regalada le escribe al comprador, no al revés).
+
+### Seguimiento automático — pendiente (fast-follow)
+
+Cada regalo se guarda en KV (`gift:<id>`) con su estado y fecha de creación — la data ya está lista para soportarlo. Falta la pieza que "se despierta sola" con el tiempo (un Cloudflare Cron Trigger que revise diario qué regalos llevan mucho sin completarse y le avise al comprador) — no está construida todavía, queda como la primera mejora a sumar después de este lanzamiento.
+
+### Endpoints nuevos del Worker
+
+| Endpoint | Qué hace |
+|---|---|
+| `POST /api/create-gift` | El comprador guarda su lista curada. Pública. |
+| `POST /api/get-gift` | Carga un regalo por su ID (para la persona regalada o para el comprador que vuelve a pagar). Pública. |
+| `POST /api/claim-gift` | La persona regalada guarda su elección + dirección. Pública. |
+| `POST /api/mark-gift-paid` | El comprador confirma que pagó (mismo nivel de confianza que un pedido normal — sin verificación automática). Pública. |
+
+---
+
 ## 💳 Pago con tarjeta (Culqi)
 
 Se activa solo cuando cargas una llave pública de Culqi — sin ella, la tarjeta de pago del checkout muestra "Próximamente" (comportamiento actual, sin riesgo de romper nada).
