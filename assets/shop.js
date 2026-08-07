@@ -442,7 +442,7 @@
       <div class="da-modal" id="da-modal"><div class="da-modal-card" id="da-modal-card"></div></div>
       <aside class="da-cart" id="da-cart" aria-hidden="true">
         <div class="da-cart-head">
-          <h3>Tu <em style="color:#a8895a;font-style:italic">bolsa</em></h3>
+          <h3 id="da-cart-title">Tu <em style="color:#a8895a;font-style:italic">bolsa</em></h3>
           <div style="display:flex;gap:6px;align-items:center">
             <button class="da-close da-cart-expand" id="da-cart-expand" style="position:static;box-shadow:none" title="Expandir bolsa">${ICON_EXPAND}</button>
             <button class="da-close" id="da-cart-share" style="position:static;box-shadow:none;background:transparent" title="Compartir bolsa">${ICON_SHARE}</button>
@@ -619,6 +619,12 @@
   function renderCart(){
     const list = document.getElementById('da-cart-list');
     const foot = document.getElementById('da-cart-foot');
+    const title = document.getElementById('da-cart-title');
+    if(title){
+      if(giftMode && giftRole === 'regalada') title.innerHTML = '🎁 <em style="color:#a8895a;font-style:italic">Tu regalo</em>';
+      else if(giftMode) title.innerHTML = 'Arma tu <em style="color:#a8895a;font-style:italic">regalo</em>';
+      else title.innerHTML = 'Tu <em style="color:#a8895a;font-style:italic">bolsa</em>';
+    }
     if(giftMode) return renderGiftFlow(list, foot);
     if(checkoutStep === 'form') return renderCheckoutForm(list, foot);
     if(checkoutStep === 'confirm') return renderCheckoutConfirm(list, foot);
@@ -1088,7 +1094,7 @@
         </div>
       </div>
       <div id="gift-detalles-body" class="da-order-form"></div>
-      <button class="da-btn da-btn-primary" style="width:100%;margin-top:14px" id="da-gift-submit">${isComprador ? 'Continuar' : 'Generar link de regalo'}</button>
+      <button class="da-btn da-btn-primary" style="width:100%;margin-top:14px;flex:none" id="da-gift-submit">${isComprador ? 'Continuar' : 'Generar link de regalo'}</button>
     `;
     foot.innerHTML = '';
     renderGiftDetallesBody();
@@ -1201,7 +1207,7 @@
         <div class="da-confirm-id">Regalo #${currentGift.id}</div>
         <p>Comparte este link con la persona a quien quieres regalarle — ella va a elegir su perfume favorito de tu lista.</p>
         <div class="da-gift-link-box">${url}</div>
-        <button class="da-btn da-btn-primary" style="width:100%;margin-bottom:8px" id="gift-share-btn">Compartir link</button>
+        <button class="da-btn da-btn-primary" style="width:100%;margin-bottom:8px;flex:none" id="gift-share-btn">Compartir link</button>
         <button class="da-btn da-btn-ghost" style="width:100%" id="gift-copy-btn">Copiar link</button>
         ${!currentGift.pagado ? `<p class="da-pay-note" style="margin-top:14px">Cuando la persona elija, te avisamos para que pagues. <button type="button" class="da-hint-back" id="gift-go-pagar">o paga ahora mismo</button></p>` : `<p class="da-pay-note" style="margin-top:14px">Ya está pagado — cuando la persona elija, nos llega directo a nosotros.</p>`}
         <button class="da-btn da-btn-ghost" style="width:100%;margin-top:14px" id="da-gift-close">Listo, cerrar</button>
@@ -1316,7 +1322,7 @@
           </div>`).join('')}
       </div>
       <div id="gift-claim-address" class="da-order-form" style="margin-top:16px"></div>
-      <button class="da-btn da-btn-primary" style="width:100%;margin-top:14px" id="gift-claim-confirm" disabled>Confirmar mi elección</button>
+      <button class="da-btn da-btn-primary" style="width:100%;margin-top:14px;flex:none" id="gift-claim-confirm" disabled>Confirmar mi elección</button>
     `;
     foot.innerHTML = '';
     document.getElementById('gift-claim-options').querySelectorAll('.da-gift-radio').forEach(row => row.addEventListener('click', ()=>{
