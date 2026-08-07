@@ -128,7 +128,22 @@ Y en **Workers & Pages → Storage & Databases → KV**, crea un namespace (ej. 
 >
 > 📲 **Telegram — el bot no necesita el número de Dolce Aroma.** El bot de Telegram no está atado a ningún número de teléfono del negocio; se crea con @BotFather desde cualquier cuenta de Telegram y manda las alertas a quien sea el `TELEGRAM_CHAT_ID`. Lo más simple es usar tu Telegram personal (el que ya tienes instalado) como receptor de las alertas — no hace falta instalar Telegram en el chip 2 ni verificarlo con el número del negocio.
 >
-> ⚠️ **Las variables de texto (no secretas) se borran solas si solo las agregas desde el dashboard.** `ORDER_EMAIL_TO` y `TELEGRAM_CHAT_ID` viven en `wrangler.toml` (sección `[vars]`), no solo en Cloudflare — cada vez que se publica un cambio al sitio, Cloudflare redespliega el Worker y usa `wrangler.toml` como la lista completa de variables; cualquiera que solo esté en el dashboard y no en ese archivo se borra en ese momento. Si en algún momento necesitas otra variable de texto (no secreta), pídeme agregarla ahí para que no desaparezca. Los secretos reales (`ADMIN_KEY`, `GITHUB_TOKEN`, `RESEND_API_KEY`, `TELEGRAM_BOT_TOKEN`) sí quedan solo en el dashboard de Cloudflare — nunca deben ir en `wrangler.toml`, que es público en el repo.
+> ⚠️ **Las variables de texto (no secretas) se borran solas si solo las agregas desde el dashboard.** `ORDER_EMAIL_TO` y `TELEGRAM_CHAT_ID` viven en `wrangler.toml` (sección `[vars]`), no solo en Cloudflare — cada vez que se publica un cambio al sitio, Cloudflare redespliega el Worker y usa `wrangler.toml` como la lista completa de variables; cualquiera que solo esté en el dashboard y no en ese archivo se borra en ese momento. Si en algún momento necesitas otra variable de texto (no secreta), pídeme agregarla ahí para que no desaparezca. Los secretos reales (`ADMIN_KEY`, `GITHUB_TOKEN`, `RESEND_API_KEY`, `TELEGRAM_BOT_TOKEN`, `CULQI_SECRET_KEY`) sí quedan solo en el dashboard de Cloudflare — nunca deben ir en `wrangler.toml`, que es público en el repo.
+
+---
+
+## 💳 Pago con tarjeta (Culqi)
+
+Se activa solo cuando cargas una llave pública de Culqi — sin ella, la tarjeta de pago del checkout muestra "Próximamente" (comportamiento actual, sin riesgo de romper nada).
+
+1. Crea tu cuenta en **[culqi.com](https://culqi.com)** — con DNI alcanza para modo prueba. Para cobrar de verdad (modo producción) necesitas **RUC** (puede ser Persona Natural con Negocio, régimen Nuevo RUS — el más simple, se saca gratis en SUNAT en minutos).
+2. En Culqi → Desarrollo → Llaves API, copia:
+   - **Llave pública** (`pk_test_...` para pruebas, `pk_live_...` para cobros reales) → pégala en Admin → pestaña **"💳 Pago"** → campo "Llave pública de Culqi" → Publicar. Esta llave no es secreta, está pensada para ir en el código del sitio.
+   - **Llave secreta** (`sk_test_...` / `sk_live_...`) → pégala en Cloudflare → tu Worker → Settings → Variables and Secrets → `CULQI_SECRET_KEY` (tipo "Secreto"). Esta NUNCA va en el Admin ni en ningún archivo del repo.
+3. Con la llave pública cargada, el checkout muestra un botón real "Pagar con tarjeta" que abre el checkout propio de Culqi (los datos de tarjeta nunca tocan nuestro sitio). Al confirmar el pago, el pedido pasa automáticamente a estado "Pagado" en la pestaña Pedidos.
+4. Prueba primero con las llaves `*_test_*` y las [tarjetas de prueba de Culqi](https://culqi.com) antes de pasar a `*_live_*`.
+
+> ⚠️ **Riesgo de contracargos.** A diferencia de Yape (instantáneo e irreversible), un pago con tarjeta puede ser disputado por el banco del cliente días o semanas después (uso no autorizado, fraude, etc.) — si ya entregaste el producto, pierdes ambos. El checkout de Culqi trae verificación 3D Secure por defecto, que traslada gran parte de esa responsabilidad al banco del cliente. Para pedidos grandes, conserva evidencia de entrega (foto, firma, tracking del courier) por si necesitas disputar un contracargo.
 
 ---
 
@@ -189,7 +204,7 @@ Ejemplos:
 | **⭐ Reseñas** | Administra las reseñas del carrusel de Inicio |
 | **🚚 Envíos** | Monto mínimo para envío gratis, zonas gratis por distrito (formato `Distrito \| Detalle`), mensaje estándar para zonas sin detalle propio, mensaje para el resto de zonas |
 | **🧾 Pedidos** | Lista los pedidos hechos por clientes, con su estado editable (requiere el KV de Cloudflare enlazado — ver arriba) |
-| **💳 Pago** | Nombre que se muestra en la pantalla de pago por Yape |
+| **💳 Pago** | Nombre que se muestra en la pantalla de pago por Yape, y la llave pública de Culqi para activar el pago con tarjeta |
 
 **Botones de Catálogo:**
 

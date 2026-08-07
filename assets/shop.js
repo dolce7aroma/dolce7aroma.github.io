@@ -47,7 +47,7 @@
   let catalog = [];
   let cart = [];   // [{id, ml, qty}]
   let zonas = { envioGratisMinimo: 150, zonasGratis: [], notaOtrasZonas: '', mensajeEstandarGratis: '¡Felicidades, tu zona tiene envío gratis!' };
-  let pago = { nombreYape: 'Cesar Fernandez' };
+  let pago = { nombreYape: 'Cesar Fernandez', culqiPublicKey: '' };
   let checkoutStep = 'cart'; // 'cart' | 'form' | 'confirm'
   let lastOrder = null; // datos del último pedido confirmado (para el paso de pago)
   let orderForm = { nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
@@ -67,7 +67,7 @@
       const r = await fetch(PAGO_URL, {cache:'no-cache'});
       if(r.ok){
         const j = await r.json();
-        pago = Object.assign({ nombreYape:'Cesar Fernandez' }, j);
+        pago = Object.assign({ nombreYape:'Cesar Fernandez', culqiPublicKey:'' }, j);
       }
     }catch(e){ /* se mantiene el valor por defecto */ }
   }
@@ -833,6 +833,16 @@
     const orderTag = lastOrder.orderId ? ` #${lastOrder.orderId}` : '';
     const waMsg = `Buenos días, soy ${lastOrder.nombre}. Estoy realizando el pago de mi pedido${orderTag}, adjunto la constancia 🧾`;
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
+    const tarjetaHtml = pago.culqiPublicKey
+      ? `<div class="da-pay-card" id="da-pay-card-tarjeta">
+           <div class="da-pay-title">Tarjeta de crédito / débito</div>
+           <p class="da-pay-note">Pago seguro procesado por Culqi — tus datos de tarjeta nunca pasan por nuestro sitio.</p>
+           <button class="da-btn da-btn-primary" style="width:100%" id="da-pay-culqi">Pagar S/ ${lastOrder.total} con tarjeta</button>
+         </div>`
+      : `<div class="da-pay-card da-pay-soon">
+           <div class="da-pay-title">Tarjeta de crédito / débito</div>
+           <p class="da-pay-note">Próximamente 🚧 — por ahora paga con Yape o coordina con nosotros por WhatsApp.</p>
+         </div>`;
     list.innerHTML = `
       <div class="da-confirm">
         <div class="da-confirm-check">✓</div>
@@ -850,21 +860,78 @@
           <p class="da-pay-note">Al abrirse WhatsApp, adjunta la captura de tu pago como segundo mensaje.</p>
         </div>
 
-        <div class="da-pay-card da-pay-soon">
-          <div class="da-pay-title">Tarjeta de crédito / débito</div>
-          <p class="da-pay-note">Próximamente 🚧 — por ahora paga con Yape o coordina con nosotros por WhatsApp.</p>
-        </div>
+        ${tarjetaHtml}
 
         <button class="da-btn da-btn-ghost" style="width:100%;margin-top:6px" id="da-confirm-close">Seguir comprando</button>
       </div>
     `;
     foot.innerHTML = '';
+    if(pago.culqiPublicKey) document.getElementById('da-pay-culqi')?.addEventListener('click', payWithCulqi);
     document.getElementById('da-confirm-close').addEventListener('click', ()=>{
       cart = []; saveCart();
       checkoutStep = 'cart'; lastOrder = null;
       closeCart();
     });
   }
+
+  // ─── Pago con tarjeta (Culqi) ───
+  // Se activa solo si Admin → Pago tiene cargada una llave pública (pago.culqiPublicKey).
+  // Sin ella, la tarjeta de pago muestra "Próximamente" y este código no se ejecuta nunca.
+  let culqiScriptLoaded = false;
+  function loadCulqiScript(){
+    return new Promise((resolve, reject) => {
+      if(culqiScriptLoaded || window.Culqi){ resolve(); return; }
+      const s = document.createElement('script');
+      s.src = 'https://checkout.culqi.com/js/v4';
+      s.onload = () => { culqiScriptLoaded = true; resolve(); };
+      s.onerror = () => reject(new Error('No se pudo cargar Culqi'));
+      document.head.appendChild(s);
+    });
+  }
+  async function payWithCulqi(){
+    if(!lastOrder) return;
+    const btn = document.getElementById('da-pay-culqi');
+    try{
+      if(btn){ btn.disabled = true; btn.textContent = 'Cargando pasarela…'; }
+      await loadCulqiScript();
+      window.Culqi.publicKey = pago.culqiPublicKey;
+      window.Culqi.settings({
+        title: 'Dolce Aroma',
+        currency: 'PEN',
+        amount: Math.round(lastOrder.total * 100), // Culqi espera céntimos
+        order: lastOrder.orderId || undefined,
+      });
+      window.Culqi.open();
+      if(btn){ btn.disabled = false; btn.textContent = `Pagar S/ ${lastOrder.total} con tarjeta`; }
+    }catch(e){
+      showToast('No se pudo abrir la pasarela de pago. Intenta de nuevo.');
+      if(btn){ btn.disabled = false; btn.textContent = `Pagar S/ ${lastOrder.total} con tarjeta`; }
+    }
+  }
+  // Culqi.js llama a esta función global cuando el cliente termina de ingresar la tarjeta.
+  window.culqi = async function(){
+    if(!window.Culqi || !window.Culqi.token){
+      if(window.Culqi && window.Culqi.error) showToast(window.Culqi.error.user_message || 'No se pudo procesar el pago');
+      return;
+    }
+    const token = window.Culqi.token.id;
+    const email = window.Culqi.token.email; // Culqi lo pide dentro de su propio formulario, no hace falta pedirlo en el nuestro
+    showToast('Procesando tu pago…');
+    try{
+      const r = await fetch(`${ORDER_API_BASE}/api/charge-culqi`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: lastOrder?.orderId, token, email, amount: Math.round((lastOrder?.total||0) * 100) })
+      });
+      const data = await r.json().catch(()=>({ok:false}));
+      if(!r.ok || !data.ok) throw new Error(data.error || 'Pago rechazado');
+      showToast('¡Pago confirmado! Gracias por tu compra 🌸');
+      const card = document.getElementById('da-pay-card-tarjeta');
+      if(card) card.innerHTML = `<div class="da-pay-title">✓ Pago confirmado</div><p class="da-pay-note">Ya registramos tu pago. Coordinamos la entrega por WhatsApp.</p>`;
+    }catch(e){
+      showToast('El pago no se pudo confirmar: ' + e.message);
+    }
+  };
 
   // ─── WhatsApp ───
   // Respaldo para quien no tiene WhatsApp instalado/logueado en ese dispositivo (ej. tablets):

@@ -539,6 +539,11 @@
         <label>Nombre a mostrar (igual que en tu Yape)</label>
         <input type="text" id="pago-nombre-yape" placeholder="Ej. Cesar Fernandez" />
       </div>
+      <div class="field">
+        <label>Llave pública de Culqi (activa el pago con tarjeta)</label>
+        <p class="sub" style="margin:-4px 0 4px">Pégala para activar la opción "Pagar con tarjeta" en el checkout. Vacío = sigue mostrando "Próximamente". Usa la llave `pk_test_...` para probar sin cobrar de verdad, o `pk_live_...` cuando tengas tu cuenta de Culqi verificada con RUC. La llave <em>secreta</em> (`sk_...`) NO va acá — esa se configura aparte, directo en Cloudflare, nunca en un campo publicable.</p>
+        <input type="text" id="pago-culqi-key" placeholder="pk_test_..." />
+      </div>
       <button class="btn btn-primary" id="btn-publicar-pago" style="align-self:flex-start">
         <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
         Publicar cambios de pago
@@ -1754,13 +1759,14 @@ async function loadPagoConfig(){
     const res = await fetch('data/pago.json', {cache:'no-cache'});
     const data = await res.json();
     $('#pago-nombre-yape').value = data.nombreYape || '';
+    $('#pago-culqi-key').value = data.culqiPublicKey || '';
   }catch(e){ console.warn('No se pudo cargar pago.json', e); }
 }
 async function publishPago(){
   if(!API_BASE){ toast('Configura API_BASE en el código para poder publicar', 'warn'); return; }
   const key = await getAuthKey();
   if(!key) return;
-  const config = { schema:{version:1}, nombreYape: $('#pago-nombre-yape').value.trim() };
+  const config = { schema:{version:1}, nombreYape: $('#pago-nombre-yape').value.trim(), culqiPublicKey: $('#pago-culqi-key').value.trim() };
   toast('Publicando datos de pago…');
   try{
     const res = await fetch(`${API_BASE}/api/save-config`, {
