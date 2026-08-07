@@ -31,6 +31,22 @@
  *                       usa el de pruebas de Resend.
  *   TELEGRAM_BOT_TOKEN → token del bot que crees con @BotFather en Telegram.
  *   TELEGRAM_CHAT_ID   → el chat donde el bot te manda los avisos (el tuyo).
+ *
+ * ALMACENAMIENTO DE PEDIDOS (opcional, pero recomendado):
+ *   Sin esto, los pedidos SOLO viajan por el correo/Telegram del momento — si
+ *   ninguno está configurado (o falla), el pedido se pierde. Con un KV
+ *   namespace enlazado, cada pedido queda guardado con un número de
+ *   referencia y se puede ver/actualizar su estado desde la pestaña
+ *   "Pedidos" del Admin.
+ *   1. Cloudflare dashboard → Workers & Pages → KV → Create a namespace
+ *      (ej. nómbralo "dolce-aroma-pedidos").
+ *   2. Copia el ID del namespace creado.
+ *   3. Pídele a Claude que lo agregue a wrangler.toml así:
+ *        [[kv_namespaces]]
+ *        binding = "ORDERS"
+ *        id = "EL_ID_QUE_COPIASTE"
+ *   4. Se despliega solo al hacer push. Sin este paso, el sitio sigue
+ *      funcionando igual, solo que los pedidos no quedan guardados.
  */
 
 const REPO_OWNER = 'dolce7aroma';
@@ -201,8 +217,18 @@ async function handleSaveConfig(request, env) {
   }
 }
 
+// Genera un número de pedido corto y legible (ej. DA-M2X7A3) a partir de la hora actual + azar.
+function generateOrderId() {
+  const t = Date.now().toString(36).toUpperCase();
+  const r = Math.random().toString(36).slice(2, 4).toUpperCase();
+  return `DA-${t.slice(-5)}${r}`;
+}
+
+const ORDER_STATUSES = ['nuevo', 'pagado', 'en_camino', 'entregado', 'cancelado'];
+
 // Pedido enviado por un CLIENTE (no requiere ADMIN_KEY — es público, pero no toca el repo,
-// solo dispara avisos por correo/Telegram si esos secretos están configurados).
+// solo dispara avisos por correo/Telegram si esos secretos están configurados y lo guarda
+// en KV si el binding ORDERS está enlazado).
 async function handleSubmitOrder(request, env) {
   const body = await request.json().catch(() => null);
   if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
@@ -215,9 +241,11 @@ async function handleSubmitOrder(request, env) {
     return json({ ok: false, error: 'El pedido no tiene productos' }, 400);
   }
 
+  const orderId = generateOrderId();
   const itemsText = items.map(it => `- ${it.name} (${it.ml} ml) x${it.qty} — S/ ${it.subtotal}`).join('\n');
   const summary = `🌸 Nuevo pedido — Dolce Aroma
 
+Pedido: #${orderId}
 Cliente: ${nombre}
 Teléfono: ${telefono}
 Distrito: ${distrito}
@@ -230,6 +258,17 @@ ${itemsText}
 
 Subtotal: S/ ${subtotal}
 Total: S/ ${total}`;
+
+  if (env.ORDERS) {
+    try {
+      const record = {
+        id: orderId, nombre, telefono, distrito, direccion, referencia,
+        items, subtotal, total, metodoPago: metodoPago || null,
+        estado: 'nuevo', creadoEn: new Date().toISOString(),
+      };
+      await env.ORDERS.put(`order:${orderId}`, JSON.stringify(record));
+    } catch (e) { /* si falla el guardado, igual seguimos con los avisos */ }
+  }
 
   const notified = { email: false, telegram: false };
 
@@ -263,7 +302,50 @@ Total: S/ ${total}`;
     } catch (e) { /* Telegram también es best-effort */ }
   }
 
-  return json({ ok: true, notified });
+  return json({ ok: true, orderId, notified });
+}
+
+// Lista los pedidos guardados en KV (más nuevos primero). Requiere ADMIN_KEY.
+async function handleListOrders(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+  const { key } = body;
+  if (key !== env.ADMIN_KEY) return json({ ok: false, error: 'Contraseña incorrecta' }, 401);
+  if (!env.ORDERS) return json({ ok: false, error: 'Aún no configuraste el almacenamiento de pedidos (KV) en Cloudflare.' }, 400);
+
+  try {
+    const listed = await env.ORDERS.list({ prefix: 'order:', limit: 500 });
+    const orders = (await Promise.all(
+      listed.keys.map(k => env.ORDERS.get(k.name).then(v => v ? JSON.parse(v) : null))
+    )).filter(Boolean);
+    orders.sort((a, b) => (b.creadoEn || '').localeCompare(a.creadoEn || ''));
+    return json({ ok: true, orders });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 502);
+  }
+}
+
+// Actualiza el estado de un pedido (nuevo/pagado/en_camino/entregado/cancelado). Requiere ADMIN_KEY.
+async function handleUpdateOrderStatus(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+  const { key, orderId, estado } = body;
+  if (key !== env.ADMIN_KEY) return json({ ok: false, error: 'Contraseña incorrecta' }, 401);
+  if (!env.ORDERS) return json({ ok: false, error: 'Aún no configuraste el almacenamiento de pedidos (KV) en Cloudflare.' }, 400);
+  if (!orderId) return json({ ok: false, error: 'Falta el número de pedido' }, 400);
+  if (!ORDER_STATUSES.includes(estado)) return json({ ok: false, error: 'Estado no válido' }, 400);
+
+  try {
+    const raw = await env.ORDERS.get(`order:${orderId}`);
+    if (!raw) return json({ ok: false, error: 'Pedido no encontrado' }, 404);
+    const record = JSON.parse(raw);
+    record.estado = estado;
+    record.actualizadoEn = new Date().toISOString();
+    await env.ORDERS.put(`order:${orderId}`, JSON.stringify(record));
+    return json({ ok: true, order: record });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 502);
+  }
 }
 
 export default {
@@ -286,6 +368,12 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/api/submit-order') {
       return handleSubmitOrder(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/list-orders') {
+      return handleListOrders(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/update-order-status') {
+      return handleUpdateOrderStatus(request, env);
     }
     return json({ ok: false, error: 'Ruta no encontrada' }, 404);
   },
