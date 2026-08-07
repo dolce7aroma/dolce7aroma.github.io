@@ -127,6 +127,8 @@ Y en **Workers & Pages → Storage & Databases → KV**, crea un namespace (ej. 
 > 📧 **Resend — primer correo cae en spam.** Es normal: `onboarding@resend.dev` es un remitente compartido por miles de cuentas, sin reputación previa con tu Gmail. Abre el primer correo y marca **"No es spam"** — los siguientes ya llegan directo a la bandeja de entrada. Solución permanente (opcional, a futuro): verificar un dominio propio en Resend y usar `ORDER_EMAIL_FROM` con ese dominio.
 >
 > 📲 **Telegram — el bot no necesita el número de Dolce Aroma.** El bot de Telegram no está atado a ningún número de teléfono del negocio; se crea con @BotFather desde cualquier cuenta de Telegram y manda las alertas a quien sea el `TELEGRAM_CHAT_ID`. Lo más simple es usar tu Telegram personal (el que ya tienes instalado) como receptor de las alertas — no hace falta instalar Telegram en el chip 2 ni verificarlo con el número del negocio.
+>
+> ⚠️ **Las variables de texto (no secretas) se borran solas si solo las agregas desde el dashboard.** `ORDER_EMAIL_TO` y `TELEGRAM_CHAT_ID` viven en `wrangler.toml` (sección `[vars]`), no solo en Cloudflare — cada vez que se publica un cambio al sitio, Cloudflare redespliega el Worker y usa `wrangler.toml` como la lista completa de variables; cualquiera que solo esté en el dashboard y no en ese archivo se borra en ese momento. Si en algún momento necesitas otra variable de texto (no secreta), pídeme agregarla ahí para que no desaparezca. Los secretos reales (`ADMIN_KEY`, `GITHUB_TOKEN`, `RESEND_API_KEY`, `TELEGRAM_BOT_TOKEN`) sí quedan solo en el dashboard de Cloudflare — nunca deben ir en `wrangler.toml`, que es público en el repo.
 
 ---
 

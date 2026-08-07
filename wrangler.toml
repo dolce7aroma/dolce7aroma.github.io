@@ -5,3 +5,17 @@ compatibility_date = "2024-11-01"
 [[kv_namespaces]]
 binding = "ORDERS"
 id = "4618ca47d7094c31acf4b3219c25d7ed"
+
+# Variables NO secretas (texto plano) — deben vivir acá, no solo en el dashboard de
+# Cloudflare. Cada vez que este repo se publica, Cloudflare redespliega el Worker y
+# usa este archivo como la lista completa de "vars" — cualquier variable de texto
+# plano que solo se haya agregado desde el dashboard (y no esté acá) se borra en ese
+# redeploy. Por eso ORDER_EMAIL_TO y TELEGRAM_CHAT_ID desaparecían cada vez que
+# subíamos un cambio al sitio.
+#
+# Los SECRETOS reales (ADMIN_KEY, GITHUB_TOKEN, RESEND_API_KEY, TELEGRAM_BOT_TOKEN)
+# NUNCA deben ir acá — este archivo es público en el repo. Esos se configuran solo
+# desde Cloudflare → Worker → Settings → Variables and Secrets, como "Secreto".
+[vars]
+ORDER_EMAIL_TO = "dolce7aroma@gmail.com"
+TELEGRAM_CHAT_ID = "1237036254"
