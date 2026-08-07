@@ -197,7 +197,7 @@ async function handleSaveCatalog(request, env) {
 }
 
 // Lista blanca de archivos de configuración que el Admin puede publicar (fuera del catálogo/fotos).
-const ALLOWED_CONFIG_FILES = ['data/zonas-envio.json'];
+const ALLOWED_CONFIG_FILES = ['data/zonas-envio.json', 'data/pago.json'];
 
 async function handleSaveConfig(request, env) {
   const body = await request.json().catch(() => null);

@@ -351,6 +351,7 @@
     <button class="btn btn-ghost admin-tab" data-section="resenas">⭐ Reseñas</button>
     <button class="btn btn-ghost admin-tab" data-section="envios">🚚 Envíos</button>
     <button class="btn btn-ghost admin-tab" data-section="pedidos">🧾 Pedidos</button>
+    <button class="btn btn-ghost admin-tab" data-section="pago">💳 Pago</button>
   </div>
 
   <!-- ─────────── DASHBOARD ─────────── -->
@@ -511,6 +512,25 @@
       <button class="btn btn-primary" id="btn-publicar-envios" style="align-self:flex-start">
         <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
         Publicar cambios de envío
+      </button>
+    </div>
+  </section>
+
+  <section class="admin-section" data-section="pago" style="display:none">
+    <div class="page-head">
+      <div>
+        <h1>Datos de <em>pago</em></h1>
+        <p class="sub">Esto es lo que ve el cliente en la pantalla de confirmación al pagar por Yape.</p>
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:14px;padding:24px;max-width:480px;display:flex;flex-direction:column;gap:20px">
+      <div class="field">
+        <label>Nombre a mostrar (igual que en tu Yape)</label>
+        <input type="text" id="pago-nombre-yape" placeholder="Ej. Cesar Fernandez" />
+      </div>
+      <button class="btn btn-primary" id="btn-publicar-pago" style="align-self:flex-start">
+        <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
+        Publicar cambios de pago
       </button>
     </div>
   </section>
@@ -1148,7 +1168,7 @@ function switchSection(section){
     t.classList.toggle('btn-ghost', !active);
     t.classList.toggle('active', active);
   });
-  const labels = {dashboard:'Dashboard', catalogo:'Catálogo', resenas:'Reseñas', envios:'Envíos', pedidos:'Pedidos'};
+  const labels = {dashboard:'Dashboard', catalogo:'Catálogo', resenas:'Reseñas', envios:'Envíos', pedidos:'Pedidos', pago:'Pago'};
   const crumb = document.getElementById('crumb-section');
   if(crumb) crumb.textContent = labels[section] || 'Catálogo';
 }
@@ -1232,11 +1252,13 @@ function editResena(id){
 function bootAdmin(){
   loadResenas();
   loadZonasConfig();
+  loadPagoConfig();
   document.querySelectorAll('.admin-tab').forEach(t => t.addEventListener('click', () => {
     switchSection(t.dataset.section);
     if(t.dataset.section === 'pedidos') loadOrders();
   }));
   document.getElementById('btn-publicar-envios')?.addEventListener('click', publishZonas);
+  document.getElementById('btn-publicar-pago')?.addEventListener('click', publishPago);
   document.getElementById('btn-refresh-pedidos')?.addEventListener('click', loadOrders);
   document.getElementById('btn-new-resena')?.addEventListener('click', () => editResena(null));
   document.getElementById('resenas-tbody')?.addEventListener('click', e => {
@@ -1356,33 +1378,36 @@ async function savePerfume(){
     const saveBtn = $('#btn-save');
     if(saveBtn) saveBtn.disabled = true;
     $('#f-photo-label').textContent = 'Publicando foto…';
-    try{
-      if(API_BASE){
+    if(API_BASE){
+      let res;
+      try{
         const ext = (file.name.match(/\.[^.]+$/) || ['.jpg'])[0];
         const suggestedName = (p.name.replace(/\s+/g, '_') + ext).replace(/[\\/]/g, '-');
         const dataUrl = await fileToBase64(file);
-        const res = await uploadPhotoToWorker(suggestedName, dataUrl);
-        if(res.ok){
-          p.photo = res.path;
-          $('#f-photo-label').textContent = res.path.split('/').pop() + ' · publicada ✓';
-          toast('Foto publicada en el repo');
-        } else {
-          await idbPut(p.id, file);
-          p.photo = 'idb:' + p.id;
-          toast('No se pudo publicar la foto (' + res.error + '). Se guardó solo local.', 'warn');
-        }
-      } else {
-        await idbPut(p.id, file);
-        p.photo = 'idb:' + p.id;
-        toast('Foto guardada localmente. Configura API_BASE para publicarla automáticamente.', 'warn');
+        res = await uploadPhotoToWorker(suggestedName, dataUrl);
+      }catch(err){
+        res = { ok:false, error: err.message };
       }
-    }catch(err){
+      if(res.ok){
+        p.photo = res.path;
+        $('#f-photo-label').textContent = res.path.split('/').pop() + ' · publicada ✓';
+        toast('Foto publicada en el repo');
+        pendingPhotoFile = null;
+      } else {
+        // No guardamos el perfume con una foto a medias: si se publicara el catálogo así,
+        // cualquier visitante vería la foto genérica sin que quede evidencia clara del porqué.
+        // pendingPhotoFile queda intacto para que "Guardar" lo reintente.
+        toast('No se pudo publicar la foto (' + res.error + '). El perfume NO se guardó — reintenta.', 'warn');
+        if(saveBtn) saveBtn.disabled = false;
+        $('#f-photo-label').textContent = file.name + ' (no publicada — reintenta)';
+        return;
+      }
+    } else {
       try{ await idbPut(p.id, file); p.photo = 'idb:' + p.id; }catch(e2){}
-      toast('No se pudo publicar la foto: ' + err.message, 'warn');
-    }finally{
-      if(saveBtn) saveBtn.disabled = false;
+      toast('Foto guardada localmente. Configura API_BASE para publicarla automáticamente.', 'warn');
       pendingPhotoFile = null;
     }
+    if(saveBtn) saveBtn.disabled = false;
   }
 
   const idx = state.perfumes.findIndex(x=>x.id===p.id);
@@ -1710,6 +1735,34 @@ async function publishZonas(){
   }
 }
 
+/* ─── Datos de pago ─── */
+async function loadPagoConfig(){
+  try{
+    const res = await fetch('data/pago.json', {cache:'no-cache'});
+    const data = await res.json();
+    $('#pago-nombre-yape').value = data.nombreYape || '';
+  }catch(e){ console.warn('No se pudo cargar pago.json', e); }
+}
+async function publishPago(){
+  if(!API_BASE){ toast('Configura API_BASE en el código para poder publicar', 'warn'); return; }
+  const key = await getAuthKey();
+  if(!key) return;
+  const config = { schema:{version:1}, nombreYape: $('#pago-nombre-yape').value.trim() };
+  toast('Publicando datos de pago…');
+  try{
+    const res = await fetch(`${API_BASE}/api/save-config`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ key, file: 'data/pago.json', config })
+    });
+    const out = await res.json();
+    if(out.ok) toast('Datos de pago publicados');
+    else toast('No se pudo publicar: ' + out.error, 'warn');
+  }catch(err){
+    toast('No se pudo publicar: ' + err.message, 'warn');
+  }
+}
+
 /* ─── Pedidos ─── */
 const ORDER_STATUS_LABELS = { nuevo:'Nuevo', pagado:'Pagado', en_camino:'En camino', entregado:'Entregado', cancelado:'Cancelado' };
 function escAdmin(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -1776,6 +1829,14 @@ async function updateOrderStatus(orderId, estado){
 }
 async function publishCatalog(){
   if(!API_BASE){ toast('Configura API_BASE en el código para poder publicar', 'warn'); return; }
+  // Nunca publicar fotos que solo existen en este navegador (idb:/data:) — a cualquier
+  // otra persona le saldría la foto genérica sin que tú lo notes.
+  const sinPublicar = state.perfumes.filter(p => p.photo && (p.photo.startsWith('idb:') || p.photo.startsWith('data:')));
+  if(sinPublicar.length){
+    const nombres = sinPublicar.map(p => p.name || p.id).join(', ');
+    const seguir = confirm(`Estos perfumes tienen una foto que NO se publicó al repo (solo existe en este navegador): ${nombres}.\n\nSi continúas, esos perfumes se publicarán con la foto genérica hasta que vuelvas a subirles una foto.\n\n¿Publicar igual?`);
+    if(!seguir) return;
+  }
   const key = await getAuthKey();
   if(!key) return;
   const data = { schema:{version:1}, perfumes: state.perfumes };
