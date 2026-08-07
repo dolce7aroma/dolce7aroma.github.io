@@ -1,10 +1,41 @@
 {
-  "schema": { "version": 2 },
-  "envioGratisMinimo": 150,
+  "schema": {
+    "version": 2
+  },
+  "envioGratisMinimo": 100,
   "zonasGratis": [
-    { "distrito": "San Martín de Porres", "detalle": "Av. Perú y alrededores" },
-    { "distrito": "San Miguel", "detalle": "Zonas específicas — se confirma por WhatsApp" },
-    { "distrito": "", "detalle": "Mercado San Antonio y alrededores" }
+    {
+      "distrito": "San Martín de Porres",
+      "detalle": "Av. Perú y alrededores"
+    },
+    {
+      "distrito": "San Miguel",
+      "detalle": "Zonas específicas — se confirma por WhatsApp"
+    },
+    {
+      "distrito": "Miraflores",
+      "detalle": ""
+    },
+    {
+      "distrito": "Magdalena",
+      "detalle": ""
+    },
+    {
+      "distrito": "Lince",
+      "detalle": ""
+    },
+    {
+      "distrito": "San Isidro",
+      "detalle": ""
+    },
+    {
+      "distrito": "Los Olivos",
+      "detalle": "Zonas específicas — se confirma por WhatsApp"
+    },
+    {
+      "distrito": "Callao",
+      "detalle": "Zonas específicas — se confirma por WhatsApp"
+    }
   ],
-  "notaOtrasZonas": "Se envía por courier (Olva u otro). Te confirmamos el costo exacto por WhatsApp antes de coordinar el envío."
+  "notaOtrasZonas": "Se envía por courier (Olva u otro) el cual obtiene un descuento especial. Te confirmamos el costo exacto por WhatsApp antes de coordinar el envío."
 }
