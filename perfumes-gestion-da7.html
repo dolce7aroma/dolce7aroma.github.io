@@ -87,7 +87,13 @@
   }
 
   /* table */
-  .table-wrap{background:var(--ivory);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+  .table-wrap{background:var(--ivory);border:1px solid var(--rule);border-radius:12px;overflow-x:auto;overflow-y:hidden}
+  .pedidos-table th, .pedidos-table td{padding:20px 20px;font-size:14.5px}
+  .pedidos-table td{line-height:1.6}
+  .pedidos-table .ord-estado{padding:8px 12px;font-size:13px;border-radius:8px;border:1.5px solid var(--rule);background:#fff;font-family:inherit;min-width:140px}
+  .pedidos-table td b{font-family:'JetBrains Mono',monospace;font-size:14px}
+  .pedidos-table tbody tr{cursor:default}
+  .pedidos-table tbody tr:hover{background:transparent}
   table{width:100%;border-collapse:collapse}
   thead th{
     background:var(--lavender-soft);
@@ -501,9 +507,14 @@
         <input type="number" id="env-minimo" min="0" step="1" />
       </div>
       <div class="field">
+        <label>Mensaje estándar (para zonas sin detalle propio)</label>
+        <p class="sub" style="margin:-4px 0 4px">Se muestra cuando el cliente elige un distrito de la lista de abajo que no tiene un "Detalle" personalizado escrito. Si le pones un Detalle a una zona, ese texto reemplaza a este estándar solo para esa zona.</p>
+        <textarea id="env-mensaje-estandar" rows="2" placeholder="¡Felicidades, tu zona tiene envío gratis! Coordinamos la entrega contigo por WhatsApp."></textarea>
+      </div>
+      <div class="field">
         <label>Zonas con envío gratis (una por línea, formato: Distrito | Detalle)</label>
-        <p class="sub" style="margin:-4px 0 4px">El distrito debe escribirse igual que en el listado del formulario (ej. "San Miguel", "San Martín de Porres") para que el cliente vea el mensaje de envío gratis automáticamente al elegir su distrito. Si dejas el distrito vacío, la zona solo aparece en la lista general.</p>
-        <textarea id="env-zonas" rows="6" placeholder="San Martín de Porres | Av. Perú y alrededores&#10;San Miguel | Zonas específicas — se confirma por WhatsApp&#10; | Mercado San Antonio y alrededores"></textarea>
+        <p class="sub" style="margin:-4px 0 4px">El distrito debe escribirse igual que en el listado del formulario (ej. "San Miguel", "San Martín de Porres") para que el cliente vea el mensaje de envío gratis automáticamente al elegir su distrito. Deja el "Detalle" vacío para usar el mensaje estándar de arriba, o escribe uno personalizado para esa zona en particular. Si dejas el distrito vacío, la zona solo aparece en la lista general.</p>
+        <textarea id="env-zonas" rows="6" placeholder="San Martín de Porres | Av. Perú y alrededores&#10;San Miguel | Zonas específicas — se confirma por WhatsApp&#10;Miraflores | "></textarea>
       </div>
       <div class="field">
         <label>Mensaje para el resto de zonas</label>
@@ -550,7 +561,7 @@
       Aún no hay pedidos registrados, o falta enlazar el almacenamiento (KV) en el Worker.
     </div>
     <div class="table-wrap">
-      <table>
+      <table class="pedidos-table">
         <thead>
           <tr>
             <th>Pedido</th>
@@ -1702,6 +1713,7 @@ async function loadZonasConfig(){
     const res = await fetch('data/zonas-envio.json', {cache:'no-cache'});
     const data = await res.json();
     $('#env-minimo').value = data.envioGratisMinimo ?? 150;
+    $('#env-mensaje-estandar').value = data.mensajeEstandarGratis || '';
     $('#env-zonas').value = (data.zonasGratis || []).map(z => `${z.distrito || ''} | ${z.detalle || ''}`).join('\n');
     $('#env-nota').value = data.notaOtrasZonas || '';
   }catch(e){ console.warn('No se pudo cargar zonas-envio.json', e); }
@@ -1713,6 +1725,7 @@ async function publishZonas(){
   const config = {
     schema: {version:2},
     envioGratisMinimo: +$('#env-minimo').value || 0,
+    mensajeEstandarGratis: $('#env-mensaje-estandar').value.trim(),
     zonasGratis: $('#env-zonas').value.split('\n').map(line => {
       const [distrito, ...rest] = line.split('|');
       const detalle = rest.join('|').trim();
