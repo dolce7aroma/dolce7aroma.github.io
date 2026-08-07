@@ -23,6 +23,24 @@
   const GENDER_LABEL = {mujer:'Mujer', hombre:'Hombre', unisex:'Unisex'};
   const ICON_SHARE = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>`;
 
+  // Lima Metropolitana + Callao — para el autocompletado de distrito en el formulario de pedido
+  const LIMA_DISTRITOS = [
+    'Ancón','Ate','Barranco','Breña','Carabayllo','Chaclacayo','Chorrillos','Cieneguilla','Comas',
+    'El Agustino','Independencia','Jesús María','La Molina','La Victoria','Lima (Cercado)','Lince',
+    'Los Olivos','Lurigancho (Chosica)','Lurín','Magdalena del Mar','Miraflores','Pachacámac','Pucusana',
+    'Pueblo Libre','Puente Piedra','Punta Hermosa','Punta Negra','Rímac','San Bartolo','San Borja',
+    'San Isidro','San Juan de Lurigancho','San Juan de Miraflores','San Luis','San Martín de Porres',
+    'San Miguel','Santa Anita','Santa María del Mar','Santa Rosa','Santiago de Surco','Surquillo',
+    'Villa El Salvador','Villa María del Triunfo',
+    'Callao (Cercado)','Bellavista','Carmen de la Legua Reynoso','La Perla','La Punta','Mi Perú','Ventanilla'
+  ];
+  function normText(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim(); }
+  function findZonaMatch(distrito){
+    if(!distrito) return null;
+    const n = normText(distrito);
+    return (zonas.zonasGratis||[]).find(z => z.distrito && normText(z.distrito) === n) || null;
+  }
+
   let catalog = [];
   let cart = [];   // [{id, ml, qty}]
   let zonas = { envioGratisMinimo: 150, zonasGratis: [], notaOtrasZonas: '' };
@@ -299,8 +317,17 @@
       .da-order-form input:focus{outline:none;border-color:#a8895a}
       .da-zonas-info{background:#efe9e0;border-radius:12px;padding:14px 16px;font-size:12.5px;color:#5d4c70;line-height:1.6}
       .da-zonas-info .da-zonas-title{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3c2f47;font-weight:600;margin-bottom:6px}
+      .da-zonas-info .da-zonas-match{color:#3c8f5a}
       .da-zonas-info ul{margin:0 0 8px;padding-left:18px}
       .da-zonas-info p{margin:0;font-style:italic}
+      .da-distrito-field{position:relative}
+      .da-autocomplete{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;overflow:hidden;z-index:5;box-shadow:0 14px 30px -10px rgba(0,0,0,0.25);max-height:220px;overflow-y:auto}
+      .da-autocomplete.open{display:block}
+      .da-ac-item{display:block;width:100%;text-align:left;background:#fff;border:0;border-bottom:1px solid rgba(60,47,71,0.08);padding:10px 14px;font-size:13px;color:#3c2f47;cursor:pointer;font-family:inherit;text-transform:none;letter-spacing:normal}
+      .da-ac-item:last-child{border-bottom:0}
+      .da-ac-item:hover{background:#f6e9d8}
+      .da-hint-back{background:none;border:0;padding:0;color:#a8895a;text-decoration:underline;cursor:pointer;font-size:12.5px;font-family:inherit}
+      .da-confirm-id{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#a8895a;font-weight:600;margin-top:-6px}
 
       .da-confirm{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:6px 4px 20px}
       .da-confirm-check{width:56px;height:56px;border-radius:50%;background:#a8895a;color:#fff;display:grid;place-items:center;font-size:26px;margin-bottom:4px}
@@ -608,8 +635,9 @@
         <label>Teléfono / WhatsApp
           <input type="tel" id="of-telefono" required value="${escapeHtml(orderForm.telefono)}" placeholder="Ej. 987 654 321"/>
         </label>
-        <label>Distrito
-          <input type="text" id="of-distrito" required value="${escapeHtml(orderForm.distrito)}" placeholder="Ej. San Miguel"/>
+        <label class="da-distrito-field">Distrito
+          <input type="text" id="of-distrito" required autocomplete="off" value="${escapeHtml(orderForm.distrito)}" placeholder="Escribe para buscar tu distrito"/>
+          <div class="da-autocomplete" id="of-distrito-list"></div>
         </label>
         <label>Dirección
           <input type="text" id="of-direccion" required value="${escapeHtml(orderForm.direccion)}" placeholder="Calle, número, referencia de edificio"/>
@@ -617,27 +645,93 @@
         <label>Referencia (opcional)
           <input type="text" id="of-referencia" value="${escapeHtml(orderForm.referencia)}" placeholder="Ej. cerca al parque, casa azul"/>
         </label>
-        <div class="da-zonas-info">
-          <div class="da-zonas-title">🚚 Envío gratis${zonas.envioGratisMinimo ? ` desde S/ ${zonas.envioGratisMinimo}` : ''}</div>
-          ${zonas.zonasGratis?.length ? `<ul>${zonas.zonasGratis.map(z=>`<li>${escapeHtml(z)}</li>`).join('')}</ul>` : ''}
-          ${zonas.notaOtrasZonas ? `<p>${escapeHtml(zonas.notaOtrasZonas)}</p>` : ''}
-        </div>
+        <div class="da-zonas-info" id="da-zonas-info"></div>
         <button type="submit" class="da-btn da-btn-primary" style="width:100%" id="da-form-submit">Continuar</button>
       </form>
     `;
+    renderZonasInfo(orderForm.distrito);
+    const missedOfferHtml = renderMissedOfferHint(offers);
     foot.innerHTML = `
       <div class="da-totals">
         <div class="da-line da-line-total"><span>Total del pedido</span><b>S/ ${offers.total}</b></div>
       </div>
+      ${missedOfferHtml}
     `;
     document.getElementById('da-form-back').addEventListener('click', ()=>{
       checkoutStep = 'cart';
       renderCart();
     });
-    ['nombre','telefono','distrito','direccion','referencia'].forEach(f=>{
+    document.getElementById('da-hint-back')?.addEventListener('click', ()=>{
+      checkoutStep = 'cart';
+      renderCart();
+    });
+    ['nombre','telefono','direccion','referencia'].forEach(f=>{
       document.getElementById('of-'+f).addEventListener('input', e=>{ orderForm[f] = e.target.value; });
     });
+    wireDistritoAutocomplete();
     document.getElementById('da-order-form').addEventListener('submit', onSubmitOrderForm);
+  }
+
+  // Sugerencias de distrito mientras el usuario escribe (tipo M → todos los distritos con M)
+  function wireDistritoAutocomplete(){
+    const input = document.getElementById('of-distrito');
+    const list = document.getElementById('of-distrito-list');
+    function closeList(){ list.innerHTML=''; list.classList.remove('open'); }
+    function openList(matches){
+      list.innerHTML = matches.map(d => `<button type="button" class="da-ac-item" data-d="${escapeHtml(d)}">${escapeHtml(d)}</button>`).join('');
+      list.classList.toggle('open', matches.length>0);
+    }
+    input.addEventListener('input', ()=>{
+      orderForm.distrito = input.value;
+      const q = normText(input.value);
+      if(!q){ closeList(); renderZonasInfo(''); return; }
+      const matches = LIMA_DISTRITOS.filter(d => normText(d).includes(q)).slice(0,8);
+      openList(matches);
+      renderZonasInfo(input.value);
+    });
+    input.addEventListener('focus', ()=>{ if(input.value) input.dispatchEvent(new Event('input')); });
+    list.addEventListener('click', e=>{
+      const b = e.target.closest('.da-ac-item');
+      if(!b) return;
+      input.value = b.dataset.d;
+      orderForm.distrito = b.dataset.d;
+      closeList();
+      renderZonasInfo(input.value);
+    });
+    document.addEventListener('click', e=>{
+      if(!e.target.closest('.da-distrito-field')) closeList();
+    }, { once:true });
+  }
+
+  // Info de envío: general por defecto, o específica en cuanto el distrito coincide con una zona gratis
+  function renderZonasInfo(distrito){
+    const box = document.getElementById('da-zonas-info');
+    if(!box) return;
+    const match = findZonaMatch(distrito);
+    if(match){
+      box.innerHTML = `
+        <div class="da-zonas-title da-zonas-match">🎉 ¡Envío gratis a ${escapeHtml(match.distrito)}!</div>
+        <p>${escapeHtml(match.detalle)}</p>
+      `;
+      return;
+    }
+    box.innerHTML = `
+      <div class="da-zonas-title">🚚 Envío gratis${zonas.envioGratisMinimo ? ` desde S/ ${zonas.envioGratisMinimo}` : ''}</div>
+      ${zonas.zonasGratis?.length ? `<ul>${zonas.zonasGratis.map(z=>`<li>${escapeHtml(z.distrito ? z.distrito+' — ' : '')}${escapeHtml(z.detalle)}</li>`).join('')}</ul>` : ''}
+      ${zonas.notaOtrasZonas ? `<p>${escapeHtml(zonas.notaOtrasZonas)}</p>` : ''}
+    `;
+  }
+
+  // Recuerda al cliente, en el paso de pago, si le falta poco para un descuento aún sin aprovechar
+  function renderMissedOfferHint(offers){
+    if(!offers.progress.length) return '';
+    const p = offers.progress[0];
+    const msg = p.kind === 'upgrade'
+      ? `Sumá 1 más de ${p.ml} ml antes de confirmar y tu ahorro sube a S/ ${p.total}`
+      : `Te falta${p.missing===1?'':'n'} ${p.missing} más de ${p.ml} ml para ahorrar S/ ${p.total}`;
+    return `<div class="da-trio-hint" style="margin-bottom:14px">
+      <div class="da-trio-row"><span class="l">${p.label}</span><span class="r">${msg} — <button type="button" class="da-hint-back" id="da-hint-back">volver a la bolsa</button></span></div>
+    </div>`;
   }
 
   async function onSubmitOrderForm(e){
@@ -668,7 +762,7 @@
       });
       const data = await r.json().catch(()=>({ok:false}));
       if(!r.ok || !data.ok) throw new Error(data.error || 'No se pudo registrar el pedido');
-      lastOrder = { nombre, telefono, distrito, direccion, referencia, items, subtotal: offers.subtotal, total: offers.total };
+      lastOrder = { orderId: data.orderId || null, nombre, telefono, distrito, direccion, referencia, items, subtotal: offers.subtotal, total: offers.total };
       checkoutStep = 'confirm';
       renderCart();
     }catch(err){
@@ -680,18 +774,20 @@
   // ─── Paso 3: confirmación + pago ───
   function renderCheckoutConfirm(list, foot){
     if(!lastOrder){ checkoutStep = 'cart'; return renderCart(); }
-    const waMsg = 'Buenos días, estoy realizando el pago de mi pedido, adjunto la constancia 🧾';
+    const orderTag = lastOrder.orderId ? ` #${lastOrder.orderId}` : '';
+    const waMsg = `Buenos días, soy ${lastOrder.nombre}. Estoy realizando el pago de mi pedido${orderTag}, adjunto la constancia 🧾`;
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
     list.innerHTML = `
       <div class="da-confirm">
         <div class="da-confirm-check">✓</div>
         <h4>¡Pedido registrado!</h4>
+        ${lastOrder.orderId ? `<div class="da-confirm-id">Pedido #${lastOrder.orderId}</div>` : ''}
         <p>Guardamos tu pedido y ya nos llegó la notificación. Elige cómo quieres pagar para coordinar tu entrega:</p>
 
         <div class="da-pay-card">
-          <div class="da-pay-title">Yape / Plin</div>
+          <div class="da-pay-title">Yape</div>
           <img src="assets/pago-yape.jpg" alt="Código QR para pagar por Yape" class="da-pay-qr"/>
-          <div class="da-pay-name">Cesar Junior Fernandez Huancas</div>
+          <div class="da-pay-name">Cesar Fernandez</div>
           <a class="da-btn da-btn-wa" style="width:100%" href="${waUrl}" target="_blank" rel="noopener" id="da-pay-wa">
             Ya pagué, avisar por WhatsApp
           </a>
@@ -700,7 +796,7 @@
 
         <div class="da-pay-card da-pay-soon">
           <div class="da-pay-title">Tarjeta de crédito / débito</div>
-          <p class="da-pay-note">Próximamente 🚧 — por ahora paga con Yape/Plin o coordina con nosotros por WhatsApp.</p>
+          <p class="da-pay-note">Próximamente 🚧 — por ahora paga con Yape o coordina con nosotros por WhatsApp.</p>
         </div>
 
         <button class="da-btn da-btn-ghost" style="width:100%;margin-top:6px" id="da-confirm-close">Seguir comprando</button>

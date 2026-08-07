@@ -350,6 +350,7 @@
     <button class="btn btn-ghost admin-tab" data-section="catalogo">📚 Catálogo</button>
     <button class="btn btn-ghost admin-tab" data-section="resenas">⭐ Reseñas</button>
     <button class="btn btn-ghost admin-tab" data-section="envios">🚚 Envíos</button>
+    <button class="btn btn-ghost admin-tab" data-section="pedidos">🧾 Pedidos</button>
   </div>
 
   <!-- ─────────── DASHBOARD ─────────── -->
@@ -499,8 +500,9 @@
         <input type="number" id="env-minimo" min="0" step="1" />
       </div>
       <div class="field">
-        <label>Zonas con envío gratis (una por línea)</label>
-        <textarea id="env-zonas" rows="6" placeholder="Av. Perú (SMP)&#10;San Miguel (zonas específicas)&#10;Mercado San Antonio y alrededores"></textarea>
+        <label>Zonas con envío gratis (una por línea, formato: Distrito | Detalle)</label>
+        <p class="sub" style="margin:-4px 0 4px">El distrito debe escribirse igual que en el listado del formulario (ej. "San Miguel", "San Martín de Porres") para que el cliente vea el mensaje de envío gratis automáticamente al elegir su distrito. Si dejas el distrito vacío, la zona solo aparece en la lista general.</p>
+        <textarea id="env-zonas" rows="6" placeholder="San Martín de Porres | Av. Perú y alrededores&#10;San Miguel | Zonas específicas — se confirma por WhatsApp&#10; | Mercado San Antonio y alrededores"></textarea>
       </div>
       <div class="field">
         <label>Mensaje para el resto de zonas</label>
@@ -510,6 +512,38 @@
         <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
         Publicar cambios de envío
       </button>
+    </div>
+  </section>
+
+  <section class="admin-section" data-section="pedidos" style="display:none">
+    <div class="page-head">
+      <div>
+        <h1>Pedidos de <em>clientes</em></h1>
+        <p class="sub">Pedidos hechos desde el formulario de la bolsa. Actualiza el estado a medida que confirmas el pago y coordinas la entrega.</p>
+      </div>
+      <button class="btn btn-ghost" id="btn-refresh-pedidos">
+        <svg viewBox="0 0 24 24"><path d="M4 4v6h6M20 20v-6h-6M4.5 15a8 8 0 0014.9 2.5M19.5 9A8 8 0 004.6 6.5"/></svg>
+        Actualizar
+      </button>
+    </div>
+    <div id="pedidos-empty" style="display:none;background:#fff;border-radius:14px;padding:32px;text-align:center;color:var(--muted)">
+      Aún no hay pedidos registrados, o falta enlazar el almacenamiento (KV) en el Worker.
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Pedido</th>
+            <th>Cliente</th>
+            <th>Distrito</th>
+            <th>Productos</th>
+            <th style="text-align:right">Total</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody id="pedidos-tbody"></tbody>
+      </table>
     </div>
   </section>
 
@@ -1114,7 +1148,7 @@ function switchSection(section){
     t.classList.toggle('btn-ghost', !active);
     t.classList.toggle('active', active);
   });
-  const labels = {dashboard:'Dashboard', catalogo:'Catálogo', resenas:'Reseñas', envios:'Envíos'};
+  const labels = {dashboard:'Dashboard', catalogo:'Catálogo', resenas:'Reseñas', envios:'Envíos', pedidos:'Pedidos'};
   const crumb = document.getElementById('crumb-section');
   if(crumb) crumb.textContent = labels[section] || 'Catálogo';
 }
@@ -1198,8 +1232,12 @@ function editResena(id){
 function bootAdmin(){
   loadResenas();
   loadZonasConfig();
-  document.querySelectorAll('.admin-tab').forEach(t => t.addEventListener('click', () => switchSection(t.dataset.section)));
+  document.querySelectorAll('.admin-tab').forEach(t => t.addEventListener('click', () => {
+    switchSection(t.dataset.section);
+    if(t.dataset.section === 'pedidos') loadOrders();
+  }));
   document.getElementById('btn-publicar-envios')?.addEventListener('click', publishZonas);
+  document.getElementById('btn-refresh-pedidos')?.addEventListener('click', loadOrders);
   document.getElementById('btn-new-resena')?.addEventListener('click', () => editResena(null));
   document.getElementById('resenas-tbody')?.addEventListener('click', e => {
     const tr = e.target.closest('tr[data-rid]'); if(!tr) return;
@@ -1639,7 +1677,7 @@ async function loadZonasConfig(){
     const res = await fetch('data/zonas-envio.json', {cache:'no-cache'});
     const data = await res.json();
     $('#env-minimo').value = data.envioGratisMinimo ?? 150;
-    $('#env-zonas').value = (data.zonasGratis || []).join('\n');
+    $('#env-zonas').value = (data.zonasGratis || []).map(z => `${z.distrito || ''} | ${z.detalle || ''}`).join('\n');
     $('#env-nota').value = data.notaOtrasZonas || '';
   }catch(e){ console.warn('No se pudo cargar zonas-envio.json', e); }
 }
@@ -1648,9 +1686,13 @@ async function publishZonas(){
   const key = await getAuthKey();
   if(!key) return;
   const config = {
-    schema: {version:1},
+    schema: {version:2},
     envioGratisMinimo: +$('#env-minimo').value || 0,
-    zonasGratis: $('#env-zonas').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    zonasGratis: $('#env-zonas').value.split('\n').map(line => {
+      const [distrito, ...rest] = line.split('|');
+      const detalle = rest.join('|').trim();
+      return { distrito: (distrito||'').trim(), detalle };
+    }).filter(z => z.distrito || z.detalle),
     notaOtrasZonas: $('#env-nota').value.trim()
   };
   toast('Publicando zonas de envío…');
@@ -1665,6 +1707,71 @@ async function publishZonas(){
     else toast('No se pudo publicar: ' + out.error, 'warn');
   }catch(err){
     toast('No se pudo publicar: ' + err.message, 'warn');
+  }
+}
+
+/* ─── Pedidos ─── */
+const ORDER_STATUS_LABELS = { nuevo:'Nuevo', pagado:'Pagado', en_camino:'En camino', entregado:'Entregado', cancelado:'Cancelado' };
+function escAdmin(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+async function loadOrders(){
+  if(!API_BASE){ toast('Configura API_BASE en el código para poder ver pedidos', 'warn'); return; }
+  const key = await getAuthKey();
+  if(!key) return;
+  try{
+    const res = await fetch(`${API_BASE}/api/list-orders`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ key })
+    });
+    const out = await res.json();
+    if(!out.ok){
+      $('#pedidos-tbody').innerHTML = '';
+      $('#pedidos-empty').style.display = '';
+      $('#pedidos-empty').textContent = out.error || 'No se pudo cargar los pedidos.';
+      return;
+    }
+    renderOrders(out.orders || []);
+  }catch(err){
+    toast('No se pudo cargar pedidos: ' + err.message, 'warn');
+  }
+}
+function renderOrders(orders){
+  const tbody = $('#pedidos-tbody');
+  const empty = $('#pedidos-empty');
+  if(!orders.length){
+    tbody.innerHTML = '';
+    empty.style.display = '';
+    empty.textContent = 'Aún no hay pedidos registrados.';
+    return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = orders.map(o => {
+    const productos = (o.items||[]).map(it => `${it.name} (${it.ml}ml) x${it.qty}`).join(', ');
+    const fecha = o.creadoEn ? new Date(o.creadoEn).toLocaleString('es-PE', {dateStyle:'short', timeStyle:'short'}) : '-';
+    return `<tr>
+      <td><b>#${escAdmin(o.id)}</b></td>
+      <td>${escAdmin(o.nombre)}<br><span style="color:var(--muted);font-size:12px">${escAdmin(o.telefono)}</span></td>
+      <td>${escAdmin(o.distrito)}</td>
+      <td style="max-width:260px">${escAdmin(productos)}</td>
+      <td style="text-align:right">S/ ${o.total}</td>
+      <td><select class="ord-estado" data-id="${escAdmin(o.id)}">
+        ${Object.entries(ORDER_STATUS_LABELS).map(([v,l])=>`<option value="${v}" ${o.estado===v?'selected':''}>${l}</option>`).join('')}
+      </select></td>
+      <td style="font-size:12px;color:var(--muted)">${fecha}</td>
+    </tr>`;
+  }).join('');
+  tbody.querySelectorAll('.ord-estado').forEach(sel => sel.addEventListener('change', () => updateOrderStatus(sel.dataset.id, sel.value)));
+}
+async function updateOrderStatus(orderId, estado){
+  const key = await getAuthKey();
+  if(!key) return;
+  try{
+    const res = await fetch(`${API_BASE}/api/update-order-status`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ key, orderId, estado })
+    });
+    const out = await res.json();
+    if(out.ok) toast('Estado actualizado');
+    else toast('No se pudo actualizar: ' + out.error, 'warn');
+  }catch(err){
+    toast('No se pudo actualizar: ' + err.message, 'warn');
   }
 }
 async function publishCatalog(){

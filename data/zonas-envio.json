@@ -1,10 +1,10 @@
 {
-  "schema": { "version": 1 },
+  "schema": { "version": 2 },
   "envioGratisMinimo": 150,
   "zonasGratis": [
-    "Av. Perú (SMP)",
-    "San Miguel (zonas específicas)",
-    "Mercado San Antonio y alrededores"
+    { "distrito": "San Martín de Porres", "detalle": "Av. Perú y alrededores" },
+    { "distrito": "San Miguel", "detalle": "Zonas específicas — se confirma por WhatsApp" },
+    { "distrito": "", "detalle": "Mercado San Antonio y alrededores" }
   ],
   "notaOtrasZonas": "Se envía por courier (Olva u otro). Te confirmamos el costo exacto por WhatsApp antes de coordinar el envío."
 }
