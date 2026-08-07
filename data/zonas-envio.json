@@ -3,6 +3,7 @@
     "version": 2
   },
   "envioGratisMinimo": 100,
+  "mensajeEstandarGratis": "¡Felicidades, tu zona tiene envío gratis! Coordinamos la entrega contigo por WhatsApp.",
   "zonasGratis": [
     {
       "distrito": "San Martín de Porres",

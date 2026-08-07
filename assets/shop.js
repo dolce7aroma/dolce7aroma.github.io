@@ -44,7 +44,7 @@
 
   let catalog = [];
   let cart = [];   // [{id, ml, qty}]
-  let zonas = { envioGratisMinimo: 150, zonasGratis: [], notaOtrasZonas: '' };
+  let zonas = { envioGratisMinimo: 150, zonasGratis: [], notaOtrasZonas: '', mensajeEstandarGratis: '¡Felicidades, tu zona tiene envío gratis!' };
   let pago = { nombreYape: 'Cesar Fernandez' };
   let checkoutStep = 'cart'; // 'cart' | 'form' | 'confirm'
   let lastOrder = null; // datos del último pedido confirmado (para el paso de pago)
@@ -56,7 +56,7 @@
       const r = await fetch(ZONAS_URL, {cache:'no-cache'});
       if(r.ok){
         const j = await r.json();
-        zonas = Object.assign({ envioGratisMinimo:150, zonasGratis:[], notaOtrasZonas:'' }, j);
+        zonas = Object.assign({ envioGratisMinimo:150, zonasGratis:[], notaOtrasZonas:'', mensajeEstandarGratis:'¡Felicidades, tu zona tiene envío gratis!' }, j);
       }
     }catch(e){ /* se mantienen los valores por defecto */ }
   }
@@ -351,7 +351,9 @@
       .da-ac-item{display:block;width:100%;text-align:left;background:#fff;border:0;border-bottom:1px solid rgba(60,47,71,0.08);padding:10px 14px;font-size:13px;color:#3c2f47;cursor:pointer;font-family:inherit;text-transform:none;letter-spacing:normal}
       .da-ac-item:last-child{border-bottom:0}
       .da-ac-item:hover{background:#f6e9d8}
-      .da-hint-back{background:none;border:0;padding:0;color:#a8895a;text-decoration:underline;cursor:pointer;font-size:12.5px;font-family:inherit}
+      .da-hint-back{background:none;border:0;padding:0;color:#a8895a;text-decoration:underline;cursor:pointer;font-size:12.5px;font-family:inherit;margin-top:6px;display:inline-block}
+      .da-hint-headline{font-family:'Cormorant Garamond',serif;font-size:22px;color:#3c2f47;font-weight:500;margin-bottom:4px;line-height:1.25}
+      .da-hint-headline b{font-size:28px;color:#a8895a;font-weight:600}
       .da-confirm-id{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#a8895a;font-weight:600;margin-top:-6px}
 
       .da-confirm{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:6px 4px 20px}
@@ -734,9 +736,10 @@
     if(!box) return;
     const match = findZonaMatch(distrito);
     if(match){
+      const mensaje = match.detalle || zonas.mensajeEstandarGratis || '';
       box.innerHTML = `
         <div class="da-zonas-title da-zonas-match">🎉 ¡Envío gratis a ${escapeHtml(match.distrito)}!</div>
-        ${match.detalle ? `<p>${escapeHtml(match.detalle)}</p>` : ''}
+        ${mensaje ? `<p>${escapeHtml(mensaje)}</p>` : ''}
       `;
       return;
     }
@@ -755,15 +758,12 @@
     if(p.missing !== 1) return ''; // solo mostramos la proyección cuando falta exactamente 1 (dato confiable)
     const addPrice = cheapestPriceForMl(p.ml);
     const projected = computeOffers({ ml: p.ml, price: addPrice });
-    const aunqueSube = p.kind === 'upgrade'
-      ? `tu ahorro sube de S/ ${p.amount} a S/ ${p.total}`
-      : `activas ${p.label} y ahorras S/ ${p.total}`;
     return `<div class="da-trio-hint" style="margin-bottom:14px">
+      <div class="da-hint-headline">🎉 Ahorra <b>S/ ${p.total}</b> con ${p.label}</div>
       <div class="da-trio-row">
-        <span class="l">${p.label}</span>
-        <span class="r">Sumá 1 más de ${p.ml} ml (desde S/ ${addPrice}) y ${aunqueSube} — tu pedido pasaría de <b>S/ ${offers.total}</b> a <b>S/ ${projected.total}</b>.
-        <br>— <button type="button" class="da-hint-back" id="da-hint-back">volver a la bolsa</button></span>
+        <span class="r">Sumá 1 más de ${p.ml} ml (desde S/ ${addPrice}) para activarlo — tu pedido pasaría de S/ ${offers.total} a S/ ${projected.total}.</span>
       </div>
+      <button type="button" class="da-hint-back" id="da-hint-back">volver a la bolsa</button>
     </div>`;
   }
 
