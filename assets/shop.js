@@ -12,9 +12,11 @@
 (function(){
   const WHATSAPP_NUMBER = '51930122014'; // +51 930 122 014
   const EMAIL = 'Dolce7aroma@gmail.com';
+  const ORDER_API_BASE = 'https://dolce7aroma-github-io.cesarfernandezh7.workers.dev';
   const STORAGE_CATALOG = 'dolce-aroma-perfumes-v1'; // (compat: edits del admin)
   const STORAGE_CART    = 'dolce-aroma-cart-v1';
   const CATALOG_URLS    = ['data/productos.json', 'data/perfumes.json'];
+  const ZONAS_URL       = 'data/zonas-envio.json';
 
   const FAMILY_LABEL = {floral:'Floral', oriental:'Oriental', amaderado:'Amaderado', citrico:'Cítrico', chipre:'Chipre', aromatico:'Aromático', frutal:'Frutal'};
   const TAG_LABEL    = {'mas-vendido':'Más vendido','nuevo':'Nuevo','edicion-limitada':'Edición limitada','agotado':'Agotado'};
@@ -23,6 +25,21 @@
 
   let catalog = [];
   let cart = [];   // [{id, ml, qty}]
+  let zonas = { envioGratisMinimo: 150, zonasGratis: [], notaOtrasZonas: '' };
+  let checkoutStep = 'cart'; // 'cart' | 'form' | 'confirm'
+  let lastOrder = null; // datos del último pedido confirmado (para el paso de pago)
+  let orderForm = { nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
+
+  // ─── Zonas de envío (editable desde el Admin) ───
+  async function loadZonas(){
+    try{
+      const r = await fetch(ZONAS_URL, {cache:'no-cache'});
+      if(r.ok){
+        const j = await r.json();
+        zonas = Object.assign({ envioGratisMinimo:150, zonasGratis:[], notaOtrasZonas:'' }, j);
+      }
+    }catch(e){ /* se mantienen los valores por defecto */ }
+  }
 
   // ─── Carga catálogo ───
   async function loadCatalog(){
@@ -272,6 +289,30 @@
       .da-wa-fallback button{background:none;border:0;padding:0;color:#a8895a;text-decoration:underline;cursor:pointer;font-size:11px;font-family:inherit}
       .da-wa-fallback button:hover{color:#8f7449}
 
+      .da-checkout-head{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+      .da-back{align-self:flex-start;background:none;border:0;padding:0;color:#a8895a;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer}
+      .da-back:hover{color:#8f7449}
+      .da-checkout-head h4{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:24px;color:#3c2f47;margin:0}
+      .da-order-form{display:flex;flex-direction:column;gap:14px}
+      .da-order-form label{display:flex;flex-direction:column;gap:6px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#5d4c70}
+      .da-order-form input{border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;color:#3c2f47;background:#fff}
+      .da-order-form input:focus{outline:none;border-color:#a8895a}
+      .da-zonas-info{background:#efe9e0;border-radius:12px;padding:14px 16px;font-size:12.5px;color:#5d4c70;line-height:1.6}
+      .da-zonas-info .da-zonas-title{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3c2f47;font-weight:600;margin-bottom:6px}
+      .da-zonas-info ul{margin:0 0 8px;padding-left:18px}
+      .da-zonas-info p{margin:0;font-style:italic}
+
+      .da-confirm{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:6px 4px 20px}
+      .da-confirm-check{width:56px;height:56px;border-radius:50%;background:#a8895a;color:#fff;display:grid;place-items:center;font-size:26px;margin-bottom:4px}
+      .da-confirm h4{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:26px;color:#3c2f47;margin:0}
+      .da-confirm > p{font-size:13px;color:#5d4c70;line-height:1.6;margin:0 0 10px}
+      .da-pay-card{width:100%;background:#fff;border:1.5px solid rgba(60,47,71,0.12);border-radius:14px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:14px;box-sizing:border-box}
+      .da-pay-title{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#3c2f47;font-weight:600}
+      .da-pay-qr{width:100%;max-width:220px;border-radius:10px;border:1px solid rgba(60,47,71,0.1)}
+      .da-pay-name{font-family:'Cormorant Garamond',serif;font-size:18px;color:#3c2f47}
+      .da-pay-note{font-size:11.5px;color:#5d4c70;line-height:1.5;margin:0}
+      .da-pay-soon{opacity:.6}
+
       .da-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:#3c2f47;color:#f6f4ef;padding:14px 24px;border-radius:999px;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;z-index:200;transition:transform .3s cubic-bezier(.2,.7,.2,1);box-shadow:0 14px 40px -10px rgba(0,0,0,0.4)}
       .da-toast.show{transform:translateX(-50%) translateY(0)}
 
@@ -462,6 +503,11 @@
   function renderCart(){
     const list = document.getElementById('da-cart-list');
     const foot = document.getElementById('da-cart-foot');
+    if(checkoutStep === 'form') return renderCheckoutForm(list, foot);
+    if(checkoutStep === 'confirm') return renderCheckoutConfirm(list, foot);
+    return renderCartStep(list, foot);
+  }
+  function renderCartStep(list, foot){
     if(cart.length === 0){
       list.innerHTML = `<div class="da-cart-empty">
         <div class="icon">🛍️</div>
@@ -534,22 +580,138 @@
       </div>
       ${progressHtml}
       ${keepShoppingHtml}
-      <button class="da-btn da-btn-wa" style="width:100%" id="da-checkout">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9s-.5-.1-.6.1-.7.9-.9 1.1-.3.2-.6.1c-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5-.6-1.4-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.2 0 1.3 1 2.6 1.1 2.8.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.2-.2-.5-.3zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.3c1.4.8 3.1 1.3 4.8 1.3 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
-        Hacer pedido por WhatsApp
-      </button>
-      ${waFallbackHtml('da-cart')}
+      <button class="da-btn da-btn-primary" style="width:100%" id="da-checkout">Continuar con el pedido</button>
       <button class="da-btn da-btn-ghost" style="width:100%;margin-top:8px" id="da-clear">Vaciar bolsa</button>
     `;
     document.getElementById('da-checkout').addEventListener('click', ()=>{
-      const msg = buildWhatsAppMessage(cart, false);
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+      checkoutStep = 'form';
+      renderCart();
     });
     document.getElementById('da-clear').addEventListener('click', ()=>{
       if(confirm('¿Vaciar la bolsa?')){ cart=[]; saveCart(); renderCart(); }
     });
     document.getElementById('da-keep-shopping')?.addEventListener('click', closeCart);
-    wireWaFallback('da-cart', () => cart, false);
+  }
+
+  // ─── Paso 2: formulario de datos de entrega ───
+  function renderCheckoutForm(list, foot){
+    const offers = computeOffers();
+    list.innerHTML = `
+      <div class="da-checkout-head">
+        <button class="da-back" type="button" id="da-form-back">← Volver a la bolsa</button>
+        <h4>Tus datos de entrega</h4>
+      </div>
+      <form id="da-order-form" class="da-order-form" novalidate>
+        <label>Nombre completo
+          <input type="text" id="of-nombre" required value="${escapeHtml(orderForm.nombre)}" placeholder="Ej. María Torres"/>
+        </label>
+        <label>Teléfono / WhatsApp
+          <input type="tel" id="of-telefono" required value="${escapeHtml(orderForm.telefono)}" placeholder="Ej. 987 654 321"/>
+        </label>
+        <label>Distrito
+          <input type="text" id="of-distrito" required value="${escapeHtml(orderForm.distrito)}" placeholder="Ej. San Miguel"/>
+        </label>
+        <label>Dirección
+          <input type="text" id="of-direccion" required value="${escapeHtml(orderForm.direccion)}" placeholder="Calle, número, referencia de edificio"/>
+        </label>
+        <label>Referencia (opcional)
+          <input type="text" id="of-referencia" value="${escapeHtml(orderForm.referencia)}" placeholder="Ej. cerca al parque, casa azul"/>
+        </label>
+        <div class="da-zonas-info">
+          <div class="da-zonas-title">🚚 Envío gratis${zonas.envioGratisMinimo ? ` desde S/ ${zonas.envioGratisMinimo}` : ''}</div>
+          ${zonas.zonasGratis?.length ? `<ul>${zonas.zonasGratis.map(z=>`<li>${escapeHtml(z)}</li>`).join('')}</ul>` : ''}
+          ${zonas.notaOtrasZonas ? `<p>${escapeHtml(zonas.notaOtrasZonas)}</p>` : ''}
+        </div>
+        <button type="submit" class="da-btn da-btn-primary" style="width:100%" id="da-form-submit">Continuar</button>
+      </form>
+    `;
+    foot.innerHTML = `
+      <div class="da-totals">
+        <div class="da-line da-line-total"><span>Total del pedido</span><b>S/ ${offers.total}</b></div>
+      </div>
+    `;
+    document.getElementById('da-form-back').addEventListener('click', ()=>{
+      checkoutStep = 'cart';
+      renderCart();
+    });
+    ['nombre','telefono','distrito','direccion','referencia'].forEach(f=>{
+      document.getElementById('of-'+f).addEventListener('input', e=>{ orderForm[f] = e.target.value; });
+    });
+    document.getElementById('da-order-form').addEventListener('submit', onSubmitOrderForm);
+  }
+
+  async function onSubmitOrderForm(e){
+    e.preventDefault();
+    const nombre = document.getElementById('of-nombre').value.trim();
+    const telefono = document.getElementById('of-telefono').value.trim();
+    const distrito = document.getElementById('of-distrito').value.trim();
+    const direccion = document.getElementById('of-direccion').value.trim();
+    const referencia = document.getElementById('of-referencia').value.trim();
+    if(!nombre || !telefono || !distrito || !direccion){
+      showToast('Completa los campos obligatorios');
+      return;
+    }
+    orderForm = { nombre, telefono, distrito, direccion, referencia };
+    const offers = computeOffers();
+    const items = cart.map(it=>{
+      const p = catalog.find(x=>x.id===it.id);
+      const sz = p?.sizes?.find(s=>s.ml===it.ml);
+      return { name: p?.name || it.id, ml: it.ml, qty: it.qty, subtotal: (sz?.price||0)*it.qty };
+    });
+    const btn = document.getElementById('da-form-submit');
+    btn.disabled = true; btn.textContent = 'Enviando...';
+    try{
+      const r = await fetch(`${ORDER_API_BASE}/api/submit-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, telefono, distrito, direccion, referencia, items, subtotal: offers.subtotal, total: offers.total })
+      });
+      const data = await r.json().catch(()=>({ok:false}));
+      if(!r.ok || !data.ok) throw new Error(data.error || 'No se pudo registrar el pedido');
+      lastOrder = { nombre, telefono, distrito, direccion, referencia, items, subtotal: offers.subtotal, total: offers.total };
+      checkoutStep = 'confirm';
+      renderCart();
+    }catch(err){
+      showToast('No se pudo enviar el pedido. Intenta de nuevo.');
+      btn.disabled = false; btn.textContent = 'Continuar';
+    }
+  }
+
+  // ─── Paso 3: confirmación + pago ───
+  function renderCheckoutConfirm(list, foot){
+    if(!lastOrder){ checkoutStep = 'cart'; return renderCart(); }
+    const waMsg = 'Buenos días, estoy realizando el pago de mi pedido, adjunto la constancia 🧾';
+    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
+    list.innerHTML = `
+      <div class="da-confirm">
+        <div class="da-confirm-check">✓</div>
+        <h4>¡Pedido registrado!</h4>
+        <p>Guardamos tu pedido y ya nos llegó la notificación. Elige cómo quieres pagar para coordinar tu entrega:</p>
+
+        <div class="da-pay-card">
+          <div class="da-pay-title">Yape / Plin</div>
+          <img src="assets/pago-yape.jpg" alt="Código QR para pagar por Yape" class="da-pay-qr"/>
+          <div class="da-pay-name">Cesar Junior Fernandez Huancas</div>
+          <a class="da-btn da-btn-wa" style="width:100%" href="${waUrl}" target="_blank" rel="noopener" id="da-pay-wa">
+            Ya pagué, avisar por WhatsApp
+          </a>
+          <p class="da-pay-note">Al abrirse WhatsApp, adjunta la captura de tu pago como segundo mensaje.</p>
+        </div>
+
+        <div class="da-pay-card da-pay-soon">
+          <div class="da-pay-title">Tarjeta de crédito / débito</div>
+          <p class="da-pay-note">Próximamente 🚧 — por ahora paga con Yape/Plin o coordina con nosotros por WhatsApp.</p>
+        </div>
+
+        <button class="da-btn da-btn-ghost" style="width:100%;margin-top:6px" id="da-confirm-close">Seguir comprando</button>
+      </div>
+    `;
+    foot.innerHTML = '';
+    document.getElementById('da-confirm-close').addEventListener('click', ()=>{
+      cart = []; saveCart();
+      checkoutStep = 'cart'; lastOrder = null;
+      closeCart();
+    });
   }
 
   // ─── WhatsApp ───
@@ -684,7 +846,7 @@
     async init(opts){
       injectCSS();
       injectChrome();
-      await loadCatalog();
+      await Promise.all([loadCatalog(), loadZonas()]);
       loadCart();
       refreshBadges();
       document.querySelectorAll('[data-cart-open]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); openCart(); }));
