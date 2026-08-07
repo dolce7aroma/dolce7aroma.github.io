@@ -660,7 +660,7 @@
           <input type="text" id="of-nombre" required value="${escapeHtml(orderForm.nombre)}" placeholder="Ej. María Torres"/>
         </label>
         <label>Teléfono / WhatsApp
-          <input type="tel" id="of-telefono" required value="${escapeHtml(orderForm.telefono)}" placeholder="Ej. 987 654 321"/>
+          <input type="tel" id="of-telefono" required inputmode="numeric" value="${escapeHtml(orderForm.telefono)}" placeholder="Ej. 987654321"/>
         </label>
         <label class="da-distrito-field">Distrito
           <input type="text" id="of-distrito" required autocomplete="off" value="${escapeHtml(orderForm.distrito)}" placeholder="Escribe para buscar tu distrito"/>
@@ -692,8 +692,14 @@
       checkoutStep = 'cart';
       renderCart();
     });
-    ['nombre','telefono','direccion','referencia'].forEach(f=>{
+    ['nombre','direccion','referencia'].forEach(f=>{
       document.getElementById('of-'+f).addEventListener('input', e=>{ orderForm[f] = e.target.value; });
+    });
+    document.getElementById('of-telefono').addEventListener('input', e=>{
+      // Últimos 9 dígitos: si pegan un número con +51 u otro prefijo, igual queda el celular correcto.
+      const digits = e.target.value.replace(/\D/g,'').slice(-9);
+      e.target.value = digits;
+      orderForm.telefono = digits;
     });
     wireDistritoAutocomplete();
     document.getElementById('da-order-form').addEventListener('submit', onSubmitOrderForm);
@@ -757,11 +763,11 @@
     const p = offers.progress[0];
     if(p.missing !== 1) return ''; // solo mostramos la proyección cuando falta exactamente 1 (dato confiable)
     const addPrice = cheapestPriceForMl(p.ml);
-    const projected = computeOffers({ ml: p.ml, price: addPrice });
+    const ahorroActual = p.kind === 'upgrade' ? p.amount : 0;
     return `<div class="da-trio-hint" style="margin-bottom:14px">
       <div class="da-hint-headline">🎉 Ahorra <b>S/ ${p.total}</b> con ${p.label}</div>
       <div class="da-trio-row">
-        <span class="r">Sumá 1 más de ${p.ml} ml (desde S/ ${addPrice}) para activarlo — tu pedido pasaría de S/ ${offers.total} a S/ ${projected.total}.</span>
+        <span class="r">Sumá 1 más de ${p.ml} ml (desde S/ ${addPrice}) para activarlo — tu ahorro pasaría de S/ ${ahorroActual} a S/ ${p.total}.</span>
       </div>
       <button type="button" class="da-hint-back" id="da-hint-back">volver a la bolsa</button>
     </div>`;
