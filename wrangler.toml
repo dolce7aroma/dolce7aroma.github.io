@@ -1,3 +1,7 @@
 name = "dolce7aroma-github-io"
 main = "worker/dolce-aroma-admin-worker.js"
 compatibility_date = "2024-11-01"
+
+[[kv_namespaces]]
+binding = "ORDERS"
+id = "4618ca47d7094c31acf4b3219c25d7ed"
