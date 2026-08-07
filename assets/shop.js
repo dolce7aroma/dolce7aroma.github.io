@@ -371,8 +371,24 @@
       .da-hint-headline b{font-size:28px;color:#a8895a;font-weight:600}
       .da-confirm-id{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#a8895a;font-weight:600;margin-top:-6px}
 
-      .da-gift-open{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid rgba(60,47,71,0.18);border-radius:999px;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#3c2f47;text-decoration:none;margin-right:8px;transition:all .2s;cursor:pointer}
-      .da-gift-open:hover{background:#a8895a;color:#f6f4ef;border-color:#a8895a}
+      .da-gift-float{
+        position:fixed;right:20px;bottom:86px;z-index:80;
+        display:flex;align-items:center;gap:10px;text-decoration:none;
+      }
+      .da-gift-float .da-gift-float-label{
+        background:#fff;color:#1a1620;font-size:13px;font-weight:600;font-family:'Jost',sans-serif;
+        padding:10px 16px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:nowrap;
+      }
+      .da-gift-float .da-gift-float-icon{
+        width:54px;height:54px;border-radius:50%;background:#a8895a;flex-shrink:0;
+        display:grid;place-items:center;box-shadow:0 8px 24px rgba(168,137,90,0.5);transition:transform .2s;font-size:24px;
+      }
+      .da-gift-float:hover .da-gift-float-icon{transform:scale(1.06)}
+      @media (max-width:480px){
+        .da-gift-float{right:14px;bottom:76px}
+        .da-gift-float .da-gift-float-label{font-size:12px;padding:8px 12px}
+        .da-gift-float .da-gift-float-icon{width:48px;height:48px;font-size:20px}
+      }
       .da-gift-banner{background:linear-gradient(135deg, rgba(168,137,90,0.18), rgba(207,200,216,0.28));border:1.5px solid #a8895a;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#3c2f47}
       .da-gift-banner b{color:#a8895a}
       .da-gift-item{background:#fff;border:1.5px solid rgba(60,47,71,0.15);border-radius:12px;padding:12px 14px;margin-bottom:10px}
@@ -453,9 +469,14 @@
         <div class="da-cart-foot" id="da-cart-foot"></div>
       </aside>
       <div class="da-toast" id="da-toast"></div>
+      <a href="#" class="da-gift-float" id="da-gift-float" aria-label="Regalar un perfume">
+        <span class="da-gift-float-label">Regalar</span>
+        <span class="da-gift-float-icon">🎁</span>
+      </a>
     `);
     document.getElementById('da-bd').addEventListener('click', ()=>{ closeModal(); closeCart(); });
     document.getElementById('da-cart-close').addEventListener('click', closeCart);
+    document.getElementById('da-gift-float').addEventListener('click', e => { e.preventDefault(); openGiftBuilder(); });
     document.getElementById('da-cart-share').addEventListener('click', shareCart);
     document.getElementById('da-cart-expand').addEventListener('click', toggleCartExpand);
     document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); closeCart(); } });
@@ -1526,13 +1547,7 @@
       await Promise.all([loadCatalog(), loadZonas(), loadPago()]);
       loadCart();
       refreshBadges();
-      document.querySelectorAll('[data-cart-open]').forEach(el => {
-        el.addEventListener('click', e => { e.preventDefault(); openCart(); });
-        const giftBtn = document.createElement('a');
-        giftBtn.href = '#'; giftBtn.className = 'da-gift-open'; giftBtn.textContent = '🎁 Regalar';
-        giftBtn.addEventListener('click', e => { e.preventDefault(); openGiftBuilder(); });
-        el.parentNode.insertBefore(giftBtn, el);
-      });
+      document.querySelectorAll('[data-cart-open]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); openCart(); }));
       if(opts?.onReady) opts.onReady(catalog);
       const shareParams = new URLSearchParams(location.search);
       // Link compartido (?p=id) → abre directo el detalle de ese perfume
