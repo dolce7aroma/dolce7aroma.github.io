@@ -1,0 +1,10 @@
+{
+  "schema": { "version": 1 },
+  "envioGratisMinimo": 150,
+  "zonasGratis": [
+    "Av. Perú (SMP)",
+    "San Miguel (zonas específicas)",
+    "Mercado San Antonio y alrededores"
+  ],
+  "notaOtrasZonas": "Se envía por courier (Olva u otro). Te confirmamos el costo exacto por WhatsApp antes de coordinar el envío."
+}

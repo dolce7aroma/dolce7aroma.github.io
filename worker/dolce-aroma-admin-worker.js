@@ -22,6 +22,15 @@
  *   6. Copia la URL pública del Worker (algo como
  *        https://dolce-aroma-admin.TU-SUBDOMINIO.workers.dev )
  *      y pégala en perfumes-gestion-da7.html en la constante API_BASE.
+ *
+ * SECRETOS OPCIONALES (para los avisos de pedidos nuevos — el sitio funciona
+ * igual sin ellos, simplemente no llega el aviso automático hasta que los cargues):
+ *   RESEND_API_KEY   → API key de resend.com (capa gratis) para mandar el correo.
+ *   ORDER_EMAIL_TO   → tu correo, donde querés recibir el aviso de cada pedido.
+ *   ORDER_EMAIL_FROM → (opcional) remitente verificado en Resend; si no lo pones,
+ *                       usa el de pruebas de Resend.
+ *   TELEGRAM_BOT_TOKEN → token del bot que crees con @BotFather en Telegram.
+ *   TELEGRAM_CHAT_ID   → el chat donde el bot te manda los avisos (el tuyo).
  */
 
 const REPO_OWNER = 'dolce7aroma';
@@ -171,6 +180,92 @@ async function handleSaveCatalog(request, env) {
   }
 }
 
+// Lista blanca de archivos de configuración que el Admin puede publicar (fuera del catálogo/fotos).
+const ALLOWED_CONFIG_FILES = ['data/zonas-envio.json'];
+
+async function handleSaveConfig(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+
+  const { key, file, config } = body;
+  if (key !== env.ADMIN_KEY) return json({ ok: false, error: 'Contraseña incorrecta' }, 401);
+  if (!ALLOWED_CONFIG_FILES.includes(file)) return json({ ok: false, error: 'Archivo no permitido' }, 400);
+  if (!config || typeof config !== 'object') return json({ ok: false, error: 'Config inválida' }, 400);
+
+  try {
+    const content = utf8ToBase64(JSON.stringify(config, null, 2));
+    await putFile(file, content, `Admin: actualizar ${file}`, env);
+    return json({ ok: true });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 502);
+  }
+}
+
+// Pedido enviado por un CLIENTE (no requiere ADMIN_KEY — es público, pero no toca el repo,
+// solo dispara avisos por correo/Telegram si esos secretos están configurados).
+async function handleSubmitOrder(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+
+  const { nombre, telefono, distrito, direccion, referencia, items, subtotal, total, metodoPago } = body;
+  if (!nombre || !telefono || !distrito || !direccion) {
+    return json({ ok: false, error: 'Faltan datos del pedido' }, 400);
+  }
+  if (!Array.isArray(items) || !items.length) {
+    return json({ ok: false, error: 'El pedido no tiene productos' }, 400);
+  }
+
+  const itemsText = items.map(it => `- ${it.name} (${it.ml} ml) x${it.qty} — S/ ${it.subtotal}`).join('\n');
+  const summary = `🌸 Nuevo pedido — Dolce Aroma
+
+Cliente: ${nombre}
+Teléfono: ${telefono}
+Distrito: ${distrito}
+Dirección: ${direccion}
+Referencia: ${referencia || '-'}
+Método de pago: ${metodoPago || '-'}
+
+Productos:
+${itemsText}
+
+Subtotal: S/ ${subtotal}
+Total: S/ ${total}`;
+
+  const notified = { email: false, telegram: false };
+
+  if (env.RESEND_API_KEY && env.ORDER_EMAIL_TO) {
+    try {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: env.ORDER_EMAIL_FROM || 'Dolce Aroma <onboarding@resend.dev>',
+          to: [env.ORDER_EMAIL_TO],
+          subject: `Nuevo pedido de ${nombre}`,
+          text: summary,
+        }),
+      });
+      notified.email = res.ok;
+    } catch (e) { /* el correo es best-effort, no bloquea la respuesta */ }
+  }
+
+  if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: summary }),
+      });
+      notified.telegram = res.ok;
+    } catch (e) { /* Telegram también es best-effort */ }
+  }
+
+  return json({ ok: true, notified });
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
@@ -185,6 +280,12 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/api/save-catalog') {
       return handleSaveCatalog(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/save-config') {
+      return handleSaveConfig(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/submit-order') {
+      return handleSubmitOrder(request, env);
     }
     return json({ ok: false, error: 'Ruta no encontrada' }, 404);
   },

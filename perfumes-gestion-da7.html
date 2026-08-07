@@ -349,6 +349,7 @@
     <button class="btn btn-primary admin-tab active" data-section="dashboard">📊 Dashboard</button>
     <button class="btn btn-ghost admin-tab" data-section="catalogo">📚 Catálogo</button>
     <button class="btn btn-ghost admin-tab" data-section="resenas">⭐ Reseñas</button>
+    <button class="btn btn-ghost admin-tab" data-section="envios">🚚 Envíos</button>
   </div>
 
   <!-- ─────────── DASHBOARD ─────────── -->
@@ -482,6 +483,33 @@
         </thead>
         <tbody id="resenas-tbody"></tbody>
       </table>
+    </div>
+  </section>
+
+  <section class="admin-section" data-section="envios" style="display:none">
+    <div class="page-head">
+      <div>
+        <h1>Zonas de <em>envío</em></h1>
+        <p class="sub">Esto es lo que ve el cliente en el formulario de pedido para saber si su zona tiene delivery gratis. Se publica igual que el catálogo.</p>
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:14px;padding:24px;max-width:640px;display:flex;flex-direction:column;gap:20px">
+      <div class="field">
+        <label>Monto mínimo para envío gratis (S/)</label>
+        <input type="number" id="env-minimo" min="0" step="1" />
+      </div>
+      <div class="field">
+        <label>Zonas con envío gratis (una por línea)</label>
+        <textarea id="env-zonas" rows="6" placeholder="Av. Perú (SMP)&#10;San Miguel (zonas específicas)&#10;Mercado San Antonio y alrededores"></textarea>
+      </div>
+      <div class="field">
+        <label>Mensaje para el resto de zonas</label>
+        <textarea id="env-nota" rows="3"></textarea>
+      </div>
+      <button class="btn btn-primary" id="btn-publicar-envios" style="align-self:flex-start">
+        <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
+        Publicar cambios de envío
+      </button>
     </div>
   </section>
 
@@ -1086,7 +1114,7 @@ function switchSection(section){
     t.classList.toggle('btn-ghost', !active);
     t.classList.toggle('active', active);
   });
-  const labels = {dashboard:'Dashboard', catalogo:'Catálogo', resenas:'Reseñas'};
+  const labels = {dashboard:'Dashboard', catalogo:'Catálogo', resenas:'Reseñas', envios:'Envíos'};
   const crumb = document.getElementById('crumb-section');
   if(crumb) crumb.textContent = labels[section] || 'Catálogo';
 }
@@ -1169,7 +1197,9 @@ function editResena(id){
 /* ─── boot extras ─── */
 function bootAdmin(){
   loadResenas();
+  loadZonasConfig();
   document.querySelectorAll('.admin-tab').forEach(t => t.addEventListener('click', () => switchSection(t.dataset.section)));
+  document.getElementById('btn-publicar-envios')?.addEventListener('click', publishZonas);
   document.getElementById('btn-new-resena')?.addEventListener('click', () => editResena(null));
   document.getElementById('resenas-tbody')?.addEventListener('click', e => {
     const tr = e.target.closest('tr[data-rid]'); if(!tr) return;
@@ -1602,6 +1632,40 @@ async function deletePhotoFromWorker(filename){
     body: JSON.stringify({ key, filename })
   });
   return res.json();
+}
+/* ─── Zonas de envío ─── */
+async function loadZonasConfig(){
+  try{
+    const res = await fetch('data/zonas-envio.json', {cache:'no-cache'});
+    const data = await res.json();
+    $('#env-minimo').value = data.envioGratisMinimo ?? 150;
+    $('#env-zonas').value = (data.zonasGratis || []).join('\n');
+    $('#env-nota').value = data.notaOtrasZonas || '';
+  }catch(e){ console.warn('No se pudo cargar zonas-envio.json', e); }
+}
+async function publishZonas(){
+  if(!API_BASE){ toast('Configura API_BASE en el código para poder publicar', 'warn'); return; }
+  const key = await getAuthKey();
+  if(!key) return;
+  const config = {
+    schema: {version:1},
+    envioGratisMinimo: +$('#env-minimo').value || 0,
+    zonasGratis: $('#env-zonas').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    notaOtrasZonas: $('#env-nota').value.trim()
+  };
+  toast('Publicando zonas de envío…');
+  try{
+    const res = await fetch(`${API_BASE}/api/save-config`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ key, file: 'data/zonas-envio.json', config })
+    });
+    const out = await res.json();
+    if(out.ok) toast('Zonas de envío publicadas');
+    else toast('No se pudo publicar: ' + out.error, 'warn');
+  }catch(err){
+    toast('No se pudo publicar: ' + err.message, 'warn');
+  }
 }
 async function publishCatalog(){
   if(!API_BASE){ toast('Configura API_BASE en el código para poder publicar', 'warn'); return; }
