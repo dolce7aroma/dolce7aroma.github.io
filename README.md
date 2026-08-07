@@ -112,6 +112,8 @@ El botón "Hacer pedido por WhatsApp" del carrito fue reemplazado por un flujo c
 
 ### Activar el guardado de pedidos y las alertas (opcional, pero recomendado)
 
+> ✅ **Estado: activo y probado.** Las alertas por correo y Telegram, y el guardado en KV, ya están configurados y confirmados con pedidos de prueba reales — correo llega a `dolce7aroma@gmail.com` y Telegram al chat personal con el bot "Dolce Aroma Pedidos".
+
 Sin esto el sitio funciona igual, pero el pedido solo viaja por correo/Telegram del momento — si no configuras nada, no queda registro. En Cloudflare → tu Worker → **Settings → Variables and Secrets**, agrega los que quieras usar:
 
 | Secreto | Para qué |
@@ -211,6 +213,7 @@ Ejemplos:
 - [ ] Los perfumes destacados son los que quieres mostrar en el Inicio
 - [ ] Las zonas de envío gratis en Admin → Envíos están al día
 - [ ] El nombre de Admin → Pago coincide con el que aparece en tu Yape
+- [x] Alertas de pedidos (correo + Telegram) y guardado en KV — configurados y probados
 
 ---
 
