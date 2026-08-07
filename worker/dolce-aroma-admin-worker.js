@@ -47,6 +47,19 @@
  *        id = "EL_ID_QUE_COPIASTE"
  *   4. Se despliega solo al hacer push. Sin este paso, el sitio sigue
  *      funcionando igual, solo que los pedidos no quedan guardados.
+ *
+ * PAGO CON TARJETA (Culqi — opcional):
+ *   Sin CULQI_SECRET_KEY, la tarjeta de pago del checkout muestra "Próximamente"
+ *   y este endpoint no hace nada. Para activarlo:
+ *   1. Crea cuenta en culqi.com y saca tus llaves (Desarrollo → Llaves API).
+ *   2. La llave PÚBLICA (pk_test_... o pk_live_...) va en el Admin → pestaña
+ *      "Pago" → campo "Llave pública de Culqi" — esa NO es secreta, se publica
+ *      igual que el resto del catálogo.
+ *   3. La llave SECRETA (sk_test_... o sk_live_...) va SOLO en Cloudflare →
+ *      este Worker → Settings → Variables and Secrets → CULQI_SECRET_KEY
+ *      (tipo "Secreto"). Nunca en el código ni en wrangler.toml.
+ *   4. Para cobrar de verdad (llaves *_live_*) necesitas RUC — sin él, Culqi
+ *      solo permite modo prueba (*_test_*), que funciona igual mientras tanto.
  */
 
 const REPO_OWNER = 'dolce7aroma';
@@ -348,6 +361,54 @@ async function handleUpdateOrderStatus(request, env) {
   }
 }
 
+// Cobra la tarjeta tokenizada por Culqi.js y, si sale bien, marca el pedido como "pagado".
+// Pública (el cliente la llama al pagar), pero solo hace algo si CULQI_SECRET_KEY está configurado.
+async function handleChargeCulqi(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+  const { orderId, token, email, amount } = body;
+  if (!env.CULQI_SECRET_KEY) return json({ ok: false, error: 'El cobro con tarjeta no está activado todavía.' }, 400);
+  if (!token || !email || !amount) return json({ ok: false, error: 'Faltan datos del pago' }, 400);
+
+  try {
+    const res = await fetch('https://api.culqi.com/v2/charges', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.CULQI_SECRET_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount,
+        currency_code: 'PEN',
+        email,
+        source_id: token,
+        description: orderId ? `Pedido Dolce Aroma #${orderId}` : 'Pedido Dolce Aroma',
+      }),
+    });
+    const charge = await res.json().catch(() => null);
+    if (!res.ok || !charge) {
+      return json({ ok: false, error: charge?.user_message || charge?.merchant_message || 'El banco rechazó el pago' }, 402);
+    }
+
+    if (orderId && env.ORDERS) {
+      try {
+        const raw = await env.ORDERS.get(`order:${orderId}`);
+        if (raw) {
+          const record = JSON.parse(raw);
+          record.estado = 'pagado';
+          record.actualizadoEn = new Date().toISOString();
+          record.culqiChargeId = charge.id;
+          await env.ORDERS.put(`order:${orderId}`, JSON.stringify(record));
+        }
+      } catch (e) { /* el cobro ya se hizo; si esto falla solo no se actualiza el estado */ }
+    }
+
+    return json({ ok: true, chargeId: charge.id });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 502);
+  }
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') {
@@ -374,6 +435,9 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/api/update-order-status') {
       return handleUpdateOrderStatus(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/charge-culqi') {
+      return handleChargeCulqi(request, env);
     }
     return json({ ok: false, error: 'Ruta no encontrada' }, 404);
   },
