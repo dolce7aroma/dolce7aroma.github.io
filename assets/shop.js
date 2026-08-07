@@ -931,9 +931,11 @@
 
   // ─── Compartir ───
   function buildShareUrl(params){
+    // Usa el alias sin espacios (catalogo.html) — algunas apps (WhatsApp entre otras) decodifican
+    // %20 a espacio antes de enviar el mensaje, y el espacio literal corta el link a la mitad.
     const base = location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/')+1);
     const qs = new URLSearchParams(params).toString();
-    return base + 'Dolce%20Aroma%20-%20Catalogo.html' + (qs ? '?' + qs : '');
+    return base + 'catalogo.html' + (qs ? '?' + qs : '');
   }
   async function shareViaClipboard(text){
     try{ await navigator.clipboard.writeText(text); showToast('Enlace copiado'); }
