@@ -17,6 +17,7 @@
   const STORAGE_CART    = 'dolce-aroma-cart-v1';
   const CATALOG_URLS    = ['data/productos.json', 'data/perfumes.json'];
   const ZONAS_URL       = 'data/zonas-envio.json';
+  const PAGO_URL        = 'data/pago.json';
 
   const FAMILY_LABEL = {floral:'Floral', oriental:'Oriental', amaderado:'Amaderado', citrico:'Cítrico', chipre:'Chipre', aromatico:'Aromático', frutal:'Frutal'};
   const TAG_LABEL    = {'mas-vendido':'Más vendido','nuevo':'Nuevo','edicion-limitada':'Edición limitada','agotado':'Agotado'};
@@ -44,6 +45,7 @@
   let catalog = [];
   let cart = [];   // [{id, ml, qty}]
   let zonas = { envioGratisMinimo: 150, zonasGratis: [], notaOtrasZonas: '' };
+  let pago = { nombreYape: 'Cesar Fernandez' };
   let checkoutStep = 'cart'; // 'cart' | 'form' | 'confirm'
   let lastOrder = null; // datos del último pedido confirmado (para el paso de pago)
   let orderForm = { nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
@@ -57,6 +59,15 @@
         zonas = Object.assign({ envioGratisMinimo:150, zonasGratis:[], notaOtrasZonas:'' }, j);
       }
     }catch(e){ /* se mantienen los valores por defecto */ }
+  }
+  async function loadPago(){
+    try{
+      const r = await fetch(PAGO_URL, {cache:'no-cache'});
+      if(r.ok){
+        const j = await r.json();
+        pago = Object.assign({ nombreYape:'Cesar Fernandez' }, j);
+      }
+    }catch(e){ /* se mantiene el valor por defecto */ }
   }
 
   // ─── Carga catálogo ───
@@ -102,7 +113,8 @@
     110: { label: 'Dúo Premium · 110 ml', amount: 30 },
     50:  { label: 'Dúo Esencial · 50 ml',  amount: 10 }
   };
-  function computeOffers(){
+  // extra: {ml, price} → simula 1 unidad más de ese ml (para proyectar "si sumo 1 más, ¿cuánto ahorro/pago?")
+  function computeOffers(extra){
     const groups = {}; // ml -> [unit price, ...]
     cart.forEach(it => {
       const p = catalog.find(x => x.id === it.id);
@@ -111,6 +123,10 @@
       groups[it.ml] = groups[it.ml] || [];
       for(let i=0;i<it.qty;i++) groups[it.ml].push(sz.price||0);
     });
+    if(extra && extra.ml){
+      groups[extra.ml] = groups[extra.ml] || [];
+      groups[extra.ml].push(extra.price||0);
+    }
     const subtotal = Object.values(groups).reduce((s,arr)=> s + arr.reduce((a,b)=>a+b,0), 0);
     const discounts = [];
     const progress = []; // tiers donde aún no se completa la oferta, o donde conviene sumar una más
@@ -155,6 +171,15 @@
     return { subtotal, discounts, progress, total: subtotal - totalDiscount, totalDiscount };
   }
   function cartTotal(){ return computeOffers().total; }
+  // Precio más bajo disponible del catálogo para un tamaño dado — para estimar "si sumo 1 más de X ml"
+  function cheapestPriceForMl(ml){
+    let min = null;
+    catalog.forEach(p=>{
+      const sz = p.sizes?.find(s=>s.ml===ml && s.stock>0 && s.price);
+      if(sz && (min===null || sz.price<min)) min = sz.price;
+    });
+    return min || 0;
+  }
   function addToCart(item){
     const ex = cart.find(c=>c.id===item.id && c.ml===item.ml);
     if(ex) ex.qty += item.qty || 1;
@@ -711,26 +736,34 @@
     if(match){
       box.innerHTML = `
         <div class="da-zonas-title da-zonas-match">🎉 ¡Envío gratis a ${escapeHtml(match.distrito)}!</div>
-        <p>${escapeHtml(match.detalle)}</p>
+        ${match.detalle ? `<p>${escapeHtml(match.detalle)}</p>` : ''}
       `;
       return;
     }
     box.innerHTML = `
       <div class="da-zonas-title">🚚 Envío gratis${zonas.envioGratisMinimo ? ` desde S/ ${zonas.envioGratisMinimo}` : ''}</div>
-      ${zonas.zonasGratis?.length ? `<ul>${zonas.zonasGratis.map(z=>`<li>${escapeHtml(z.distrito ? z.distrito+' — ' : '')}${escapeHtml(z.detalle)}</li>`).join('')}</ul>` : ''}
+      ${zonas.zonasGratis?.length ? `<ul>${zonas.zonasGratis.map(z=>`<li>${escapeHtml(z.distrito || '')}${z.distrito && z.detalle ? ' — ' : ''}${escapeHtml(z.detalle||'')}</li>`).join('')}</ul>` : ''}
       ${zonas.notaOtrasZonas ? `<p>${escapeHtml(zonas.notaOtrasZonas)}</p>` : ''}
     `;
   }
 
-  // Recuerda al cliente, en el paso de pago, si le falta poco para un descuento aún sin aprovechar
+  // Recuerda al cliente, en el paso de pago, si le falta poco para un descuento aún sin aprovechar,
+  // mostrando el ahorro Y el total que le quedaría si suma esa unidad (no solo el número de descuento suelto).
   function renderMissedOfferHint(offers){
     if(!offers.progress.length) return '';
     const p = offers.progress[0];
-    const msg = p.kind === 'upgrade'
-      ? `Sumá 1 más de ${p.ml} ml antes de confirmar y tu ahorro sube a S/ ${p.total}`
-      : `Te falta${p.missing===1?'':'n'} ${p.missing} más de ${p.ml} ml para ahorrar S/ ${p.total}`;
+    if(p.missing !== 1) return ''; // solo mostramos la proyección cuando falta exactamente 1 (dato confiable)
+    const addPrice = cheapestPriceForMl(p.ml);
+    const projected = computeOffers({ ml: p.ml, price: addPrice });
+    const aunqueSube = p.kind === 'upgrade'
+      ? `tu ahorro sube de S/ ${p.amount} a S/ ${p.total}`
+      : `activas ${p.label} y ahorras S/ ${p.total}`;
     return `<div class="da-trio-hint" style="margin-bottom:14px">
-      <div class="da-trio-row"><span class="l">${p.label}</span><span class="r">${msg} — <button type="button" class="da-hint-back" id="da-hint-back">volver a la bolsa</button></span></div>
+      <div class="da-trio-row">
+        <span class="l">${p.label}</span>
+        <span class="r">Sumá 1 más de ${p.ml} ml (desde S/ ${addPrice}) y ${aunqueSube} — tu pedido pasaría de <b>S/ ${offers.total}</b> a <b>S/ ${projected.total}</b>.
+        <br>— <button type="button" class="da-hint-back" id="da-hint-back">volver a la bolsa</button></span>
+      </div>
     </div>`;
   }
 
@@ -787,7 +820,7 @@
         <div class="da-pay-card">
           <div class="da-pay-title">Yape</div>
           <img src="assets/pago-yape.jpg" alt="Código QR para pagar por Yape" class="da-pay-qr"/>
-          <div class="da-pay-name">Cesar Fernandez</div>
+          <div class="da-pay-name">${escapeHtml(pago.nombreYape)}</div>
           <a class="da-btn da-btn-wa" style="width:100%" href="${waUrl}" target="_blank" rel="noopener" id="da-pay-wa">
             Ya pagué, avisar por WhatsApp
           </a>
@@ -942,7 +975,7 @@
     async init(opts){
       injectCSS();
       injectChrome();
-      await Promise.all([loadCatalog(), loadZonas()]);
+      await Promise.all([loadCatalog(), loadZonas(), loadPago()]);
       loadCart();
       refreshBadges();
       document.querySelectorAll('[data-cart-open]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); openCart(); }));
