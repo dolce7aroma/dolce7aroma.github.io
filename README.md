@@ -132,6 +132,14 @@ Y en **Workers & Pages → Storage & Databases → KV**, crea un namespace (ej. 
 
 ---
 
+## 🔍 Filtros del catálogo (Catálogo → panel "Filtros")
+
+En pantallas angostas (tablet y celular, ≤1100px), los filtros (tamaño, familia olfativa, estilo, etiqueta, intensidad, ocasión) ya no aparecen apilados entre el buscador y las fotos — antes eso ocupaba tanto espacio que un cliente podía pasar varios scrolls sin ver un solo perfume. Ahora se agrupan en un botón **"Filtros"** en la barra de herramientas (con un contador de cuántos están activos) que abre un panel a pantalla completa; los resultados quedan visibles justo debajo del buscador desde el primer momento. En escritorio (>1100px) no cambia nada — sigue siendo la barra lateral fija de siempre.
+
+Se agregó también el filtro **Estilo** (Árabe / Diseñador), calculado con el mismo criterio `ARABE_BRANDS` que ya usa el armador de regalo (ver sección de Regalar más abajo) — una sola fuente de verdad, expuesta como `window.DA.estiloFor(perfume)`.
+
+---
+
 ## 🎁 Regalar un perfume (Fase 1)
 
 Botón flotante **"🎁 Regalar"** encima del de WhatsApp, en todas las páginas. El comprador primero elige uno de dos modos:
