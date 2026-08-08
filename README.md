@@ -132,11 +132,13 @@ Y en **Workers & Pages → Storage & Databases → KV**, crea un namespace (ej. 
 
 ---
 
-## 🔍 Filtros del catálogo (Catálogo → panel "Filtros")
+## 🔍 Filtros del catálogo (Catálogo → toolbar + panel "Filtros")
 
-En pantallas angostas (tablet y celular, ≤1100px), los filtros (tamaño, familia olfativa, estilo, etiqueta, intensidad, ocasión) ya no aparecen apilados entre el buscador y las fotos — antes eso ocupaba tanto espacio que un cliente podía pasar varios scrolls sin ver un solo perfume. Ahora se agrupan en un botón **"Filtros"** en la barra de herramientas (con un contador de cuántos están activos) que abre un panel a pantalla completa; los resultados quedan visibles justo debajo del buscador desde el primer momento. En escritorio (>1100px) no cambia nada — sigue siendo la barra lateral fija de siempre.
+La barra de herramientas del catálogo (siempre visible, en cualquier tamaño de pantalla) tiene: buscador, género (Todos/Mujer/Hombre/Unisex), **estilo** (Todos/Árabe/Diseñador), un combo de **marca con selección múltiple** (checkboxes — se puede filtrar por varias marcas a la vez sin entrar a ningún panel), orden, y el botón "Filtros" con el resto (tamaño, familia olfativa, etiqueta, intensidad, ocasión). Ya no existe el toggle Confort/Denso — se reemplazó por el de estilo.
 
-Se agregó también el filtro **Estilo** (Árabe / Diseñador), calculado con el mismo criterio `ARABE_BRANDS` que ya usa el armador de regalo (ver sección de Regalar más abajo) — una sola fuente de verdad, expuesta como `window.DA.estiloFor(perfume)`.
+El filtro **Estilo** (Árabe/Diseñador) se calcula con el mismo criterio `ARABE_BRANDS` que ya usa el armador de regalo (ver sección de Regalar más abajo) — una sola fuente de verdad, expuesta como `window.DA.estiloFor(perfume)`.
+
+En pantallas angostas (tablet y celular, ≤1100px), los filtros que SÍ viven dentro del panel "Filtros" (tamaño, familia olfativa, etiqueta, intensidad, ocasión) ya no aparecen apilados entre el buscador y las fotos — antes eso ocupaba tanto espacio que un cliente podía pasar varios scrolls sin ver un solo perfume. Ahora se agrupan detrás de ese botón (con un contador de cuántos están activos) que abre un panel a pantalla completa; los resultados quedan visibles justo debajo del buscador desde el primer momento. En escritorio (>1100px) el panel es la barra lateral fija de siempre.
 
 ---
 
