@@ -404,6 +404,11 @@
       .da-gift-size-chip{border:1.5px solid rgba(60,47,71,0.2);background:#fff;border-radius:999px;padding:8px 14px;font-family:inherit;font-size:12px;color:#3c2f47;cursor:pointer;transition:all .15s;white-space:nowrap}
       .da-gift-size-chip:hover{border-color:#3c2f47}
       .da-gift-size-chip.selected{border-color:#3c2f47;background:#3c2f47;color:#f6f4ef}
+      .da-gift-modo-card{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid rgba(60,47,71,0.15);border-radius:12px;padding:16px;cursor:pointer;font-family:inherit;transition:all .15s;margin-bottom:10px}
+      .da-gift-modo-card:hover{border-color:#a8895a}
+      .da-gift-modo-card.selected{border-color:#3c2f47;background:#efe9e0}
+      .da-gift-modo-card b{display:block;font-family:'Cormorant Garamond',serif;font-size:18px;color:#3c2f47;margin-bottom:4px}
+      .da-gift-modo-card span{display:block;font-size:12.5px;color:#5d4c70;line-height:1.4}
       .da-gift-premium{margin-left:0;margin-top:8px;font-size:12.5px;color:#3c2f47;display:flex;align-items:center;gap:8px}
       .da-gift-premium input[type=checkbox]{accent-color:#a8895a}
       .da-gift-radio{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;background:#fff;border:1.5px solid rgba(60,47,71,0.15);border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer}
@@ -623,6 +628,7 @@
   function openGiftBuilder(){
     giftRole = 'comprador'; giftMode = true; giftStep = 'armar';
     giftList = []; giftDraft = { entregaPara:'regalada', compradorTelefono:'', compradorNombre:'', pagarAhora:false, nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
+    giftArmarModo = null; giftTallaMl = null;
     renderCart();
     document.getElementById('da-bd').classList.add('open');
     document.getElementById('da-cart').classList.add('open');
@@ -1015,6 +1021,9 @@
   let giftRole = 'comprador'; // 'comprador' (arma/paga) | 'regalada' (elige, vía ?regalo=)
   let giftClaimResult = null; // { orderId } una vez que la persona regalada confirma
   let giftFilterText = '', giftFilterGender = '', giftFilterBrand = '';
+  let giftArmarModo = null; // null (sin elegir) | 'curada' (arma lista puntual) | 'talla' (solo tamaño, ella elige el perfume)
+  let giftTallaMl = null;   // tamaño elegido en modo 'talla'
+  let giftClaimFilterText = ''; // buscador dentro de la pantalla de la persona regalada, solo si hay muchas opciones
 
   function giftItemPhoto(it){
     const p = catalog.find(x=>x.id===it.id);
@@ -1029,10 +1038,96 @@
     return renderGiftArmar(list, foot);
   }
 
-  // Paso 1 (comprador): elige uno o varios perfumes para la lista curada
+  // Precio "estándar" de un tamaño: el más frecuente entre los perfumes con ese ml en
+  // stock. Como casi todo el catálogo tiene precios uniformes por tamaño (con un par de
+  // excepciones puntuales, ej. los frascos originales de Bleu/Invictus), esto excluye
+  // esas excepciones automáticamente sin tener que mantener una lista a mano.
+  function standardPriceForMl(ml){
+    const prices = catalog.flatMap(p => (p.sizes||[]).filter(s=>s.ml===ml && s.stock>0 && s.price).map(s=>s.price));
+    if(!prices.length) return 0;
+    const counts = {};
+    prices.forEach(pr => counts[pr] = (counts[pr]||0) + 1);
+    return +Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];
+  }
+  // Tamaños disponibles para el modo "solo tamaño", de mayor a menor ml.
+  function giftTallaSizes(){
+    const mls = [...new Set(catalog.flatMap(p => (p.sizes||[]).filter(s=>s.stock>0 && s.price).map(s=>s.ml)))];
+    return mls.sort((a,b)=>b-a).map(ml => ({ ml, price: standardPriceForMl(ml) }));
+  }
+  // Arma la lista de "opciones" para el modo talla: TODO el catálogo con ese tamaño al
+  // precio estándar — la persona regalada elige cuál de todos esos quiere.
+  function buildTallaGiftList(ml){
+    const price = standardPriceForMl(ml);
+    return catalog
+      .filter(p => (p.sizes||[]).some(s=>s.ml===ml && s.stock>0 && s.price===price))
+      .map(p => ({ id: p.id, ml, name: p.name, inspiration: p.inspiration || '', price, premium: false, premiumPrecio: 0 }));
+  }
+  // Total de referencia mientras arma la lista (paso 1). En modo talla es el precio fijo
+  // del tamaño elegido; en modo curada es la suma de lo agregado hasta ahora — es solo una
+  // referencia mientras arma, no necesariamente lo que se termina cobrando si el regalo es
+  // "para otra persona" (ver computeGiftForOtherTotal): la persona regalada se queda con
+  // UNA sola de las opciones curadas, no con todas.
+  function computeGiftArmarTotal(){
+    if(giftArmarModo === 'talla') return giftTallaMl ? standardPriceForMl(giftTallaMl) : 0;
+    return giftList.reduce((s,it)=> s + it.price + (it.premium ? it.premiumPrecio : 0), 0);
+  }
+  // Total REAL a cobrar cuando el regalo es para otra persona: en talla es el precio fijo
+  // del tamaño (todas las opciones cuestan lo mismo, por construcción); en curada, como solo
+  // se entrega UNA de las opciones ofrecidas, se cobra la más cara del grupo — nunca menos
+  // de lo que podría terminar costando, y nunca la suma de opciones que no se van a entregar.
+  function computeGiftForOtherTotal(){
+    if(giftArmarModo === 'talla') return giftTallaMl ? standardPriceForMl(giftTallaMl) : 0;
+    if(!giftList.length) return 0;
+    return Math.max(...giftList.map(it => it.price + (it.premium ? it.premiumPrecio : 0)));
+  }
+
+  // Paso 1 (comprador): elige el modo (perfumes puntuales o solo tamaño), y luego arma
+  // la lista de opciones para que la persona elija.
   function renderGiftArmar(list, foot){
+    if(giftArmarModo === null) return renderGiftArmarModo(list, foot);
+    if(giftArmarModo === 'talla') return renderGiftArmarTalla(list, foot);
+    return renderGiftArmarCurada(list, foot);
+  }
+  function renderGiftArmarModo(list, foot){
+    list.innerHTML = `
+      <div class="da-gift-banner">🎁 ¿Cómo quieres armar el regalo?</div>
+      <button type="button" class="da-gift-modo-card" id="gift-modo-curada">
+        <b>Elijo yo los perfumes</b>
+        <span>Armas una lista de opciones (uno o varios) y la persona elige la que más le guste.</span>
+      </button>
+      <button type="button" class="da-gift-modo-card" id="gift-modo-talla">
+        <b>Solo el tamaño</b>
+        <span>Tú eliges el tamaño — el precio es el mismo para todo el catálogo — y ella elige el perfume que más le guste, entre todos los que tenemos.</span>
+      </button>
+    `;
+    foot.innerHTML = `<button class="da-btn da-btn-ghost" style="width:100%" id="da-gift-cancel">Cancelar</button>`;
+    document.getElementById('da-gift-cancel').addEventListener('click', ()=>{ giftMode = false; renderCart(); });
+    document.getElementById('gift-modo-curada').addEventListener('click', ()=>{ giftArmarModo = 'curada'; renderCart(); });
+    document.getElementById('gift-modo-talla').addEventListener('click', ()=>{ giftArmarModo = 'talla'; renderCart(); });
+  }
+  function renderGiftArmarTalla(list, foot){
+    const sizes = giftTallaSizes();
+    list.innerHTML = `
+      <button class="da-back" type="button" id="da-gift-modo-back">← Cambiar modo</button>
+      <div class="da-gift-banner">🎁 Elige el tamaño que quieres regalar — la persona va a elegir el perfume que más le guste, de todo nuestro catálogo en ese tamaño.</div>
+      ${sizes.map(s => `
+        <button type="button" class="da-gift-modo-card ${giftTallaMl===s.ml?'selected':''}" data-ml="${s.ml}">
+          <b>${s.ml} ml</b>
+          <span>S/ ${s.price}</span>
+        </button>`).join('')}
+    `;
+    document.getElementById('da-gift-modo-back').addEventListener('click', ()=>{ giftArmarModo = null; giftTallaMl = null; giftList = []; renderCart(); });
+    list.querySelectorAll('.da-gift-modo-card[data-ml]').forEach(card => card.addEventListener('click', ()=>{
+      giftTallaMl = +card.dataset.ml;
+      giftList = buildTallaGiftList(giftTallaMl);
+      renderCart();
+    }));
+    renderGiftArmarFoot(foot);
+  }
+  function renderGiftArmarCurada(list, foot){
     const brands = [...new Set(catalog.map(p=>p.inspiration).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
     list.innerHTML = `
+      <button class="da-back" type="button" id="da-gift-modo-back">← Cambiar modo</button>
       <div class="da-gift-banner">🎁 Arma un regalo — elige uno o varios perfumes (o varios tamaños) para que la persona elija el que más le guste.</div>
       <input type="text" id="gift-filter" placeholder="Buscar por nombre o marca..." style="width:100%;padding:10px 14px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;margin-bottom:10px;font-family:inherit;font-size:13px;color:#3c2f47"/>
       <div style="display:flex;gap:8px;margin-bottom:12px">
@@ -1051,6 +1146,7 @@
     `;
     renderGiftCatalogList();
     renderGiftArmarFoot(foot);
+    document.getElementById('da-gift-modo-back').addEventListener('click', ()=>{ giftArmarModo = null; giftList = []; renderCart(); });
     document.getElementById('gift-filter').value = giftFilterText;
     document.getElementById('gift-filter-gender').value = giftFilterGender;
     document.getElementById('gift-filter-brand').value = giftFilterBrand;
@@ -1059,15 +1155,20 @@
     document.getElementById('gift-filter-brand').addEventListener('change', e => { giftFilterBrand = e.target.value; renderGiftCatalogList(); });
   }
   function renderGiftArmarFoot(foot){
-    const total = giftList.reduce((s,it)=> s + it.price + (it.premium ? it.premiumPrecio : 0), 0);
+    const total = computeGiftArmarTotal();
+    const isTalla = giftArmarModo === 'talla';
+    const canNext = isTalla ? !!giftTallaMl : giftList.length > 0;
+    const label = isTalla
+      ? (giftTallaMl ? `Regalo de ${giftTallaMl} ml` : 'Elige un tamaño')
+      : `${giftList.length} elegido${giftList.length===1?'':'s'}`;
     foot.innerHTML = `
-      <div class="da-gift-total"><span>${giftList.length} elegido${giftList.length===1?'':'s'}</span><b>S/ ${total}</b></div>
+      <div class="da-gift-total"><span>${label}</span><b>S/ ${total}</b></div>
       <button class="da-btn da-btn-ghost" style="width:100%;margin-bottom:8px" id="da-gift-cancel">Cancelar</button>
-      <button class="da-btn da-btn-primary" style="width:100%" id="da-gift-next" ${giftList.length ? '' : 'disabled'}>Siguiente</button>
+      <button class="da-btn da-btn-primary" style="width:100%" id="da-gift-next" ${canNext ? '' : 'disabled'}>Siguiente</button>
     `;
     document.getElementById('da-gift-cancel').addEventListener('click', ()=>{ giftMode = false; renderCart(); });
     document.getElementById('da-gift-next').addEventListener('click', ()=>{
-      if(!giftList.length) return;
+      if(!canNext) return;
       giftStep = 'detalles'; renderCart();
     });
   }
@@ -1103,7 +1204,7 @@
           <div class="da-gift-sizes">
             ${sizes.map(sz => {
               const inList = giftList.find(g=>g.id===p.id && g.ml===sz.ml);
-              return `<button type="button" class="da-gift-size-chip ${inList?'selected':''}" data-id="${p.id}" data-ml="${sz.ml}" data-name="${escapeHtml(p.name)}" data-price="${sz.price}">${sz.ml} ml · S/ ${sz.price}</button>`;
+              return `<button type="button" class="da-gift-size-chip ${inList?'selected':''}" data-id="${p.id}" data-ml="${sz.ml}" data-name="${escapeHtml(p.name)}" data-inspiration="${escapeHtml(p.inspiration||'')}" data-price="${sz.price}">${sz.ml} ml · S/ ${sz.price}</button>`;
             }).join('')}
           </div>
           ${hasPremium ? sizes.map(sz => {
@@ -1124,7 +1225,7 @@
         chip.classList.remove('selected');
         if(premiumRow){ premiumRow.style.display = 'none'; const cb = premiumRow.querySelector('input'); if(cb) cb.checked = false; }
       } else {
-        giftList.push({ id, ml, name: chip.dataset.name, price: +chip.dataset.price, premium:false, premiumPrecio: catalog.find(x=>x.id===id)?.frascoPremium?.precio||0 });
+        giftList.push({ id, ml, name: chip.dataset.name, inspiration: chip.dataset.inspiration || '', price: +chip.dataset.price, premium:false, premiumPrecio: catalog.find(x=>x.id===id)?.frascoPremium?.precio||0 });
         chip.classList.add('selected');
         if(premiumRow) premiumRow.style.display = 'flex';
       }
@@ -1140,27 +1241,31 @@
 
   // Paso 2 (comprador): ¿para quién es la entrega? + contacto / dirección según corresponda
   function renderGiftDetalles(list, foot){
+    // En modo "talla" no tiene sentido entregárselo al propio comprador: la gracia es que
+    // la otra persona elija el perfume entre todo el catálogo de ese tamaño.
+    if(giftArmarModo === 'talla') giftDraft.entregaPara = 'regalada';
     const isComprador = giftDraft.entregaPara === 'comprador';
     list.innerHTML = `
       <div class="da-checkout-head">
-        <button class="da-back" type="button" id="da-gift-back">← Volver a elegir perfumes</button>
+        <button class="da-back" type="button" id="da-gift-back">← Volver a elegir ${giftArmarModo === 'talla' ? 'el tamaño' : 'perfumes'}</button>
         <h4>Datos del regalo</h4>
       </div>
+      ${giftArmarModo === 'talla' ? '' : `
       <div style="margin-bottom:18px">
         <span class="da-gift-toggle-label">¿Se te entregará el regalo a ti?</span>
         <div style="display:flex;gap:10px">
           <button type="button" class="da-btn ${isComprador?'da-btn-primary':'da-btn-ghost'}" id="gift-entrega-si" style="flex:1">Sí, a mí</button>
           <button type="button" class="da-btn ${!isComprador?'da-btn-primary':'da-btn-ghost'}" id="gift-entrega-no" style="flex:1">No, a otra persona</button>
         </div>
-      </div>
+      </div>`}
       <div id="gift-detalles-body" class="da-order-form"></div>
       <button class="da-btn da-btn-primary" style="width:100%;margin-top:14px;flex:none" id="da-gift-submit">${isComprador ? 'Continuar' : 'Generar link de regalo'}</button>
     `;
     foot.innerHTML = '';
     renderGiftDetallesBody();
     document.getElementById('da-gift-back').addEventListener('click', ()=>{ giftStep = 'armar'; renderCart(); });
-    document.getElementById('gift-entrega-si').addEventListener('click', ()=>{ giftDraft.entregaPara = 'comprador'; renderGiftDetalles(list, foot); });
-    document.getElementById('gift-entrega-no').addEventListener('click', ()=>{ giftDraft.entregaPara = 'regalada'; renderGiftDetalles(list, foot); });
+    document.getElementById('gift-entrega-si')?.addEventListener('click', ()=>{ giftDraft.entregaPara = 'comprador'; renderGiftDetalles(list, foot); });
+    document.getElementById('gift-entrega-no')?.addEventListener('click', ()=>{ giftDraft.entregaPara = 'regalada'; renderGiftDetalles(list, foot); });
     document.getElementById('da-gift-submit').addEventListener('click', ()=>{
       if(giftDraft.entregaPara === 'comprador') submitGiftSelf(); else submitGiftForOther();
     });
@@ -1260,8 +1365,8 @@
     if(!compradorTelefono){ showToast('Déjanos tu WhatsApp para avisarte'); return; }
     const pagarAhora = giftDraft.pagarAhora;
     giftDraft = { ...giftDraft, compradorNombre, compradorTelefono, pagarAhora };
-    const items = giftList.map(g => ({ id: g.id, ml: g.ml, name: g.name, qty: 1, premium: g.premium, subtotal: g.price + (g.premium ? g.premiumPrecio : 0) }));
-    const total = items.reduce((s,it)=>s+it.subtotal, 0);
+    const items = giftList.map(g => ({ id: g.id, ml: g.ml, name: g.name, inspiration: g.inspiration || '', qty: 1, premium: g.premium, subtotal: g.price + (g.premium ? g.premiumPrecio : 0) }));
+    const total = computeGiftForOtherTotal();
     const btn = document.getElementById('da-gift-submit');
     if(btn){ btn.disabled = true; btn.textContent = 'Generando...'; }
     try{
@@ -1285,9 +1390,15 @@
   function buildGiftShareMessage(g, url){
     const quien = g.compradorNombre ? `${escapeHtml(g.compradorNombre)} te preparó` : 'Te preparé';
     const n = g.items.length;
-    const linea2 = n > 1
-      ? `Elegí ${n} perfumes para ti — entra, elige el que más te enamore y en pocos días lo tienes contigo 🌸`
-      : `Elegí un perfume para ti — entra, confírmalo y en pocos días lo tienes contigo 🌸`;
+    let linea2;
+    if(giftArmarModo === 'talla'){
+      const ml = g.items[0]?.ml || '';
+      linea2 = `Elegí un perfume de ${ml} ml para ti — entra y elige el que más te guste entre todo nuestro catálogo 🌸`;
+    } else if(n > 1){
+      linea2 = `Elegí ${n} perfumes para ti — entra, elige el que más te enamore y en pocos días lo tienes contigo 🌸`;
+    } else {
+      linea2 = `Elegí un perfume para ti — entra, confírmalo y en pocos días lo tienes contigo 🌸`;
+    }
     return [
       `🎁✨ ¡${quien} un regalo!`,
       '',
@@ -1398,7 +1509,7 @@
       if(!data.ok){ showToast(data.error || 'Este link de regalo no existe o ya expiró'); return; }
       currentGift = data.gift;
       giftClaimStep = data.gift.elegido ? 'gracias' : 'elegir';
-      giftClaimChoice = null; giftClaimResult = null;
+      giftClaimChoice = null; giftClaimResult = null; giftClaimFilterText = '';
       giftRole = 'regalada'; giftMode = true;
       renderCart();
       document.getElementById('da-bd').classList.add('open');
@@ -1424,27 +1535,49 @@
       foot.innerHTML = '';
       return;
     }
+    const showFilter = g.items.length > 6;
     list.innerHTML = `
       <div class="da-gift-banner">🎁 <b>¡Es un regalo para ti!</b> Elige el que más te guste.</div>
-      <div id="gift-claim-options">
-        ${g.items.map((it,i)=>`
-          <div class="da-gift-radio ${giftClaimChoice===i?'selected':''}" data-idx="${i}">
-            <img src="${giftItemPhoto(it)}" alt="" onerror="this.style.visibility='hidden'"/>
-            <div><div class="n">${escapeHtml(it.name)}</div><div class="m">${it.ml} ml${it.premium?' · frasco premium incluido':''}</div></div>
-            <div class="da-radio-dot"></div>
-          </div>`).join('')}
-      </div>
+      ${showFilter ? `<input type="text" id="gift-claim-filter" placeholder="Buscar por nombre o marca..." style="width:100%;padding:10px 14px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;margin-bottom:12px;font-family:inherit;font-size:13px;color:#3c2f47"/>` : ''}
+      <div id="gift-claim-options"></div>
       <div id="gift-claim-address" class="da-order-form" style="margin-top:16px"></div>
       <button class="da-btn da-btn-primary" style="width:100%;margin-top:14px;flex:none" id="gift-claim-confirm" disabled>Confirmar mi elección</button>
     `;
     foot.innerHTML = '';
-    document.getElementById('gift-claim-options').querySelectorAll('.da-gift-radio').forEach(row => row.addEventListener('click', ()=>{
+    renderGiftClaimOptions();
+    if(showFilter){
+      const filterInput = document.getElementById('gift-claim-filter');
+      filterInput.value = giftClaimFilterText;
+      filterInput.addEventListener('input', e=>{ giftClaimFilterText = e.target.value; renderGiftClaimOptions(); });
+    }
+    renderGiftClaimAddressAndButton();
+  }
+  // Lista de opciones de la persona regalada — separado para poder re-renderizar solo esto
+  // al buscar, sin perder lo que ya escribió en la dirección más abajo.
+  function renderGiftClaimOptions(){
+    const g = currentGift;
+    const box = document.getElementById('gift-claim-options');
+    if(!box) return;
+    const words = normText(giftClaimFilterText).split(/\s+/).filter(Boolean);
+    const visible = g.items
+      .map((it,i)=>({ it, i }))
+      .filter(({it}) => !words.length || words.every(w => normText(`${it.name} ${it.inspiration||''}`).includes(w)));
+    if(!visible.length){
+      box.innerHTML = `<p style="text-align:center;color:#5d4c70;font-size:13px;padding:16px 0">No encontramos nada con esa búsqueda.</p>`;
+      return;
+    }
+    box.innerHTML = visible.map(({it,i})=>`
+      <div class="da-gift-radio ${giftClaimChoice===i?'selected':''}" data-idx="${i}">
+        <img src="${giftItemPhoto(it)}" alt="" onerror="this.style.visibility='hidden'"/>
+        <div><div class="n">${escapeHtml(it.name)}</div><div class="m">${it.ml} ml${it.inspiration ? ' · '+escapeHtml(it.inspiration) : ''}${it.premium?' · frasco premium incluido':''}</div></div>
+        <div class="da-radio-dot"></div>
+      </div>`).join('');
+    box.querySelectorAll('.da-gift-radio').forEach(row => row.addEventListener('click', ()=>{
       giftClaimChoice = +row.dataset.idx;
-      document.querySelectorAll('#gift-claim-options .da-gift-radio').forEach(r=>r.classList.remove('selected'));
+      box.querySelectorAll('.da-gift-radio').forEach(r=>r.classList.remove('selected'));
       row.classList.add('selected');
       renderGiftClaimAddressAndButton();
     }));
-    renderGiftClaimAddressAndButton();
   }
   function renderGiftClaimAddressAndButton(){
     const addrBox = document.getElementById('gift-claim-address');

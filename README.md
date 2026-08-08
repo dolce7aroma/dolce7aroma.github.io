@@ -134,14 +134,20 @@ Y en **Workers & Pages → Storage & Databases → KV**, crea un namespace (ej. 
 
 ## 🎁 Regalar un perfume (Fase 1)
 
-Botón flotante **"🎁 Regalar"** encima del de WhatsApp, en todas las páginas. Flujo:
+Botón flotante **"🎁 Regalar"** encima del de WhatsApp, en todas las páginas. El comprador primero elige uno de dos modos:
 
-1. **Comprador**: elige uno o varios perfumes (y tamaños — cada tamaño de un mismo perfume aparece como una opción separada) de una lista curada, con buscador (busca por nombre o marca, en cualquier orden de palabras) y filtros por género y por marca/diseñador. Si un perfume tiene "Frasco premium" activado en el Admin, puede sumarlo a un precio extra por cada tamaño elegido.
-2. Elige si el regalo **se le entrega a él mismo** (llena su dirección ahí mismo y listo, va directo por el checkout normal) o **a otra persona** (deja su nombre y WhatsApp para que le avisen, y elige con dos botones si paga de inmediato o cuando la otra persona elija — el total no cambia en ningún caso, porque el catálogo tiene precios uniformes).
-3. Si es para otra persona, se genera un link (`catalogo.html?regalo=<id>`) con un mensaje ya armado y personalizado (usa el nombre del comprador si lo dejó) para compartir por WhatsApp o copiar. El link es válido por **7 días** (`GIFT_EXPIRY_DAYS`, definido tanto en `assets/shop.js` como en el Worker — hay que mantenerlos iguales si se cambia).
-4. La persona regalada abre el link, ve solo esa lista curada, elige uno, llena su propia dirección de entrega y confirma.
-5. El pedido **solo llega a la pestaña Pedidos una vez que está pagado** — sin excepción, sea que el comprador pagó antes o después de que la otra persona eligiera.
-6. Si nadie completa el regalo (falta el pago o la elección) dentro de los 7 días, el link queda **expirado**: la próxima vez que alguien lo abre, el Worker lo detecta y le cambia el estado a `expirado` en KV (no hay Cron Trigger — es una revisión "perezosa" al momento de acceder, no un job en segundo plano). Un regalo ya convertido en pedido nunca expira.
+- **"Elijo yo los perfumes"** (modo curada): arma una lista de opciones (uno o varios perfumes, cada tamaño como opción separada), con buscador (nombre o marca, en cualquier orden de palabras) y filtros por género y por marca/diseñador. Si un perfume tiene "Frasco premium" activado en el Admin, puede sumarlo a un precio extra por cada tamaño elegido.
+- **"Solo el tamaño"** (modo talla): el comprador elige únicamente el tamaño (10/50/110 ml) al precio estándar de ese tamaño, y la persona regalada elige libremente el perfume que quiera entre **todo el catálogo** con ese tamaño y precio (se arma automáticamente con todos los perfumes que califican). Este modo no ofrece frasco premium ni entrega al propio comprador — no tendría sentido, ya que la gracia es que la otra persona decida. Como puede haber muchas opciones (60+), la pantalla de la persona regalada muestra un buscador (por nombre o marca) cuando hay más de 6.
+
+Luego, en ambos modos:
+
+1. El comprador elige si el regalo **se le entrega a él mismo** (solo disponible en modo curada — llena su dirección ahí mismo y va directo por el checkout normal) o **a otra persona** (deja su nombre y WhatsApp para que le avisen, y elige con dos botones si paga de inmediato o cuando la otra persona elija).
+2. Si es para otra persona, se genera un link (`catalogo.html?regalo=<id>`) con un mensaje ya armado y personalizado (usa el nombre del comprador si lo dejó) para compartir por WhatsApp o copiar. El link es válido por **7 días** (`GIFT_EXPIRY_DAYS`, definido tanto en `assets/shop.js` como en el Worker — hay que mantenerlos iguales si se cambia).
+3. La persona regalada abre el link, elige uno entre las opciones, llena su propia dirección de entrega y confirma.
+4. El pedido **solo llega a la pestaña Pedidos una vez que está pagado** — sin excepción, sea que el comprador pagó antes o después de que la otra persona eligiera.
+5. Si nadie completa el regalo (falta el pago o la elección) dentro de los 7 días, el link queda **expirado**: la próxima vez que alguien lo abre, el Worker lo detecta y le cambia el estado a `expirado` en KV (no hay Cron Trigger — es una revisión "perezosa" al momento de acceder, no un job en segundo plano). Un regalo ya convertido en pedido nunca expira.
+
+> 💰 **Cómo se calcula el total a cobrar cuando es "para otra persona":** como la persona regalada se queda con **una sola** de las opciones ofrecidas (nunca con todas), el total no es la suma de las opciones — sería cobrar de más. En modo talla es directo (todas las opciones cuestan lo mismo, el precio estándar del tamaño). En modo curada, se cobra la más cara de las opciones curadas (nunca menos de lo que podría terminar costando, nunca la suma de opciones que no se van a entregar). Cuando el regalo es para uno mismo (sin "elegir" de por medio), sí se cobra la suma de todo lo agregado, porque ahí se entrega todo.
 
 ### Frasco premium (Admin → Catálogo → editar perfume)
 
