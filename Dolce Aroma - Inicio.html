@@ -1121,6 +1121,14 @@
     const item = heroItems[heroIdx];
     if(!item) return;
     const isAnuncio = item.type === 'anuncio';
+    const stack = document.getElementById('hero-bottle-stack');
+    if(stack){
+      // En slides de perfume, la foto misma abre la ficha para comprarlo — en
+      // anuncios no (ya tienen su propio botón, no queremos dos acciones distintas
+      // compitiendo sobre la misma imagen).
+      stack.style.cursor = isAnuncio ? 'default' : 'pointer';
+      stack.setAttribute('aria-label', isAnuncio ? '' : `Ver ${item.perfume.name}`);
+    }
     const img = document.getElementById('hero-bottle-img');
     if(img){
       img.style.opacity = '0';
@@ -1179,6 +1187,13 @@
     const direct = e.target.closest('[data-detail]');
     const id = direct?.dataset.detail || card?.dataset.perfumeId;
     if(id && window.DA){ e.preventDefault(); window.DA.openDetail(id); }
+  });
+
+  // Click en la foto del hero: si el slide actual es un perfume, abre su ficha para
+  // comprarlo (los anuncios no, ya tienen su propio botón — ver paintHero).
+  document.getElementById('hero-bottle-stack')?.addEventListener('click', () => {
+    const item = heroItems[heroIdx];
+    if(item && item.type === 'producto' && window.DA) window.DA.openDetail(item.perfume.id);
   });
 
   window.DA.init({ onReady: renderFeatured });
