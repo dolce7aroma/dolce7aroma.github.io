@@ -1785,6 +1785,7 @@
     getCatalog: () => catalog,
     openDetail,
     openCart,
+    openGiftBuilder,
     addToCart,
     resolvePhoto,
     estiloFor: giftEstiloFor,

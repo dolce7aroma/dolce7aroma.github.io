@@ -132,6 +132,26 @@ Y en **Workers & Pages → Storage & Databases → KV**, crea un namespace (ej. 
 
 ---
 
+## 📢 Anuncios del carrusel del hero (Admin → Anuncios)
+
+El carrusel principal de Inicio (la foto grande arriba, la que antes solo mostraba perfumes destacados) ahora puede mezclar dos tipos de slides:
+
+- **Perfumes destacados**: como siempre, foto limpia, sin texto encima.
+- **Anuncios**: imagen propia + título/subtítulo/botón opcionales, con un overlay de texto sobre la foto (fondo oscuro degradado para que se lea bien). Sirve para promocionar el regalo, una oferta del mes, o cualquier otra campaña.
+
+**Cómo se administra:** Admin → pestaña **📢 Anuncios**. Cada anuncio tiene imagen (se sube igual que las fotos de producto, pero se guarda aparte en `assets/anuncios/`), título, subtítulo, texto del botón, un link, y un interruptor "Activo" (solo los activos aparecen en el carrusel). Se pueden reordenar con las flechas ↑↓ de la tabla. **Cada acción (guardar, activar/ocultar, reordenar, eliminar) publica de inmediato** — no hay un botón "Publicar" aparte, para no dejar cambios a medio camino.
+
+**El campo "Link del botón" acepta dos formas:**
+- La palabra `regalo` (tal cual, sin nada más) → el botón abre directo el armador de "Regalar un perfume", sin salir de la página.
+- Cualquier otro texto se usa tal cual como `href` del botón — puede ser un ancla de la misma página (`#ofertas`), otra página del sitio (`Dolce Aroma - Catalogo.html`), o un link externo.
+
+**Dónde vive todo:**
+- `data/anuncios-hero.json` — la lista de anuncios (mismo patrón que `zonas-envio.json`/`pago.json`: se lee directo con `fetch` y se publica vía `/api/save-config`).
+- `assets/anuncios/` — las imágenes, subidas vía el endpoint `/api/upload-anuncio-photo` del Worker (igual que `/api/upload-photo`, pero en su propia carpeta para no mezclarse con fotos de producto).
+- `Dolce Aroma - Inicio.html` → `renderFeatured()` arma la lista mixta (destacados + anuncios activos) y `paintHero()` decide si muestra el overlay de texto o no, según el tipo de slide.
+
+---
+
 ## 🔍 Filtros del catálogo (Catálogo → toolbar + panel "Filtros")
 
 La barra de herramientas del catálogo (siempre visible, en cualquier tamaño de pantalla) tiene: buscador, género (Todos/Mujer/Hombre/Unisex), **estilo** (Todos/Árabe/Diseñador), un combo de **marca con selección múltiple** (checkboxes — se puede filtrar por varias marcas a la vez sin entrar a ningún panel), orden, y el botón "Filtros" con el resto (tamaño, familia olfativa, etiqueta, intensidad, ocasión). Ya no existe el toggle Confort/Denso — se reemplazó por el de estilo.
@@ -254,6 +274,7 @@ Ejemplos:
 | **📊 Dashboard** | Resumen de inventario, alertas de stock, KPIs |
 | **📚 Catálogo** | Alta/edición de perfumes, carga masiva CSV, "Publicar cambios" |
 | **⭐ Reseñas** | Administra las reseñas del carrusel de Inicio |
+| **📢 Anuncios** | Anuncios (imagen + título/subtítulo/botón opcionales) que se mezclan con los perfumes destacados en el carrusel del hero de Inicio — ver sección dedicada más abajo |
 | **🚚 Envíos** | Monto mínimo para envío gratis, zonas gratis por distrito (formato `Distrito \| Detalle`), mensaje estándar para zonas sin detalle propio, mensaje para el resto de zonas |
 | **🧾 Pedidos** | Lista los pedidos hechos por clientes, con su estado editable (requiere el KV de Cloudflare enlazado — ver arriba) |
 | **💳 Pago** | Nombre que se muestra en la pantalla de pago por Yape, y la llave pública de Culqi para activar el pago con tarjeta |

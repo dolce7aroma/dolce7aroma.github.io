@@ -197,6 +197,23 @@
   }
   .hero-bottle img{width:100%;height:auto}
 
+  /* Overlay de texto + CTA — solo aparece en los slides de tipo "anuncio" (ver Admin →
+     Anuncios); los slides de perfumes destacados quedan como foto limpia, sin overlay. */
+  .hero-anuncio-overlay{
+    position:absolute;left:0;right:0;bottom:0;z-index:4;
+    padding:30px 32px 28px;
+    background:linear-gradient(0deg, rgba(26,22,32,0.86) 0%, rgba(26,22,32,0.5) 60%, transparent 100%);
+    display:none;flex-direction:column;align-items:flex-start;gap:8px;
+  }
+  .hao-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:27px;color:var(--ivory);line-height:1.15}
+  .hao-subtitle{font-size:13px;color:rgba(246,242,236,0.85);max-width:320px;line-height:1.55}
+  .hao-btn{
+    margin-top:6px;display:inline-flex;align-items:center;gap:8px;
+    padding:11px 22px;border-radius:999px;background:var(--gold);color:var(--ink);
+    font-size:11px;letter-spacing:0.18em;text-transform:uppercase;transition:opacity .2s;
+  }
+  .hao-btn:hover{opacity:0.85}
+
   .hero-tag{
     margin-top:28px;display:flex;align-items:center;gap:18px;justify-content:flex-start;
   }
@@ -656,6 +673,11 @@
         <div class="hero-bottle" id="hero-bottle-stack">
           <img id="hero-bottle-img" src="assets/perfume-110ml.jpg" alt="Frasco insignia" style="border-radius:8px"/>
         </div>
+        <div class="hero-anuncio-overlay" id="hero-anuncio-overlay">
+          <div class="hao-title" id="hao-title"></div>
+          <div class="hao-subtitle" id="hao-subtitle"></div>
+          <a class="hao-btn" id="hao-btn" href="#"></a>
+        </div>
       </div>
 
       <div class="hero-dots" id="hero-dots" aria-hidden="true">
@@ -1013,11 +1035,24 @@
   const FAMILY_LABEL_HOME = {floral:'Floral',oriental:'Oriental',amaderado:'Amaderado',citrico:'Cítrico',chipre:'Chipre',aromatico:'Aromático',frutal:'Frutal'};
   const TAG_LABEL_HOME = {'mas-vendido':'Más vendido','nuevo':'Nuevo','edicion-limitada':'Edición limitada','agotado':'Agotado'};
 
-  function renderFeatured(catalog){
+  // Anuncios configurables desde Admin → Anuncios, se mezclan con los destacados
+  // en el mismo carrusel del hero (ver también renderFeatured).
+  async function loadAnunciosHero(){
+    try{
+      const res = await fetch('data/anuncios-hero.json', {cache:'no-cache'});
+      const data = await res.json();
+      return (data.anuncios||[]).filter(a=>a.activo && a.imagen);
+    }catch(e){ return []; }
+  }
+
+  async function renderFeatured(catalog){
     const list = catalog.filter(p => p.featured === true);
-    // ── Hero carousel: top 3 destacados ──
-    const carouselList = list.slice(0, 5);
-    const heroPool = carouselList.length ? carouselList : (catalog.length ? [catalog[0]] : []);
+    // ── Hero carousel: top 5 destacados + anuncios activos, mezclados ──
+    const productSlides = list.slice(0, 5).map(p => ({ type:'producto', perfume:p }));
+    const anuncioSlides = (await loadAnunciosHero()).map(a => ({ type:'anuncio', ...a }));
+    const heroPool = (productSlides.length || anuncioSlides.length)
+      ? [...productSlides, ...anuncioSlides]
+      : (catalog.length ? [{ type:'producto', perfume: catalog[0] }] : []);
     setupHeroCarousel(heroPool);
     const el = document.getElementById('featured-products');
     if(!el) return;
@@ -1083,17 +1118,48 @@
     restartHeroTimer();
   }
   function paintHero(){
-    const p = heroItems[heroIdx];
-    if(!p) return;
+    const item = heroItems[heroIdx];
+    if(!item) return;
+    const isAnuncio = item.type === 'anuncio';
     const img = document.getElementById('hero-bottle-img');
     if(img){
       img.style.opacity = '0';
       setTimeout(()=>{
-        img.src = window.DA.resolvePhoto(p);
-        img.alt = p.name;
+        if(isAnuncio){
+          img.src = item.imagen;
+          img.alt = item.titulo || 'Anuncio';
+        } else {
+          img.src = window.DA.resolvePhoto(item.perfume);
+          img.alt = item.perfume.name;
+        }
         img.onerror = () => { img.src = 'assets/perfume-110ml.jpg'; };
         img.style.opacity = '1';
       }, 220);
+    }
+    const overlay = document.getElementById('hero-anuncio-overlay');
+    if(overlay){
+      const showOverlay = isAnuncio && (item.titulo || item.subtitulo || item.textoBoton);
+      overlay.style.display = showOverlay ? 'flex' : 'none';
+      if(showOverlay){
+        const titleEl = document.getElementById('hao-title');
+        const subEl = document.getElementById('hao-subtitle');
+        const btnEl = document.getElementById('hao-btn');
+        if(titleEl){ titleEl.textContent = item.titulo || ''; titleEl.style.display = item.titulo ? '' : 'none'; }
+        if(subEl){ subEl.textContent = item.subtitulo || ''; subEl.style.display = item.subtitulo ? '' : 'none'; }
+        if(btnEl){
+          if(item.textoBoton){
+            btnEl.style.display = '';
+            btnEl.textContent = item.textoBoton;
+            if(item.link === 'regalo'){
+              btnEl.href = '#';
+              btnEl.onclick = e => { e.preventDefault(); window.DA.openGiftBuilder?.(); };
+            } else {
+              btnEl.href = item.link || '#';
+              btnEl.onclick = null;
+            }
+          } else { btnEl.style.display = 'none'; }
+        }
+      }
     }
     document.querySelectorAll('#hero-dots .hd').forEach((d,i)=>d.classList.toggle('active', i===heroIdx));
   }
