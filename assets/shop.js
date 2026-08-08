@@ -1787,6 +1787,7 @@
     openCart,
     addToCart,
     resolvePhoto,
+    estiloFor: giftEstiloFor,
     constants: { FAMILY_LABEL, TAG_LABEL, GENDER_LABEL, WHATSAPP_NUMBER }
   };
 })();

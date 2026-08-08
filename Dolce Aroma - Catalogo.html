@@ -89,11 +89,24 @@
   .count-pill{font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum-700);margin-left:auto}
   .count-pill b{color:var(--plum);font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;margin-right:6px}
 
+  /* botón "Filtros" — solo visible en tablet/mobile, donde los facets pasan a ser un panel aparte */
+  .filtros-btn{
+    display:none;align-items:center;gap:8px;padding:9px 16px;border:1px solid var(--rule);border-radius:999px;
+    font-size:11.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--plum);background:var(--ivory);
+  }
+  .filtros-btn .fb-count{
+    background:var(--gold);color:var(--ivory);font-size:10px;width:18px;height:18px;border-radius:50%;
+    display:grid;place-items:center;letter-spacing:0;
+  }
+  .filtros-btn .fb-count:empty{display:none}
+
   /* main layout */
   main{max-width:1440px;margin:0 auto;padding:48px 40px 100px;display:grid;grid-template-columns:260px 1fr;gap:48px}
 
-  /* sidebar facets */
+  /* sidebar facets (desktop: columna fija; tablet/mobile: panel a pantalla completa, ver media queries) */
   aside.facets{position:sticky;top:160px;align-self:start;max-height:calc(100vh - 200px);overflow-y:auto;padding-right:8px}
+  .facets-head{display:none} /* solo aparece en el panel de tablet/mobile */
+  .facets-apply{display:none} /* idem — en desktop el filtrado ya es instantáneo, no hace falta "aplicar" */
   .facet{padding-bottom:24px;margin-bottom:24px;border-bottom:1px solid var(--rule)}
   .facet:last-child{border-bottom:none}
   .facet h3{font-size:10.5px;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:16px}
@@ -173,8 +186,37 @@
     .intro-side{text-align:left;justify-self:start}
     .intro-side .meta{justify-content:flex-start}
     main{grid-template-columns:1fr;gap:24px}
-    aside.facets{position:static;max-height:none;display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
     .grid, .grid.dense{grid-template-columns:repeat(2,1fr)}
+
+    /* Filtros pasan a un panel a pantalla completa (antes ocupaban un montón de alto
+       entre el toolbar y las primeras fotos) — se abre con el botón "Filtros" del toolbar. */
+    .filtros-btn{display:inline-flex}
+    aside.facets{
+      position:fixed;inset:0;top:0;left:0;right:0;bottom:0;height:100vh;width:100vw;
+      align-self:auto;z-index:100;max-height:none;padding:0;margin:0;overflow:hidden;
+      background:var(--ivory);display:flex;flex-direction:column;
+      transform:translateY(100%);transition:transform .25s ease;
+    }
+    aside.facets.open{transform:translateY(0)}
+    .facets-head{
+      display:flex;justify-content:space-between;align-items:center;flex:0 0 auto;
+      padding:20px 24px;border-bottom:1px solid var(--rule);
+    }
+    .facets-head h3{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:26px;color:var(--plum)}
+    .facets-close{width:36px;height:36px;border-radius:50%;background:var(--lavender-soft);display:grid;place-items:center;font-size:16px;color:var(--plum)}
+    .facets-body{
+      flex:1;overflow-y:auto;padding:20px 24px;
+      display:grid;grid-template-columns:repeat(2,1fr);gap:24px;
+    }
+    .facets-foot{
+      display:flex;gap:10px;flex:0 0 auto;padding:16px 24px;border-top:1px solid var(--rule);
+      background:var(--ivory);
+    }
+    .facets-foot .clear-btn{margin-top:0;width:auto;flex:1}
+    .facets-apply{
+      display:block;flex:1;padding:12px;border-radius:8px;background:var(--plum);color:var(--ivory);
+      font-size:11px;letter-spacing:0.18em;text-transform:uppercase;
+    }
   }
   @media(max-width:640px){
     .intro{padding:50px 18px 30px}
@@ -184,7 +226,7 @@
     .toolbar .search{min-width:0;max-width:none;width:100%}
     .seg{flex-wrap:wrap}
     main{padding:30px 18px 80px;gap:30px}
-    aside.facets{grid-template-columns:1fr}
+    .facets-body{grid-template-columns:1fr}
     .grid, .grid.dense{grid-template-columns:1fr;gap:18px}
     nav.top .nav-inner{padding:14px 18px;gap:10px;grid-template-columns:auto 1fr auto !important}
     nav.top .nav-link{font-size:10.5px;letter-spacing:0.16em}
@@ -332,33 +374,51 @@
       <button data-v="comfortable" class="active">Confort</button>
       <button data-v="dense">Denso</button>
     </div>
+    <button type="button" class="filtros-btn" id="filtros-open">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+      Filtros
+      <span class="fb-count" id="filtros-count"></span>
+    </button>
     <span class="count-pill"><b id="count">0</b> resultados</span>
   </div>
 </div>
 
 <main>
-  <aside class="facets" data-screen-label="Filtros">
-    <div class="facet">
-      <h3>Tamaño</h3>
-      <div class="facet-list" id="facet-ml"></div>
+  <aside class="facets" data-screen-label="Filtros" id="facets-panel">
+    <div class="facets-head">
+      <h3>Filtros</h3>
+      <button type="button" class="facets-close" id="facets-close" aria-label="Cerrar filtros">✕</button>
     </div>
-    <div class="facet">
-      <h3>Familia olfativa</h3>
-      <div class="facet-list" id="facet-family"></div>
+    <div class="facets-body">
+      <div class="facet">
+        <h3>Tamaño</h3>
+        <div class="facet-list" id="facet-ml"></div>
+      </div>
+      <div class="facet">
+        <h3>Familia olfativa</h3>
+        <div class="facet-list" id="facet-family"></div>
+      </div>
+      <div class="facet">
+        <h3>Estilo</h3>
+        <div class="facet-list" id="facet-estilo"></div>
+      </div>
+      <div class="facet">
+        <h3>Etiqueta</h3>
+        <div class="facet-list" id="facet-tag"></div>
+      </div>
+      <div class="facet">
+        <h3>Intensidad</h3>
+        <div class="facet-list" id="facet-intensity"></div>
+      </div>
+      <div class="facet">
+        <h3>Ocasión</h3>
+        <div class="facet-list" id="facet-occasion"></div>
+      </div>
     </div>
-    <div class="facet">
-      <h3>Etiqueta</h3>
-      <div class="facet-list" id="facet-tag"></div>
+    <div class="facets-foot">
+      <button class="clear-btn" id="clear">Limpiar filtros</button>
+      <button type="button" class="facets-apply" id="facets-apply">Ver <span id="facets-apply-count">0</span> resultados</button>
     </div>
-    <div class="facet">
-      <h3>Intensidad</h3>
-      <div class="facet-list" id="facet-intensity"></div>
-    </div>
-    <div class="facet">
-      <h3>Ocasión</h3>
-      <div class="facet-list" id="facet-occasion"></div>
-    </div>
-    <button class="clear-btn" id="clear">Limpiar filtros</button>
   </aside>
 
   <section data-screen-label="Resultados">
@@ -400,7 +460,7 @@ const FAMILY_DOT = {floral:'#d9a3b5', oriental:'#a8895a', amaderado:'#7a6448', c
 
 let perfumes = [];
 let state = {
-  q:'', gender:'', family:'', tag:'', intensity:'', occasion:'', ml:'',
+  q:'', gender:'', family:'', tag:'', intensity:'', occasion:'', ml:'', estilo:'',
   sort:'featured', density:'comfortable'
 };
 
@@ -429,6 +489,14 @@ function buildFacets(){
     return `<div class="facet-item" data-facet="family" data-v="${f}">
       <span class="lbl"><span class="dot" style="background:${FAMILY_DOT[f]||'#aaa'}"></span>${FAMILY_LABEL[f]||f}</span>
       <span class="count">${c}</span></div>`;
+  }).join('');
+
+  // estilo (árabe / diseñador — se deriva de la marca, ver window.DA.estiloFor)
+  const ESTILO_LABEL = { arabe: 'Árabe', disenador: 'Diseñador' };
+  $('#facet-estilo').innerHTML = ['arabe','disenador'].map(e=>{
+    const c = perfumes.filter(p=>window.DA.estiloFor(p)===e).length;
+    return `<div class="facet-item" data-facet="estilo" data-v="${e}">
+      <span class="lbl">${ESTILO_LABEL[e]}</span><span class="count">${c}</span></div>`;
   }).join('');
 
   // tag
@@ -472,6 +540,7 @@ function filtered(){
     }
     if(state.gender && p.gender !== state.gender) return false;
     if(state.family && p.family !== state.family) return false;
+    if(state.estilo && window.DA.estiloFor(p) !== state.estilo) return false;
     if(state.tag && p.tag !== state.tag) return false;
     if(state.intensity && p.intensity !== state.intensity) return false;
     if(state.occasion && !(p.occasion||[]).includes(state.occasion)) return false;
@@ -494,6 +563,8 @@ function filtered(){
 function renderCards(){
   const list = filtered();
   $('#count').textContent = list.length;
+  const applyCount = $('#facets-apply-count');
+  if(applyCount) applyCount.textContent = list.length;
   if(list.length === 0){
     $('#grid').innerHTML = `<div class="empty">
       <div class="serif">No encontramos nada.</div>
@@ -547,6 +618,16 @@ function syncFacetUI(){
     const k = el.dataset.facet; const v = el.dataset.v;
     el.classList.toggle('active', state[k] === v);
   });
+  updateFiltrosBadge();
+}
+
+// Cuenta cuántos de los filtros que viven DENTRO del panel "Filtros" están activos
+// (género queda fuera porque ya es visible siempre en el toolbar, no está escondido).
+function updateFiltrosBadge(){
+  const keys = ['family','estilo','tag','intensity','occasion','ml'];
+  const n = keys.filter(k => state[k]).length;
+  const badge = $('#filtros-count');
+  if(badge) badge.textContent = n ? n : '';
 }
 
 function renderMeta(){
@@ -581,12 +662,21 @@ function wire(){
   });
 
   $('#clear').addEventListener('click', ()=>{
-    state.q=''; state.gender=''; state.family=''; state.tag=''; state.intensity=''; state.occasion=''; state.ml='';
+    state.q=''; state.gender=''; state.family=''; state.estilo=''; state.tag=''; state.intensity=''; state.occasion=''; state.ml='';
     $('#q').value=''; $('#sort').value='featured'; state.sort='featured';
     document.querySelectorAll('#seg-gender button').forEach(x=>x.classList.remove('active'));
     document.querySelector('#seg-gender button[data-v=""]').classList.add('active');
     syncFacetUI(); renderCards();
   });
+
+  // Panel de filtros (tablet/mobile): abrir, cerrar y "aplicar" (el filtrado ya es
+  // instantáneo al tocar cada opción — este botón solo cierra el panel).
+  const panel = $('#facets-panel');
+  function openFiltros(){ panel.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeFiltros(){ panel.classList.remove('open'); document.body.style.overflow = ''; }
+  $('#filtros-open')?.addEventListener('click', openFiltros);
+  $('#facets-close')?.addEventListener('click', closeFiltros);
+  $('#facets-apply')?.addEventListener('click', closeFiltros);
 }
 
 (async function(){
@@ -606,6 +696,7 @@ function wire(){
   renderMeta();
   buildFacets();
   wire();
+  syncFacetUI();
   renderCards();
   // Delegación: click en cualquier card o botón "Ver detalle" abre el modal
   document.getElementById('grid').addEventListener('click', e => {
