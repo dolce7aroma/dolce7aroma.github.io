@@ -136,7 +136,9 @@ Y en **Workers & Pages → Storage & Databases → KV**, crea un namespace (ej. 
 
 Botón flotante **"🎁 Regalar"** encima del de WhatsApp, en todas las páginas. El comprador primero elige uno de dos modos:
 
-- **"Yo los elijo"** (modo curada): elige **un** perfume/tamaño para regalar (por ahora, un solo perfume por regalo — primera edición, mientras se valida la logística de entrega — con buscador y filtros por género y por marca/diseñador). Si tiene "Frasco premium" activado en el Admin, puede sumarlo a un precio extra.
+- **"Yo los elijo"** (modo curada): elige **un** perfume/tamaño para regalar (por ahora, un solo perfume por regalo — primera edición, mientras se valida la logística de entrega — con buscador y filtros por género, marca, y estilo árabe/diseñador). Si tiene "Frasco premium" activado en el Admin, puede sumarlo a un precio extra.
+
+  El filtro **árabe/diseñador** se calcula automáticamente por marca (`inspiration`), no requiere marcar nada en el Admin: `ARABE_BRANDS` en `assets/shop.js` lista las marcas consideradas "árabe" (hoy: Afnan, Lattafa, Bharara, Kayali) — cualquier marca que no esté en esa lista cae en "diseñador". Si se agrega un perfume de una marca árabe nueva, hay que sumarla a esa lista para que el filtro la reconozca.
 - **"Ella/Él los elige"** (modo talla): el comprador elige únicamente el tamaño (**solo 50 o 110 ml** — los frascos de 10 ml no se regalan) al precio estándar de ese tamaño, y la persona regalada elige libremente el perfume que quiera entre **todo el catálogo** con ese tamaño y precio (se arma automáticamente con todos los perfumes que califican). Este modo no ofrece frasco premium ni entrega al propio comprador — no tendría sentido, ya que la gracia es que la otra persona decida. Como puede haber muchas opciones (60+), la pantalla de la persona regalada muestra un buscador (por nombre o marca) cuando hay más de 6.
 
 Luego, en ambos modos:
