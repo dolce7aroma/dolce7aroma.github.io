@@ -197,28 +197,6 @@
   }
   .hero-bottle img{width:100%;height:auto}
 
-  .hero-floating-card{
-    position:absolute;background:var(--ivory);
-    padding:18px 22px;border-radius:14px;
-    box-shadow:0 24px 50px -20px rgba(60,47,71,0.28);
-    display:flex;align-items:center;gap:14px;z-index:3;
-  }
-  .hero-floating-card .dot{width:8px;height:8px;border-radius:50%;background:#7aa17a}
-  .hero-floating-card .pulse{
-    width:8px;height:8px;border-radius:50%;background:#7aa17a;position:relative;
-  }
-  .hero-floating-card .pulse::before{
-    content:"";position:absolute;inset:-4px;border-radius:50%;
-    background:#7aa17a;opacity:.3;animation:pulse 2s ease-out infinite;
-  }
-  @keyframes pulse{0%{transform:scale(.6);opacity:.5}100%{transform:scale(2);opacity:0}}
-  .hero-floating-card .label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--plum-700)}
-  .hero-floating-card .value{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--plum)}
-
-  .float-1{top:60px;left:-30px}
-  .float-1b{top:170px;left:-50px}
-  .float-2{bottom:60px;right:-30px}
-
   .hero-tag{
     margin-top:28px;display:flex;align-items:center;gap:18px;justify-content:flex-start;
   }
@@ -680,29 +658,6 @@
         </div>
       </div>
 
-      <div class="hero-floating-card float-1">
-        <div class="pulse"></div>
-        <div>
-          <div class="label" id="hero-stock-label">En stock · 110 ml</div>
-          <div class="value" id="hero-price">desde S/ 90</div>
-        </div>
-      </div>
-      <div class="hero-floating-card float-1b">
-        <div class="pulse"></div>
-        <div>
-          <div class="label" id="hero-stock-label-50">En stock · 50 ml</div>
-          <div class="value" id="hero-price-50">desde S/ 55</div>
-        </div>
-      </div>
-
-      <div class="hero-floating-card float-2">
-        <div>
-          <div class="label">Edición Atelier</div>
-          <div class="value" id="hero-name">Born in Roma</div>
-        </div>
-        <div id="hero-num" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:24px">N°01</div>
-      </div>
-
       <div class="hero-dots" id="hero-dots" aria-hidden="true">
         <span class="hd active"></span><span class="hd"></span><span class="hd"></span>
       </div>
@@ -1140,28 +1095,6 @@
         img.style.opacity = '1';
       }, 220);
     }
-    const s110 = (p.sizes||[]).find(s=>s.ml===110 && s.stock>0);
-    const s50  = (p.sizes||[]).find(s=>s.ml===50  && s.stock>0);
-    const card110 = document.querySelector('.float-1');
-    const card50  = document.querySelector('.float-1b');
-    if(card110){
-      if(s110){
-        card110.style.display='flex';
-        document.getElementById('hero-price').textContent = `desde S/ ${s110.price}`;
-        document.getElementById('hero-stock-label').textContent = 'En stock · 110 ml';
-      } else card110.style.display='none';
-    }
-    if(card50){
-      if(s50){
-        card50.style.display='flex';
-        document.getElementById('hero-price-50').textContent = `desde S/ ${s50.price}`;
-        document.getElementById('hero-stock-label-50').textContent = 'En stock · 50 ml';
-      } else card50.style.display='none';
-    }
-    const nameEl = document.getElementById('hero-name');
-    const numEl = document.getElementById('hero-num');
-    if(nameEl) nameEl.textContent = p.name;
-    if(numEl) numEl.textContent = 'N°' + String(heroIdx+1).padStart(2,'0');
     document.querySelectorAll('#hero-dots .hd').forEach((d,i)=>d.classList.toggle('active', i===heroIdx));
   }
   function restartHeroTimer(){
