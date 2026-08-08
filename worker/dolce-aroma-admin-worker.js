@@ -162,6 +162,36 @@ async function handleUploadPhoto(request, env) {
   }
 }
 
+// Igual que handleUploadPhoto, pero para las imágenes de los anuncios del carrusel
+// del hero (Inicio) — se guardan aparte, en assets/anuncios/, para no mezclarlas
+// con las fotos de producto.
+async function handleUploadAnuncioPhoto(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+
+  const { key, filename, imageBase64 } = body;
+  if (key !== env.ADMIN_KEY) return json({ ok: false, error: 'Contraseña incorrecta' }, 401);
+
+  const safeName = sanitizeFilename(filename);
+  if (!safeName) {
+    return json({ ok: false, error: 'Nombre de archivo no válido (usa letras, números, espacios, guiones y termina en .jpg/.png/.webp)' }, 400);
+  }
+  if (typeof imageBase64 !== 'string' || !imageBase64.length) {
+    return json({ ok: false, error: 'Falta la imagen' }, 400);
+  }
+  const raw = imageBase64.includes(',') ? imageBase64.split(',').pop() : imageBase64;
+  if (raw.length > 6_000_000) {
+    return json({ ok: false, error: 'La imagen es muy pesada (máx. ~4MB). Comprímela e intenta de nuevo.' }, 400);
+  }
+
+  try {
+    await putFile(`assets/anuncios/${safeName}`, raw, `Admin: subir imagen de anuncio ${safeName}`, env);
+    return json({ ok: true, path: `assets/anuncios/${safeName}` });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 502);
+  }
+}
+
 async function handleDeletePhoto(request, env) {
   const body = await request.json().catch(() => null);
   if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
@@ -210,7 +240,7 @@ async function handleSaveCatalog(request, env) {
 }
 
 // Lista blanca de archivos de configuración que el Admin puede publicar (fuera del catálogo/fotos).
-const ALLOWED_CONFIG_FILES = ['data/zonas-envio.json', 'data/pago.json'];
+const ALLOWED_CONFIG_FILES = ['data/zonas-envio.json', 'data/pago.json', 'data/anuncios-hero.json'];
 
 async function handleSaveConfig(request, env) {
   const body = await request.json().catch(() => null);
@@ -596,6 +626,9 @@ export default {
     const url = new URL(request.url);
     if (request.method === 'POST' && url.pathname === '/api/upload-photo') {
       return handleUploadPhoto(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/upload-anuncio-photo') {
+      return handleUploadAnuncioPhoto(request, env);
     }
     if (request.method === 'POST' && url.pathname === '/api/delete-photo') {
       return handleDeletePhoto(request, env);
