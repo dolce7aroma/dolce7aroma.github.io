@@ -15,6 +15,13 @@
   const ORDER_API_BASE = 'https://dolce7aroma-github-io.cesarfernandezh7.workers.dev';
   const GIFT_EXPIRY_DAYS = 15; // debe coincidir con GIFT_EXPIRY_DAYS en el Worker
   const GIFT_SIZES = [50, 110]; // solo se regalan estos tamaños (no 10 ml)
+  // Clasificación de marcas para el filtro "árabe / diseñador" del armador de regalo.
+  // Confirmado con el dueño: Afnan y Lattafa son casas árabes reconocidas; Bharara y Kayali
+  // (marcas con estética/perfil árabe aunque de origen estadounidense) también se marcan como
+  // árabe. Todo lo demás (incluye nicho: Creed, Initio, Kilian, Maison Francis Kurkdjian,
+  // Xerjoff) cae en "diseñador".
+  const ARABE_BRANDS = new Set(['Afnan', 'Lattafa', 'Bharara', 'Kayali']);
+  function giftEstiloFor(p){ return ARABE_BRANDS.has(p.inspiration) ? 'arabe' : 'disenador'; }
   const STORAGE_CATALOG = 'dolce-aroma-perfumes-v1'; // (compat: edits del admin)
   const STORAGE_CART    = 'dolce-aroma-cart-v1';
   const CATALOG_URLS    = ['data/productos.json', 'data/perfumes.json'];
@@ -1023,7 +1030,7 @@
   // ─── Regalar un perfume (Fase 1) ───
   let giftRole = 'comprador'; // 'comprador' (arma/paga) | 'regalada' (elige, vía ?regalo=)
   let giftClaimResult = null; // { orderId } una vez que la persona regalada confirma
-  let giftFilterText = '', giftFilterGender = '', giftFilterBrand = '';
+  let giftFilterText = '', giftFilterGender = '', giftFilterBrand = '', giftFilterEstilo = '';
   let giftArmarModo = null; // null (sin elegir) | 'curada' (arma lista puntual) | 'talla' (solo tamaño, ella elige el perfume)
   let giftTallaMl = null;   // tamaño elegido en modo 'talla'
   let giftClaimFilterText = ''; // buscador dentro de la pantalla de la persona regalada, solo si hay muchas opciones
@@ -1133,14 +1140,19 @@
       <button class="da-back" type="button" id="da-gift-modo-back">← Cambiar modo</button>
       <div class="da-gift-banner">🎁 Arma un regalo — selecciona el perfume que quieres regalar (disponible en 50 ml y 110 ml).</div>
       <input type="text" id="gift-filter" placeholder="Buscar por nombre o marca..." style="width:100%;padding:10px 14px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;margin-bottom:10px;font-family:inherit;font-size:13px;color:#3c2f47"/>
-      <div style="display:flex;gap:8px;margin-bottom:12px">
-        <select id="gift-filter-gender" style="flex:1;padding:10px 8px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;font-family:inherit;font-size:12.5px;color:#3c2f47;background:#fff">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        <select id="gift-filter-gender" style="flex:1 1 110px;padding:10px 8px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;font-family:inherit;font-size:12.5px;color:#3c2f47;background:#fff">
           <option value="">Todos los géneros</option>
           <option value="mujer">Mujer</option>
           <option value="hombre">Hombre</option>
           <option value="unisex">Unisex</option>
         </select>
-        <select id="gift-filter-brand" style="flex:1;padding:10px 8px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;font-family:inherit;font-size:12.5px;color:#3c2f47;background:#fff">
+        <select id="gift-filter-estilo" style="flex:1 1 110px;padding:10px 8px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;font-family:inherit;font-size:12.5px;color:#3c2f47;background:#fff">
+          <option value="">Todos los estilos</option>
+          <option value="arabe">Árabe</option>
+          <option value="disenador">Diseñador</option>
+        </select>
+        <select id="gift-filter-brand" style="flex:1 1 110px;padding:10px 8px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;font-family:inherit;font-size:12.5px;color:#3c2f47;background:#fff">
           <option value="">Todas las marcas</option>
           ${brands.map(b=>`<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join('')}
         </select>
@@ -1152,9 +1164,11 @@
     document.getElementById('da-gift-modo-back').addEventListener('click', ()=>{ giftArmarModo = null; giftList = []; renderCart(); });
     document.getElementById('gift-filter').value = giftFilterText;
     document.getElementById('gift-filter-gender').value = giftFilterGender;
+    document.getElementById('gift-filter-estilo').value = giftFilterEstilo;
     document.getElementById('gift-filter-brand').value = giftFilterBrand;
     document.getElementById('gift-filter').addEventListener('input', e => { giftFilterText = e.target.value; renderGiftCatalogList(); });
     document.getElementById('gift-filter-gender').addEventListener('change', e => { giftFilterGender = e.target.value; renderGiftCatalogList(); });
+    document.getElementById('gift-filter-estilo').addEventListener('change', e => { giftFilterEstilo = e.target.value; renderGiftCatalogList(); });
     document.getElementById('gift-filter-brand').addEventListener('change', e => { giftFilterBrand = e.target.value; renderGiftCatalogList(); });
   }
   function renderGiftArmarFoot(foot){
@@ -1189,6 +1203,7 @@
       (p.sizes||[]).some(s=>s.stock>0 && s.price && GIFT_SIZES.includes(s.ml)) &&
       matchesGiftSearch(p, words) &&
       (!giftFilterGender || p.gender === giftFilterGender) &&
+      (!giftFilterEstilo || giftEstiloFor(p) === giftFilterEstilo) &&
       (!giftFilterBrand || p.inspiration === giftFilterBrand)
     );
     if(!items.length){
