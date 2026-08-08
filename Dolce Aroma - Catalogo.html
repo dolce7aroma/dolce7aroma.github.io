@@ -89,6 +89,28 @@
   .count-pill{font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum-700);margin-left:auto}
   .count-pill b{color:var(--plum);font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;margin-right:6px}
 
+  /* combo de marca — multi-selección directa en el toolbar, sin entrar al panel de Filtros */
+  .marca-combo{position:relative}
+  .marca-btn{
+    display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--rule);border-radius:999px;
+    background:var(--ivory);font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--plum);
+  }
+  .marca-btn .marca-count{color:var(--gold);font-family:'JetBrains Mono',monospace;letter-spacing:0}
+  .marca-dropdown{
+    display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:40;min-width:240px;max-height:320px;
+    overflow-y:auto;background:#fff;border:1px solid var(--rule);border-radius:12px;padding:8px;
+    box-shadow:0 16px 36px rgba(26,22,32,0.16);
+  }
+  .marca-dropdown.open{display:block}
+  .marca-item{
+    display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;
+    font-size:13px;color:var(--plum);
+  }
+  .marca-item:hover{background:var(--lavender-soft)}
+  .marca-item input{accent-color:var(--gold)}
+  .marca-item span:not(.count){flex:1}
+  .marca-item .count{font-size:11px;color:var(--plum-700);font-family:'JetBrains Mono',monospace}
+
   /* botón "Filtros" — solo visible en tablet/mobile, donde los facets pasan a ser un panel aparte */
   .filtros-btn{
     display:none;align-items:center;gap:8px;padding:9px 16px;border:1px solid var(--rule);border-radius:999px;
@@ -130,7 +152,6 @@
 
   /* grid */
   .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
-  .grid.dense{grid-template-columns:repeat(4,1fr);gap:20px}
 
   .card{
     background:var(--lavender-soft);border-radius:18px;padding:20px;
@@ -186,7 +207,7 @@
     .intro-side{text-align:left;justify-self:start}
     .intro-side .meta{justify-content:flex-start}
     main{grid-template-columns:1fr;gap:24px}
-    .grid, .grid.dense{grid-template-columns:repeat(2,1fr)}
+    .grid{grid-template-columns:repeat(2,1fr)}
 
     /* Filtros pasan a un panel a pantalla completa (antes ocupaban un montón de alto
        entre el toolbar y las primeras fotos) — se abre con el botón "Filtros" del toolbar. */
@@ -227,7 +248,7 @@
     .seg{flex-wrap:wrap}
     main{padding:30px 18px 80px;gap:30px}
     .facets-body{grid-template-columns:1fr}
-    .grid, .grid.dense{grid-template-columns:1fr;gap:18px}
+    .grid{grid-template-columns:1fr;gap:18px}
     nav.top .nav-inner{padding:14px 18px;gap:10px;grid-template-columns:auto 1fr auto !important}
     nav.top .nav-link{font-size:10.5px;letter-spacing:0.16em}
     .nav-right .nav-link{display:none !important}
@@ -363,6 +384,18 @@
       <button data-v="hombre">Hombre</button>
       <button data-v="unisex">Unisex</button>
     </div>
+    <div class="seg" id="seg-estilo">
+      <button data-v="" class="active">Todos</button>
+      <button data-v="arabe">Árabe</button>
+      <button data-v="disenador">Diseñador</button>
+    </div>
+    <div class="marca-combo" id="marca-combo">
+      <button type="button" class="marca-btn" id="marca-toggle">
+        Marca <span class="marca-count" id="marca-count"></span>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="marca-dropdown" id="marca-dropdown"></div>
+    </div>
     <select class="sort-sel" id="sort">
       <option value="featured">Destacados primero</option>
       <option value="new">Más recientes</option>
@@ -370,10 +403,6 @@
       <option value="price-desc">Precio · mayor a menor</option>
       <option value="name">Alfabético</option>
     </select>
-    <div class="seg" id="seg-density">
-      <button data-v="comfortable" class="active">Confort</button>
-      <button data-v="dense">Denso</button>
-    </div>
     <button type="button" class="filtros-btn" id="filtros-open">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
       Filtros
@@ -397,10 +426,6 @@
       <div class="facet">
         <h3>Familia olfativa</h3>
         <div class="facet-list" id="facet-family"></div>
-      </div>
-      <div class="facet">
-        <h3>Estilo</h3>
-        <div class="facet-list" id="facet-estilo"></div>
       </div>
       <div class="facet">
         <h3>Etiqueta</h3>
@@ -460,8 +485,8 @@ const FAMILY_DOT = {floral:'#d9a3b5', oriental:'#a8895a', amaderado:'#7a6448', c
 
 let perfumes = [];
 let state = {
-  q:'', gender:'', family:'', tag:'', intensity:'', occasion:'', ml:'', estilo:'',
-  sort:'featured', density:'comfortable'
+  q:'', gender:'', family:'', tag:'', intensity:'', occasion:'', ml:'', estilo:'', brands:[],
+  sort:'featured'
 };
 
 const $ = s => document.querySelector(s);
@@ -491,14 +516,6 @@ function buildFacets(){
       <span class="count">${c}</span></div>`;
   }).join('');
 
-  // estilo (árabe / diseñador — se deriva de la marca, ver window.DA.estiloFor)
-  const ESTILO_LABEL = { arabe: 'Árabe', disenador: 'Diseñador' };
-  $('#facet-estilo').innerHTML = ['arabe','disenador'].map(e=>{
-    const c = perfumes.filter(p=>window.DA.estiloFor(p)===e).length;
-    return `<div class="facet-item" data-facet="estilo" data-v="${e}">
-      <span class="lbl">${ESTILO_LABEL[e]}</span><span class="count">${c}</span></div>`;
-  }).join('');
-
   // tag
   const tags = unique(perfumes.map(p=>p.tag).filter(Boolean));
   $('#facet-tag').innerHTML = (tags.length ? tags : []).map(t => {
@@ -526,6 +543,22 @@ function buildFacets(){
   }).join('');
 }
 
+// Combo de marca en el toolbar: multi-selección directa, sin entrar al panel de Filtros.
+function buildMarcaCombo(){
+  const brands = unique(perfumes.map(p=>p.inspiration).filter(Boolean)).sort((a,b)=>a.localeCompare(b));
+  $('#marca-dropdown').innerHTML = brands.map(b=>{
+    const c = perfumes.filter(p=>p.inspiration===b).length;
+    return `<label class="marca-item">
+      <input type="checkbox" value="${b}" ${state.brands.includes(b)?'checked':''}>
+      <span>${b}</span><span class="count">${c}</span>
+    </label>`;
+  }).join('');
+}
+function updateMarcaLabel(){
+  const n = state.brands.length;
+  $('#marca-count').textContent = n ? `(${n})` : '';
+}
+
 function priceOf(p){
   const s = (p.sizes||[]).find(x=>x.ml===110) || (p.sizes||[])[0];
   return s ? s.price : 0;
@@ -541,6 +574,7 @@ function filtered(){
     if(state.gender && p.gender !== state.gender) return false;
     if(state.family && p.family !== state.family) return false;
     if(state.estilo && window.DA.estiloFor(p) !== state.estilo) return false;
+    if(state.brands.length && !state.brands.includes(p.inspiration)) return false;
     if(state.tag && p.tag !== state.tag) return false;
     if(state.intensity && p.intensity !== state.intensity) return false;
     if(state.occasion && !(p.occasion||[]).includes(state.occasion)) return false;
@@ -622,9 +656,9 @@ function syncFacetUI(){
 }
 
 // Cuenta cuántos de los filtros que viven DENTRO del panel "Filtros" están activos
-// (género queda fuera porque ya es visible siempre en el toolbar, no está escondido).
+// (género, estilo y marca quedan fuera porque ya son visibles siempre en el toolbar, no están escondidos).
 function updateFiltrosBadge(){
-  const keys = ['family','estilo','tag','intensity','occasion','ml'];
+  const keys = ['family','tag','intensity','occasion','ml'];
   const n = keys.filter(k => state[k]).length;
   const badge = $('#filtros-count');
   if(badge) badge.textContent = n ? n : '';
@@ -645,11 +679,25 @@ function wire(){
     document.querySelectorAll('#seg-gender button').forEach(x=>x.classList.remove('active'));
     b.classList.add('active'); state.gender = b.dataset.v; renderCards();
   });
-  document.getElementById('seg-density').addEventListener('click', e=>{
+  document.getElementById('seg-estilo').addEventListener('click', e=>{
     const b = e.target.closest('button'); if(!b) return;
-    document.querySelectorAll('#seg-density button').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active'); state.density = b.dataset.v;
-    document.getElementById('grid').classList.toggle('dense', state.density==='dense');
+    document.querySelectorAll('#seg-estilo button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); state.estilo = b.dataset.v; renderCards();
+  });
+
+  // Combo de marca: multi-selección con checkboxes, abre/cierra como dropdown.
+  $('#marca-toggle').addEventListener('click', e=>{
+    e.stopPropagation();
+    $('#marca-dropdown').classList.toggle('open');
+  });
+  $('#marca-dropdown').addEventListener('change', e=>{
+    const cb = e.target.closest('input[type=checkbox]'); if(!cb) return;
+    if(cb.checked) state.brands.push(cb.value);
+    else state.brands = state.brands.filter(b=>b!==cb.value);
+    updateMarcaLabel(); renderCards();
+  });
+  document.addEventListener('click', e=>{
+    if(!e.target.closest('#marca-combo')) $('#marca-dropdown').classList.remove('open');
   });
 
   document.querySelectorAll('.facet-list').forEach(list => {
@@ -662,10 +710,14 @@ function wire(){
   });
 
   $('#clear').addEventListener('click', ()=>{
-    state.q=''; state.gender=''; state.family=''; state.estilo=''; state.tag=''; state.intensity=''; state.occasion=''; state.ml='';
+    state.q=''; state.gender=''; state.family=''; state.estilo=''; state.tag=''; state.intensity=''; state.occasion=''; state.ml=''; state.brands=[];
     $('#q').value=''; $('#sort').value='featured'; state.sort='featured';
     document.querySelectorAll('#seg-gender button').forEach(x=>x.classList.remove('active'));
     document.querySelector('#seg-gender button[data-v=""]').classList.add('active');
+    document.querySelectorAll('#seg-estilo button').forEach(x=>x.classList.remove('active'));
+    document.querySelector('#seg-estilo button[data-v=""]').classList.add('active');
+    document.querySelectorAll('#marca-dropdown input[type=checkbox]').forEach(cb=>cb.checked=false);
+    updateMarcaLabel();
     syncFacetUI(); renderCards();
   });
 
@@ -695,6 +747,8 @@ function wire(){
 
   renderMeta();
   buildFacets();
+  buildMarcaCombo();
+  updateMarcaLabel();
   wire();
   syncFacetUI();
   renderCards();
