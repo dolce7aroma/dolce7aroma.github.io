@@ -13,7 +13,7 @@
   const WHATSAPP_NUMBER = '51930122014'; // +51 930 122 014
   const EMAIL = 'Dolce7aroma@gmail.com';
   const ORDER_API_BASE = 'https://dolce7aroma-github-io.cesarfernandezh7.workers.dev';
-  const GIFT_EXPIRY_DAYS = 7; // debe coincidir con GIFT_EXPIRY_DAYS en el Worker
+  const GIFT_EXPIRY_DAYS = 15; // debe coincidir con GIFT_EXPIRY_DAYS en el Worker
   const GIFT_SIZES = [50, 110]; // solo se regalan estos tamaños (no 10 ml)
   const STORAGE_CATALOG = 'dolce-aroma-perfumes-v1'; // (compat: edits del admin)
   const STORAGE_CART    = 'dolce-aroma-cart-v1';
@@ -58,7 +58,7 @@
   let giftMode = false;             // true = el panel de la derecha muestra el armador de regalo
   let giftStep = 'armar';           // 'armar' | 'detalles' | 'compartir' | 'pagar'
   let giftList = [];                // [{id, ml, name, price, premium}] — lista curada del comprador
-  let giftDraft = { entregaPara: 'regalada', compradorTelefono: '', compradorNombre: '', pagarAhora: false,
+  let giftDraft = { entregaPara: 'regalada', compradorTelefono: '', compradorNombre: '',
     nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
   let currentGift = null;           // el regalo cargado vía ?regalo= o ?pagar_regalo=
   let giftClaimStep = 'elegir';     // 'elegir' | 'gracias' (vista de la persona regalada)
@@ -424,6 +424,8 @@
       .da-gift-total span{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#5d4c70}
       .da-gift-total b{font-family:'Cormorant Garamond',serif;font-size:26px;color:#3c2f47}
       .da-gift-link-box{background:#fff;border:1.5px dashed rgba(60,47,71,0.3);border-radius:10px;padding:12px;font-size:12px;color:#5d4c70;word-break:break-all;margin-bottom:14px}
+      .da-gift-share-textarea{width:100%;background:#fff;border:1.5px dashed rgba(60,47,71,0.3);border-radius:10px;padding:12px;font-family:inherit;font-size:12.5px;color:#3c2f47;line-height:1.5;resize:vertical;margin-bottom:14px}
+      .da-gift-share-textarea:focus{outline:none;border-color:#a8895a}
       .da-gift-toggle-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#5d4c70;font-weight:500;display:block;margin-bottom:8px}
 
       .da-confirm{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:6px 4px 20px}
@@ -628,7 +630,7 @@
   function openCart(){ giftMode = false; renderCart(); document.getElementById('da-bd').classList.add('open'); document.getElementById('da-cart').classList.add('open'); }
   function openGiftBuilder(){
     giftRole = 'comprador'; giftMode = true; giftStep = 'armar';
-    giftList = []; giftDraft = { entregaPara:'regalada', compradorTelefono:'', compradorNombre:'', pagarAhora:false, nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
+    giftList = []; giftDraft = { entregaPara:'regalada', compradorTelefono:'', compradorNombre:'', nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
     giftArmarModo = null; giftTallaMl = null;
     renderCart();
     document.getElementById('da-bd').classList.add('open');
@@ -1129,7 +1131,7 @@
     const brands = [...new Set(catalog.map(p=>p.inspiration).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
     list.innerHTML = `
       <button class="da-back" type="button" id="da-gift-modo-back">← Cambiar modo</button>
-      <div class="da-gift-banner">🎁 Arma un regalo — selecciona los perfumes que quieres regalar (disponible en 50 ml y 110 ml) para que la persona elija el que más le guste.</div>
+      <div class="da-gift-banner">🎁 Arma un regalo — selecciona el perfume que quieres regalar (disponible en 50 ml y 110 ml).</div>
       <input type="text" id="gift-filter" placeholder="Buscar por nombre o marca..." style="width:100%;padding:10px 14px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;margin-bottom:10px;font-family:inherit;font-size:13px;color:#3c2f47"/>
       <div style="display:flex;gap:8px;margin-bottom:12px">
         <select id="gift-filter-gender" style="flex:1;padding:10px 8px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;font-family:inherit;font-size:12.5px;color:#3c2f47;background:#fff">
@@ -1161,7 +1163,7 @@
     const canNext = isTalla ? !!giftTallaMl : giftList.length > 0;
     const label = isTalla
       ? (giftTallaMl ? `Regalo de ${giftTallaMl} ml` : 'Elige un tamaño')
-      : `${giftList.length} elegido${giftList.length===1?'':'s'}`;
+      : (giftList.length ? giftList[0].name : 'Elige un perfume');
     foot.innerHTML = `
       <div class="da-gift-total"><span>${label}</span><b>S/ ${total}</b></div>
       <button class="da-btn da-btn-ghost" style="width:100%;margin-bottom:8px" id="da-gift-cancel">Cancelar</button>
@@ -1217,19 +1219,13 @@
           }).join('') : ''}
         </div>`;
     }).join('');
+    // Selección única: por ahora solo se regala UN perfume por link (mientras se valida
+    // cómo entregar cada regalo), así que elegir uno reemplaza cualquier elección anterior.
     box.querySelectorAll('.da-gift-size-chip').forEach(chip => chip.addEventListener('click', ()=>{
       const id = chip.dataset.id, ml = +chip.dataset.ml;
       const exists = giftList.find(g=>g.id===id && g.ml===ml);
-      const premiumRow = box.querySelector(`[data-premium-row="${id}:${ml}"]`);
-      if(exists){
-        giftList = giftList.filter(g=>!(g.id===id && g.ml===ml));
-        chip.classList.remove('selected');
-        if(premiumRow){ premiumRow.style.display = 'none'; const cb = premiumRow.querySelector('input'); if(cb) cb.checked = false; }
-      } else {
-        giftList.push({ id, ml, name: chip.dataset.name, inspiration: chip.dataset.inspiration || '', price: +chip.dataset.price, premium:false, premiumPrecio: catalog.find(x=>x.id===id)?.frascoPremium?.precio||0 });
-        chip.classList.add('selected');
-        if(premiumRow) premiumRow.style.display = 'flex';
-      }
+      giftList = exists ? [] : [{ id, ml, name: chip.dataset.name, inspiration: chip.dataset.inspiration || '', price: +chip.dataset.price, premium:false, premiumPrecio: catalog.find(x=>x.id===id)?.frascoPremium?.precio||0 }];
+      renderGiftCatalogList();
       renderGiftArmarFoot(document.getElementById('da-cart-foot'));
     }));
     box.querySelectorAll('input[data-premium-for]').forEach(cb => cb.addEventListener('change', e=>{
@@ -1302,30 +1298,10 @@
           <input type="tel" id="gof-comprador-tel" inputmode="numeric" value="${escapeHtml(giftDraft.compradorTelefono)}" placeholder="987654321"/>
         </label>
         <p class="da-pay-note" style="margin-top:-8px">Para avisarte cuando confirmen los perfumes de tu regalo.</p>
-        <div style="margin-top:6px">
-          <span class="da-gift-toggle-label">¿Cuándo prefieres pagar?</span>
-          <div style="display:flex;gap:10px">
-            <button type="button" class="da-btn ${giftDraft.pagarAhora?'da-btn-primary':'da-btn-ghost'}" id="gof-pagar-ahora-btn" style="flex:1">Pagar ahora</button>
-            <button type="button" class="da-btn ${!giftDraft.pagarAhora?'da-btn-primary':'da-btn-ghost'}" id="gof-pagar-luego-btn" style="flex:1">Pagar al confirmar perfumes</button>
-          </div>
-        </div>
-        <p class="da-pay-note" style="margin-top:6px">El link de tu regalo será válido por ${GIFT_EXPIRY_DAYS} días.</p>
+        <p class="da-pay-note">A continuación pagas tu regalo — el link para compartir se genera justo después.</p>
+        <p class="da-pay-note">El link de tu regalo será válido por ${GIFT_EXPIRY_DAYS} días.</p>
       `;
       document.getElementById('gof-comprador-tel').addEventListener('input', e=>{ e.target.value = e.target.value.replace(/\D/g,'').slice(-9); });
-      // Solo alterna las clases de los botones (no re-renderiza el body): un re-render
-      // completo perdería lo que la persona ya escribió en nombre/WhatsApp.
-      const ahoraBtn = document.getElementById('gof-pagar-ahora-btn');
-      const luegoBtn = document.getElementById('gof-pagar-luego-btn');
-      ahoraBtn.addEventListener('click', ()=>{
-        giftDraft.pagarAhora = true;
-        ahoraBtn.className = 'da-btn da-btn-primary';
-        luegoBtn.className = 'da-btn da-btn-ghost';
-      });
-      luegoBtn.addEventListener('click', ()=>{
-        giftDraft.pagarAhora = false;
-        ahoraBtn.className = 'da-btn da-btn-ghost';
-        luegoBtn.className = 'da-btn da-btn-primary';
-      });
     }
   }
 
@@ -1364,8 +1340,7 @@
     const compradorNombre = document.getElementById('gof-comprador-nombre').value.trim();
     const compradorTelefono = document.getElementById('gof-comprador-tel').value.trim();
     if(!compradorTelefono){ showToast('Déjanos tu WhatsApp para avisarte'); return; }
-    const pagarAhora = giftDraft.pagarAhora;
-    giftDraft = { ...giftDraft, compradorNombre, compradorTelefono, pagarAhora };
+    giftDraft = { ...giftDraft, compradorNombre, compradorTelefono };
     const items = giftList.map(g => ({ id: g.id, ml: g.ml, name: g.name, inspiration: g.inspiration || '', qty: 1, premium: g.premium, subtotal: g.price + (g.premium ? g.premiumPrecio : 0) }));
     const total = computeGiftForOtherTotal();
     const btn = document.getElementById('da-gift-submit');
@@ -1378,7 +1353,7 @@
       const data = await r.json().catch(()=>({ok:false}));
       if(!r.ok || !data.ok) throw new Error(data.error || 'No se pudo generar el regalo');
       currentGift = { id: data.giftId, items, total, compradorTelefono, compradorNombre, elegido: false, pagado: false };
-      giftStep = pagarAhora ? 'pagar' : 'compartir';
+      giftStep = 'pagar'; // el pago es obligatorio antes de compartir el link
       renderCart();
     }catch(e){
       showToast('No se pudo generar el link de regalo. Intenta de nuevo.');
@@ -1417,24 +1392,24 @@
     list.innerHTML = `
       <div class="da-confirm">
         <div class="da-confirm-check">✓</div>
-        <h4>¡Regalo listo!</h4>
+        <h4>¡Regalo pagado y listo!</h4>
         <div class="da-confirm-id">Regalo #${currentGift.id}</div>
-        <p>Comparte este mensaje con la persona a quien quieres regalarle — ella va a elegir su perfume favorito de tu lista.</p>
-        <div class="da-gift-link-box">${escapeHtml(shareMsg).replace(/\n/g,'<br>')}</div>
+        <p>Comparte este mensaje con la persona a quien quieres regalarle — puedes editarlo o agregarle algo tuyo antes de enviarlo.</p>
+        <textarea id="gift-share-text" class="da-gift-share-textarea" rows="7">${escapeHtml(shareMsg)}</textarea>
         <button class="da-btn da-btn-primary" style="width:100%;margin-bottom:8px;flex:none" id="gift-share-btn">Compartir</button>
         <button class="da-btn da-btn-ghost" style="width:100%" id="gift-copy-btn">Copiar mensaje</button>
-        <p class="da-pay-note" style="margin-top:10px">Este link es válido por ${GIFT_EXPIRY_DAYS} días.</p>
-        ${!currentGift.pagado ? `<p class="da-pay-note" style="margin-top:6px">Cuando la persona elija, te avisamos para que pagues. <button type="button" class="da-hint-back" id="gift-go-pagar">o paga ahora mismo</button></p>` : `<p class="da-pay-note" style="margin-top:6px">Ya está pagado — cuando la persona elija, nos llega directo a nosotros.</p>`}
+        <p class="da-pay-note" style="margin-top:10px">Este link es válido por ${GIFT_EXPIRY_DAYS} días. Ya está pagado — en cuanto la persona elija, nos llega directo a nosotros para coordinar la entrega.</p>
         <button class="da-btn da-btn-ghost" style="width:100%;margin-top:14px" id="da-gift-close">Listo, cerrar</button>
       </div>
     `;
     foot.innerHTML = '';
+    const getText = () => document.getElementById('gift-share-text').value;
     document.getElementById('gift-share-btn').addEventListener('click', async ()=>{
-      if(navigator.share){ try{ await navigator.share({ title: '🎁 Tienes un regalo', text: shareMsg }); }catch(e){ /* canceló */ } }
-      else shareViaClipboard(shareMsg);
+      const text = getText();
+      if(navigator.share){ try{ await navigator.share({ title: '🎁 Tienes un regalo', text }); }catch(e){ /* canceló */ } }
+      else shareViaClipboard(text);
     });
-    document.getElementById('gift-copy-btn').addEventListener('click', ()=> shareViaClipboard(shareMsg));
-    document.getElementById('gift-go-pagar')?.addEventListener('click', ()=>{ giftStep = 'pagar'; renderCart(); });
+    document.getElementById('gift-copy-btn').addEventListener('click', ()=> shareViaClipboard(getText()));
     document.getElementById('da-gift-close').addEventListener('click', ()=>{ giftMode = false; closeCart(); });
   }
 
@@ -1449,7 +1424,7 @@
         <div class="da-confirm-check">✓</div>
         <h4>Paga tu regalo</h4>
         <div class="da-confirm-id">Regalo #${g.id}</div>
-        <p>Total: <b>S/ ${g.total}</b>${g.elegido ? ' · la persona regalada ya eligió' : ' · aún no eligen el perfume'}</p>
+        <p>Total: <b>S/ ${g.total}</b>${g.elegido ? ' · la persona regalada ya eligió' : ' · en cuanto pagues, te damos el link para compartir'}</p>
         <div class="da-pay-card">
           <div class="da-pay-title">Yape</div>
           <img src="assets/pago-yape.jpg" alt="Código QR para pagar por Yape" class="da-pay-qr"/>
@@ -1457,7 +1432,6 @@
           <a class="da-btn da-btn-wa" style="width:100%" href="${waUrl}" target="_blank" rel="noopener" id="da-gift-pay-wa">Ya pagué, avisar por WhatsApp</a>
           <p class="da-pay-note">Al abrirse WhatsApp, adjunta la captura de tu pago como segundo mensaje.</p>
         </div>
-        ${giftRole==='comprador' && giftStep==='pagar' && !g.elegido ? `<button class="da-btn da-btn-ghost" style="width:100%;margin-top:6px" id="da-gift-to-share">Ver / compartir el link del regalo</button>` : ''}
       </div>
     `;
     foot.innerHTML = '';
@@ -1467,9 +1441,13 @@
       // fetch que todavía está en camino, y el pago nunca queda registrado (bug real
       // reportado: "pagué" pero no se creó el pedido ni salió la alerta).
       e.preventDefault();
-      withTimeout(markGiftPaid(g.id), 2500).finally(()=>{ window.open(waUrl, '_blank', 'noopener'); });
+      withTimeout(markGiftPaid(g.id), 2500).finally(()=>{
+        // El pago es obligatorio antes de compartir: recién ahora mostramos el link.
+        // Si por algún motivo ya habían elegido antes de pagar, no hay nada que compartir.
+        if(!g.elegido){ giftStep = 'compartir'; renderCart(); }
+        window.open(waUrl, '_blank', 'noopener');
+      });
     });
-    document.getElementById('da-gift-to-share')?.addEventListener('click', ()=>{ giftStep = 'compartir'; renderCart(); });
   }
   function withTimeout(promise, ms){
     return Promise.race([promise, new Promise(res=>setTimeout(res, ms))]);

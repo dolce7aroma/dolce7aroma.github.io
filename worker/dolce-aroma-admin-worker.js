@@ -380,7 +380,7 @@ function generateGiftId() {
 
 // Días de vigencia de un link de regalo sin resolver (debe coincidir con GIFT_EXPIRY_DAYS
 // en assets/shop.js, que se usa solo para mostrar el aviso al comprador).
-const GIFT_EXPIRY_DAYS = 7;
+const GIFT_EXPIRY_DAYS = 15;
 
 // No hay Cron Trigger configurado, así que la expiración es "perezosa": recién se detecta
 // y se persiste (estado:'expirado') la próxima vez que alguien accede al link. Un regalo ya
