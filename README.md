@@ -134,17 +134,20 @@ Y en **Workers & Pages → Storage & Databases → KV**, crea un namespace (ej. 
 
 ## 🎁 Regalar un perfume (Fase 1)
 
-Botón **"🎁 Regalar"** junto al de la bolsa, en todas las páginas. Flujo:
+Botón flotante **"🎁 Regalar"** encima del de WhatsApp, en todas las páginas. Flujo:
 
-1. **Comprador**: elige uno o varios perfumes de una lista curada (con buscador). Si un perfume tiene "Frasco premium" activado en el Admin, puede sumarlo a un precio extra.
-2. Elige si el regalo **se le entrega a él mismo** (llena su dirección ahí mismo y listo, va directo por el checkout normal) o **a otra persona** (deja su WhatsApp para que le avisen, y decide si paga de inmediato o cuando la otra persona elija — el total no cambia en ningún caso, porque el catálogo tiene precios uniformes).
-3. Si es para otra persona, se genera un link (`catalogo.html?regalo=<id>`) que el comprador comparte él mismo.
+1. **Comprador**: elige uno o varios perfumes (y tamaños — cada tamaño de un mismo perfume aparece como una opción separada) de una lista curada, con buscador (busca por nombre o marca, en cualquier orden de palabras) y filtros por género y por marca/diseñador. Si un perfume tiene "Frasco premium" activado en el Admin, puede sumarlo a un precio extra por cada tamaño elegido.
+2. Elige si el regalo **se le entrega a él mismo** (llena su dirección ahí mismo y listo, va directo por el checkout normal) o **a otra persona** (deja su nombre y WhatsApp para que le avisen, y elige con dos botones si paga de inmediato o cuando la otra persona elija — el total no cambia en ningún caso, porque el catálogo tiene precios uniformes).
+3. Si es para otra persona, se genera un link (`catalogo.html?regalo=<id>`) con un mensaje ya armado y personalizado (usa el nombre del comprador si lo dejó) para compartir por WhatsApp o copiar. El link es válido por **7 días** (`GIFT_EXPIRY_DAYS`, definido tanto en `assets/shop.js` como en el Worker — hay que mantenerlos iguales si se cambia).
 4. La persona regalada abre el link, ve solo esa lista curada, elige uno, llena su propia dirección de entrega y confirma.
 5. El pedido **solo llega a la pestaña Pedidos una vez que está pagado** — sin excepción, sea que el comprador pagó antes o después de que la otra persona eligiera.
+6. Si nadie completa el regalo (falta el pago o la elección) dentro de los 7 días, el link queda **expirado**: la próxima vez que alguien lo abre, el Worker lo detecta y le cambia el estado a `expirado` en KV (no hay Cron Trigger — es una revisión "perezosa" al momento de acceder, no un job en segundo plano). Un regalo ya convertido en pedido nunca expira.
 
 ### Frasco premium (Admin → Catálogo → editar perfume)
 
 Nuevo campo "Regalo": casilla "Frasco premium disponible" + precio editable, **por perfume** — no todos lo tienen, y cada uno puede tener un precio distinto. Sin fotos ni variantes múltiples todavía (fase futura).
+
+> 🐛 **Bug corregido (jul/ago 2026):** "Ya pagué, avisar por WhatsApp" era un link `<a target="_blank">` que disparaba el registro del pago (`fetch`) al mismo tiempo que el navegador saltaba a WhatsApp — en celulares, ese cambio de app podía abortar el `fetch` antes de llegar al servidor, y el pago quedaba sin registrar (ni pedido ni alertas). Ahora el clic espera (con un tope de 2.5s) a que el registro del pago termine antes de abrir WhatsApp.
 
 ### Limitación real: no hay aviso automático push al comprador
 

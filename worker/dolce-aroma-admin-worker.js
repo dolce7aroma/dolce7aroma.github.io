@@ -273,6 +273,8 @@ async function notifyOwner(subject, summary, env) {
 
 function orderSummaryText(record) {
   const itemsText = record.items.map(it => `- ${it.name} (${it.ml} ml) x${it.qty}${it.premium ? ' + frasco premium' : ''} — S/ ${it.subtotal}`).join('\n');
+  const regaladoPor = record.esRegalo && record.compradorTelefono
+    ? `\nRegalado por: ${record.compradorNombre || '(sin nombre)'} · WhatsApp ${record.compradorTelefono}` : '';
   return `${record.esRegalo ? '🎁' : '🌸'} Nuevo pedido${record.esRegalo ? ' (REGALO)' : ''} — Dolce Aroma
 
 Pedido: #${record.id}
@@ -281,7 +283,7 @@ Teléfono: ${record.telefono}
 Distrito: ${record.distrito}
 Dirección: ${record.direccion}
 Referencia: ${record.referencia || '-'}
-Método de pago: ${record.metodoPago || '-'}
+Método de pago: ${record.metodoPago || '-'}${regaladoPor}
 
 Productos:
 ${itemsText}
@@ -376,6 +378,30 @@ function generateGiftId() {
   return `RG-${t.slice(-5)}${r}`;
 }
 
+// Días de vigencia de un link de regalo sin resolver (debe coincidir con GIFT_EXPIRY_DAYS
+// en assets/shop.js, que se usa solo para mostrar el aviso al comprador).
+const GIFT_EXPIRY_DAYS = 7;
+
+// No hay Cron Trigger configurado, así que la expiración es "perezosa": recién se detecta
+// y se persiste (estado:'expirado') la próxima vez que alguien accede al link. Un regalo ya
+// convertido en pedido (orderId) nunca expira, sin importar cuánto tiempo pasó.
+function isGiftExpired(record) {
+  if (record.orderId) return false;
+  const created = new Date(record.creadoEn).getTime();
+  if (!created) return false;
+  return (Date.now() - created) > GIFT_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+}
+
+// Si el regalo venció y todavía no se había marcado, lo marca 'expirado' y lo guarda.
+// Devuelve true si el regalo está (o queda) expirado — el llamador debe cortar ahí.
+async function markExpiredIfNeeded(record, env) {
+  if (record.estado === 'expirado') return true;
+  if (!isGiftExpired(record)) return false;
+  record.estado = 'expirado';
+  try { await env.ORDERS.put(`gift:${record.id}`, JSON.stringify(record)); } catch (e) { /* best-effort */ }
+  return true;
+}
+
 // Si el regalo ya está pagado Y ya fue elegido, lo convierte en un pedido real y avisa.
 // Devuelve el orderId si lo convirtió, o null si todavía falta algo.
 async function promoteGiftIfComplete(record, env) {
@@ -389,6 +415,7 @@ async function promoteGiftIfComplete(record, env) {
     referencia: record.direccion.referencia || '',
     items: [chosen], subtotal: record.total, total: record.total,
     metodoPago: record.metodoPago || null, esRegalo: true,
+    compradorNombre: record.compradorNombre || '', compradorTelefono: record.compradorTelefono || '',
     estado: 'pagado', creadoEn: new Date().toISOString(),
   };
   if (env.ORDERS) {
@@ -404,7 +431,7 @@ async function promoteGiftIfComplete(record, env) {
 async function handleCreateGift(request, env) {
   const body = await request.json().catch(() => null);
   if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
-  const { items, compradorTelefono, total } = body;
+  const { items, compradorTelefono, compradorNombre, total } = body;
   if (!Array.isArray(items) || !items.length) return json({ ok: false, error: 'Elige al menos un perfume para el regalo' }, 400);
   if (!compradorTelefono) return json({ ok: false, error: 'Falta tu WhatsApp para avisarte' }, 400);
   if (!env.ORDERS) return json({ ok: false, error: 'Aún no está activo el guardado de regalos (falta el KV en Cloudflare).' }, 400);
@@ -412,7 +439,7 @@ async function handleCreateGift(request, env) {
   const giftId = generateGiftId();
   const record = {
     id: giftId, tipo: 'regalo',
-    items, compradorTelefono, total: total || 0,
+    items, compradorTelefono, compradorNombre: compradorNombre || '', total: total || 0,
     direccion: null, eleccionIndex: null,
     pagado: false, elegido: false, orderId: null,
     estado: 'pendiente_eleccion', creadoEn: new Date().toISOString(),
@@ -435,6 +462,9 @@ async function handleGetGift(request, env) {
     const raw = await env.ORDERS.get(`gift:${body.giftId}`);
     if (!raw) return json({ ok: false, error: 'Este link de regalo no existe o ya expiró' }, 404);
     const record = JSON.parse(raw);
+    if (await markExpiredIfNeeded(record, env)) {
+      return json({ ok: false, error: 'Este link de regalo ya expiró' }, 410);
+    }
     return json({
       ok: true,
       gift: {
@@ -459,6 +489,9 @@ async function handleClaimGift(request, env) {
     const raw = await env.ORDERS.get(`gift:${giftId}`);
     if (!raw) return json({ ok: false, error: 'Este link de regalo no existe o ya expiró' }, 404);
     const record = JSON.parse(raw);
+    if (await markExpiredIfNeeded(record, env)) {
+      return json({ ok: false, error: 'Este link de regalo ya expiró' }, 410);
+    }
     if (record.elegido) return json({ ok: false, error: 'Este regalo ya fue elegido antes' }, 400);
     if (typeof eleccionIndex !== 'number' || !record.items[eleccionIndex]) {
       return json({ ok: false, error: 'Elige un perfume válido' }, 400);
@@ -493,6 +526,9 @@ async function handleMarkGiftPaid(request, env) {
     const raw = await env.ORDERS.get(`gift:${body.giftId}`);
     if (!raw) return json({ ok: false, error: 'Este link de regalo no existe o ya expiró' }, 404);
     const record = JSON.parse(raw);
+    if (await markExpiredIfNeeded(record, env)) {
+      return json({ ok: false, error: 'Este link de regalo ya expiró' }, 410);
+    }
     record.pagado = true;
     record.estado = record.elegido ? 'convertido' : 'pendiente_eleccion';
     record.actualizadoEn = new Date().toISOString();
