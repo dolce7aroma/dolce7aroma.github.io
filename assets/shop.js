@@ -14,6 +14,7 @@
   const EMAIL = 'Dolce7aroma@gmail.com';
   const ORDER_API_BASE = 'https://dolce7aroma-github-io.cesarfernandezh7.workers.dev';
   const GIFT_EXPIRY_DAYS = 7; // debe coincidir con GIFT_EXPIRY_DAYS en el Worker
+  const GIFT_SIZES = [50, 110]; // solo se regalan estos tamaños (no 10 ml)
   const STORAGE_CATALOG = 'dolce-aroma-perfumes-v1'; // (compat: edits del admin)
   const STORAGE_CART    = 'dolce-aroma-cart-v1';
   const CATALOG_URLS    = ['data/productos.json', 'data/perfumes.json'];
@@ -1051,7 +1052,7 @@
   }
   // Tamaños disponibles para el modo "solo tamaño", de mayor a menor ml.
   function giftTallaSizes(){
-    const mls = [...new Set(catalog.flatMap(p => (p.sizes||[]).filter(s=>s.stock>0 && s.price).map(s=>s.ml)))];
+    const mls = [...new Set(catalog.flatMap(p => (p.sizes||[]).filter(s=>s.stock>0 && s.price && GIFT_SIZES.includes(s.ml)).map(s=>s.ml)))];
     return mls.sort((a,b)=>b-a).map(ml => ({ ml, price: standardPriceForMl(ml) }));
   }
   // Arma la lista de "opciones" para el modo talla: TODO el catálogo con ese tamaño al
@@ -1092,12 +1093,12 @@
     list.innerHTML = `
       <div class="da-gift-banner">🎁 ¿Cómo quieres armar el regalo?</div>
       <button type="button" class="da-gift-modo-card" id="gift-modo-curada">
-        <b>Elijo yo los perfumes</b>
-        <span>Armas una lista de opciones (uno o varios) y la persona elige la que más le guste.</span>
+        <b>Yo los elijo</b>
+        <span>Selecciona los perfumes que deseas regalarle.</span>
       </button>
       <button type="button" class="da-gift-modo-card" id="gift-modo-talla">
-        <b>Solo el tamaño</b>
-        <span>Tú eliges el tamaño — el precio es el mismo para todo el catálogo — y ella elige el perfume que más le guste, entre todos los que tenemos.</span>
+        <b>Ella/Él los elige</b>
+        <span>Dale la alternativa de elegir el perfume que más le guste, de todo nuestro catálogo en ese tamaño.</span>
       </button>
     `;
     foot.innerHTML = `<button class="da-btn da-btn-ghost" style="width:100%" id="da-gift-cancel">Cancelar</button>`;
@@ -1109,7 +1110,7 @@
     const sizes = giftTallaSizes();
     list.innerHTML = `
       <button class="da-back" type="button" id="da-gift-modo-back">← Cambiar modo</button>
-      <div class="da-gift-banner">🎁 Elige el tamaño que quieres regalar — la persona va a elegir el perfume que más le guste, de todo nuestro catálogo en ese tamaño.</div>
+      <div class="da-gift-banner">🎁 Elige solo el tamaño del frasco que quieres regalar — la persona va a elegir el perfume que más le guste, de todo nuestro catálogo en ese tamaño.</div>
       ${sizes.map(s => `
         <button type="button" class="da-gift-modo-card ${giftTallaMl===s.ml?'selected':''}" data-ml="${s.ml}">
           <b>${s.ml} ml</b>
@@ -1128,7 +1129,7 @@
     const brands = [...new Set(catalog.map(p=>p.inspiration).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
     list.innerHTML = `
       <button class="da-back" type="button" id="da-gift-modo-back">← Cambiar modo</button>
-      <div class="da-gift-banner">🎁 Arma un regalo — elige uno o varios perfumes (o varios tamaños) para que la persona elija el que más le guste.</div>
+      <div class="da-gift-banner">🎁 Arma un regalo — selecciona los perfumes que quieres regalar (disponible en 50 ml y 110 ml) para que la persona elija el que más le guste.</div>
       <input type="text" id="gift-filter" placeholder="Buscar por nombre o marca..." style="width:100%;padding:10px 14px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;margin-bottom:10px;font-family:inherit;font-size:13px;color:#3c2f47"/>
       <div style="display:flex;gap:8px;margin-bottom:12px">
         <select id="gift-filter-gender" style="flex:1;padding:10px 8px;border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;font-family:inherit;font-size:12.5px;color:#3c2f47;background:#fff">
@@ -1183,7 +1184,7 @@
     if(!box) return;
     const words = normText(giftFilterText).split(/\s+/).filter(Boolean);
     const items = catalog.filter(p =>
-      (p.sizes||[]).some(s=>s.stock>0 && s.price) &&
+      (p.sizes||[]).some(s=>s.stock>0 && s.price && GIFT_SIZES.includes(s.ml)) &&
       matchesGiftSearch(p, words) &&
       (!giftFilterGender || p.gender === giftFilterGender) &&
       (!giftFilterBrand || p.inspiration === giftFilterBrand)
@@ -1193,7 +1194,7 @@
       return;
     }
     box.innerHTML = items.map(p => {
-      const sizes = (p.sizes||[]).filter(s=>s.stock>0 && s.price).sort((a,b)=>b.ml-a.ml);
+      const sizes = (p.sizes||[]).filter(s=>s.stock>0 && s.price && GIFT_SIZES.includes(s.ml)).sort((a,b)=>b.ml-a.ml);
       const hasPremium = !!p.frascoPremium?.disponible;
       return `
         <div class="da-gift-item" data-pid="${p.id}">
