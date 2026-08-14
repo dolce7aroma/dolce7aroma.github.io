@@ -6,59 +6,63 @@
     {
       "id": "p-sfyvxc",
       "sku": "DA-CH-BL",
-      "name": "Bleu PREMIUM",
+      "name": "Bleu",
       "inspiration": "CHANEL",
       "gender": "hombre",
-      "family": "floral",
+      "family": "amaderado",
       "notes_top": [
-        "Toronja",
+        "Toronja (pomelo)",
         "limón",
-        "menta y pimienta rosa."
+        "menta",
+        "pimienta rosa y bergamota."
       ],
       "notes_heart": [
-        "jengibre",
+        "Jengibre",
         "nuez moscada",
-        "jazmín y el toque exclusivo de Iso E Super."
+        "jazmín e Iso E Super."
       ],
       "notes_base": [
         "Incienso",
         "cedro",
         "vetiver",
         "sándalo",
-        "pachulí y ládano."
+        "pachulí",
+        "ládano y almizcle blanco."
       ],
-      "description": "El aroma de la libertad y la elegancia atemporal.",
-      "photo": "Bleu Perfum D7A.jpg",
+      "description": "Un aroma que irradia libertad, audaz y atemporal. Una fragancia amaderada y aromática con un carácter fuerte y moderno, para el hombre que no sigue las reglas.",
+      "photo": "assets/perfumes/Bleu.jpg",
       "sizes": [
         {
           "ml": 110,
           "price": 90,
-          "stock": 0
+          "stock": 5
         },
         {
           "ml": 50,
-          "price": 65,
+          "price": 55,
           "stock": 5
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 0
+          "stock": 5
         }
       ],
-      "tag": "edicion-limitada",
-      "intensity": "moderada",
+      "tag": "",
+      "intensity": "intensa",
       "occasion": [
-        "dia",
         "noche",
         "oficina",
+        "fiesta",
         "cita",
-        "especial",
-        "verano",
-        "invierno"
+        "verano"
       ],
-      "featured": true,
-      "created_at": "2026-05-25"
+      "featured": false,
+      "created_at": "2026-05-25",
+      "frascoPremium": {
+        "disponible": false,
+        "precio": 0
+      }
     },
     {
       "id": "p-o6knri",
@@ -81,8 +85,8 @@
         "almizcle",
         "madera de roble"
       ],
-      "description": "El triunfo en estado puro.",
-      "photo": "Invictus Perfum D7A.jpg",
+      "description": "El triunfo en estado puro.\nVenta con su frasco original sin marcas.",
+      "photo": "idb:p-o6knri",
       "sizes": [
         {
           "ml": 110,
@@ -92,7 +96,7 @@
         {
           "ml": 50,
           "price": 65,
-          "stock": 2
+          "stock": 0
         },
         {
           "ml": 10,
@@ -105,8 +109,12 @@
       "occasion": [
         "diario"
       ],
-      "featured": true,
-      "created_at": "2026-05-26"
+      "featured": false,
+      "created_at": "2026-05-26",
+      "frascoPremium": {
+        "disponible": false,
+        "precio": 0
+      }
     },
     {
       "id": "p-da-afn-9pm-msz",
@@ -134,17 +142,17 @@
         {
           "ml": 110,
           "price": 90,
-          "stock": 2
+          "stock": 0
         },
         {
           "ml": 50,
           "price": 55,
-          "stock": 2
+          "stock": 1
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 2
+          "stock": 0
         }
       ],
       "tag": "",
@@ -224,22 +232,22 @@
         "haba tonka"
       ],
       "description": "Glamour y sensualidad en un frasco icónico.",
-      "photo": "assets/perfumes/212 Vip.jpg",
+      "photo": "assets/perfumes/212 Vip.png",
       "sizes": [
         {
           "ml": 110,
           "price": 90,
-          "stock": 2
+          "stock": 0
         },
         {
           "ml": 50,
           "price": 55,
-          "stock": 2
+          "stock": 0
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 2
+          "stock": 0
         }
       ],
       "tag": "",
@@ -469,7 +477,7 @@
         "ámbar"
       ],
       "description": "Frescura floral inspirada en el Mediterráneo.",
-      "photo": "assets/perfumes/Acqua di Gio Woman.jpg",
+      "photo": "assets/perfumes/Acqua di Gio Woman.png",
       "sizes": [
         {
           "ml": 110,
@@ -517,7 +525,7 @@
         "almizcle"
       ],
       "description": "Sensualidad envuelta en un aura de misterio.",
-      "photo": "assets/perfumes/Amethyst.jpg",
+      "photo": "assets/perfumes/Amethyst.png",
       "sizes": [
         {
           "ml": 110,
@@ -711,7 +719,7 @@
         "azúcar"
       ],
       "description": "La fragancia más codiciada del mundo.",
-      "photo": "assets/perfumes/Baccarat Rouge 540.jpg",
+      "photo": "assets/perfumes/Baccarat Rouge 540.png",
       "sizes": [
         {
           "ml": 110,
@@ -858,7 +866,7 @@
         "cedro"
       ],
       "description": "Adictiva y moderna con un corazón de café.",
-      "photo": "assets/perfumes/Black Opium Over Red.jpg",
+      "photo": "assets/perfumes/Black Opium Over Red.png",
       "sizes": [
         {
           "ml": 110,
@@ -1099,7 +1107,7 @@
         "vainilla"
       ],
       "description": "Dulce y femenina con un toque frutal irresistible.",
-      "photo": "assets/perfumes/Can Can.jpg",
+      "photo": "assets/perfumes/Can Can.png",
       "sizes": [
         {
           "ml": 110,
@@ -1148,7 +1156,7 @@
         "ámbar"
       ],
       "description": "Delicada y luminosa, perfecta para el día.",
-      "photo": "assets/perfumes/Celeste.jpg",
+      "photo": "assets/perfumes/Celeste.png",
       "sizes": [
         {
           "ml": 110,
@@ -1196,7 +1204,7 @@
         "almizcle"
       ],
       "description": "Suave, dulce y adictiva.",
-      "photo": "assets/perfumes/Cloud.jpg",
+      "photo": "assets/perfumes/Cloud.png",
       "sizes": [
         {
           "ml": 110,
@@ -1394,7 +1402,7 @@
         "cedro"
       ],
       "description": "Libertad y frescura femenina.",
-      "photo": "assets/perfumes/Escape.jpg",
+      "photo": "assets/perfumes/Escape.png",
       "sizes": [
         {
           "ml": 110,
@@ -1442,7 +1450,7 @@
         "almizcle"
       ],
       "description": "Intensidad femenina con elegancia italiana.",
-      "photo": "assets/perfumes/Extradose Donna.jpg",
+      "photo": "assets/perfumes/Extradose Donna.png",
       "sizes": [
         {
           "ml": 110,
@@ -1587,7 +1595,7 @@
         "almizcle"
       ],
       "description": "Ambición y glamour en forma de perfume.",
-      "photo": "assets/perfumes/Fame.jpg",
+      "photo": "assets/perfumes/Fame.png",
       "sizes": [
         {
           "ml": 110,
@@ -1636,7 +1644,7 @@
         "madera"
       ],
       "description": "Juguetona y femenina con alma golosa.",
-      "photo": "assets/perfumes/Fantasy.jpg",
+      "photo": "assets/perfumes/Fantasy.png",
       "sizes": [
         {
           "ml": 110,
@@ -1684,7 +1692,7 @@
         "ámbar"
       ],
       "description": "Limpieza y frescura floral inigualable.",
-      "photo": "assets/perfumes/For Women.jpg",
+      "photo": "assets/perfumes/For Women.png",
       "sizes": [
         {
           "ml": 110,
@@ -1732,7 +1740,7 @@
         "vainilla"
       ],
       "description": "Dualidad entre el bien y el mal en un frasco icónico.",
-      "photo": "assets/perfumes/Good Girl.jpg",
+      "photo": "assets/perfumes/Good Girl.png",
       "sizes": [
         {
           "ml": 110,
@@ -1779,7 +1787,7 @@
         "almizcle"
       ],
       "description": "La versión más romántica de Good Girl.",
-      "photo": "assets/perfumes/Good Girl Supreme.jpg",
+      "photo": "assets/perfumes/Good Girl Supreme.png",
       "sizes": [
         {
           "ml": 110,
@@ -1829,7 +1837,7 @@
         "vainilla"
       ],
       "description": "Dulce herencia de glamour y feminidad.",
-      "photo": "assets/perfumes/Heiress.jpg",
+      "photo": "assets/perfumes/Heiress.png",
       "sizes": [
         {
           "ml": 110,
@@ -1878,7 +1886,7 @@
         "almizcle"
       ],
       "description": "Una confesión de elegancia y sensualidad.",
-      "photo": "assets/perfumes/Her Confession.jpg",
+      "photo": "assets/perfumes/Her Confession.png",
       "sizes": [
         {
           "ml": 110,
@@ -2120,7 +2128,7 @@
         "vainilla"
       ],
       "description": "Feminidad en su máxima expresión.",
-      "photo": "assets/perfumes/Jadore.jpg",
+      "photo": "assets/perfumes/Jadore.png",
       "sizes": [
         {
           "ml": 110,
@@ -2267,7 +2275,7 @@
         "patchouli"
       ],
       "description": "La vida es bella cuando hueles así.",
-      "photo": "assets/perfumes/La vie est belle.jpg",
+      "photo": "assets/perfumes/La vie est belle.png",
       "sizes": [
         {
           "ml": 110,
@@ -2366,7 +2374,7 @@
         "almizcle"
       ],
       "description": "Lujo y poder femenino en un diamante.",
-      "photo": "idb:p-da-pr-lm-hob",
+      "photo": "assets/perfumes/Lady_Million.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -2391,7 +2399,11 @@
         "diario"
       ],
       "featured": false,
-      "created_at": "2026-05-26"
+      "created_at": "2026-05-26",
+      "frascoPremium": {
+        "disponible": false,
+        "precio": 0
+      }
     },
     {
       "id": "p-da-jpg-lm-46y",
@@ -2563,7 +2575,7 @@
         "almizcle blanco"
       ],
       "description": "Romanticismo y frescura en su máxima expresión.",
-      "photo": "idb:p-da-dio-md-03t",
+      "photo": "assets/perfumes/Miss_Dior.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -2588,7 +2600,11 @@
         "diario"
       ],
       "featured": false,
-      "created_at": "2026-05-26"
+      "created_at": "2026-05-26",
+      "frascoPremium": {
+        "disponible": false,
+        "precio": 0
+      }
     },
     {
       "id": "p-da-arm-myw-gba",
@@ -2610,7 +2626,7 @@
         "cedro de virginia"
       ],
       "description": "Libertad y feminidad en un viaje olfativo.",
-      "photo": "idb:p-da-arm-myw-gba",
+      "photo": "assets/perfumes/My_Way.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -2635,7 +2651,11 @@
         "especial"
       ],
       "featured": false,
-      "created_at": "2026-05-26"
+      "created_at": "2026-05-26",
+      "frascoPremium": {
+        "disponible": false,
+        "precio": 0
+      }
     },
     {
       "id": "p-da-pr-1m-led",
@@ -2956,7 +2976,7 @@
         {
           "ml": 110,
           "price": 90,
-          "stock": 2
+          "stock": 1
         },
         {
           "ml": 50,
@@ -2966,14 +2986,14 @@
         {
           "ml": 10,
           "price": 20,
-          "stock": 2
+          "stock": 0
         }
       ],
       "tag": "mas-vendido",
       "intensity": "moderada",
       "occasion": [
-        "diario",
-        "oficina"
+        "oficina",
+        "diario"
       ],
       "featured": true,
       "created_at": "2026-05-26"
