@@ -96,14 +96,14 @@
     // Prioridad: edits locales del admin → productos.json → perfumes.json
     try{
       const raw = localStorage.getItem(STORAGE_CATALOG);
-      if(raw){ const d = JSON.parse(raw); if(Array.isArray(d.perfumes) && d.perfumes.length){ catalog = d.perfumes; return; } }
+      if(raw){ const d = JSON.parse(raw); if(Array.isArray(d.perfumes) && d.perfumes.length){ catalog = d.perfumes.filter(p => p.activo !== false); return; } }
     }catch(e){}
     for(const u of CATALOG_URLS){
       try{
         const r = await fetch(u, {cache:'no-cache'});
         if(!r.ok) continue;
         const j = await r.json();
-        if(Array.isArray(j.perfumes) && j.perfumes.length){ catalog = j.perfumes; return; }
+        if(Array.isArray(j.perfumes) && j.perfumes.length){ catalog = j.perfumes.filter(p => p.activo !== false); return; }
       }catch(e){ /* siguiente */ }
     }
     catalog = [];

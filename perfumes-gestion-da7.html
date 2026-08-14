@@ -814,6 +814,14 @@
 
       <fieldset>
         <legend>Visibilidad</legend>
+        <label class="toggle" style="margin-bottom:12px">
+          <input type="checkbox" id="f-activo" checked />
+          <span class="switch"></span>
+          <span class="label">
+            <b>Activo (Mostrar en catálogo)</b>
+            <small>Si lo apagas, el perfume desaparecerá por completo de la tienda (gris = inactivo, verde = activo).</small>
+          </span>
+        </label>
         <label class="toggle">
           <input type="checkbox" id="f-featured" />
           <span class="switch"></span>
@@ -1124,7 +1132,12 @@ function renderTable(){
             <span>S/ ${s10.price ?? '—'} · 10ml · ${stockPill(s10.stock||0)}</span>
           </div>
         </td>
-        <td>${tagBadge} ${featBadge}</td>
+        <td>
+          <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">
+            ${p.activo === false ? '<span class="badge" style="background:#cfc8d8;color:#3c2f47">Inactivo</span>' : '<span class="badge" style="background:#5a8a5e;color:#fff">Activo</span>'}
+            ${tagBadge} ${featBadge}
+          </div>
+        </td>
         <td>
           <div class="row-actions">
             <button class="icon-act" data-act="dup" title="Duplicar">
@@ -1610,6 +1623,7 @@ function openDrawer(id=null){
   if(p?.photo){ resolvePhoto(p).then(url => { if($('#f-id').value === p.id) $('#f-preview').src = url; }); }
   $('#f-photo-label').textContent = p?.photo ? p.photo.split('/').pop() : 'Sin foto cargada';
   $('#f-featured').checked = !!p?.featured;
+  $('#f-activo').checked = p ? p.activo !== false : true;
   $('#f-frasco-premium').checked = !!p?.frascoPremium?.disponible;
   $('#f-frasco-premium-precio').value = p?.frascoPremium?.precio ?? '';
   $('#f-frasco-premium-precio-wrap').style.display = p?.frascoPremium?.disponible ? '' : 'none';
@@ -1677,6 +1691,7 @@ function readForm(){
     intensity: $('#f-intensity').value,
     occasion: getChipsValue('chips-occasion'),
     featured: $('#f-featured').checked,
+    activo: $('#f-activo').checked,
     created_at: $('#f-created').value.trim(),
     frascoPremium: {
       disponible: $('#f-frasco-premium').checked,
@@ -1859,6 +1874,7 @@ function csvToPerfumes(text){
       intensity: get('intensity').toLowerCase() || 'moderada',
       occasion: list('occasion'),
       featured: /^(si|sí|true|1|yes|x)$/i.test(get('featured')),
+      activo: idx('activo') >= 0 ? !/^(no|false|0)$/i.test(get('activo')) : true,
       created_at: new Date().toISOString().slice(0,10)
     });
   }
