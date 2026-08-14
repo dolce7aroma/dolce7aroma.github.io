@@ -967,9 +967,9 @@ function dataURLtoBlob(d){
   return new Blob([a], {type: mime});
 }
 async function resolvePhoto(p){
+  if(photoCache[p.id]) return photoCache[p.id];
   if(!p.photo) return 'assets/perfume-110ml.jpg';
   if(p.photo.startsWith('idb:')){
-    if(photoCache[p.id]) return photoCache[p.id];
     const blob = await idbGet(p.id);
     if(blob){ const url = URL.createObjectURL(blob); photoCache[p.id] = url; return url; }
     return 'assets/perfume-110ml.jpg';
@@ -983,8 +983,14 @@ async function migrateDataURLs(){
   // Move any embedded data: URLs out of localStorage and into IndexedDB
   let migrated = 0;
   for(const p of state.perfumes){
-    if(typeof p.photo === 'string' && p.photo.startsWith('data:')){
-      try{ await idbPut(p.id, dataURLtoBlob(p.photo)); p.photo = 'idb:' + p.id; migrated++; }catch(e){ console.warn('migrate fail', p.id, e); }
+    if(typeof p.photo === 'string'){
+      if(p.photo.startsWith('assets/perfumes/') && p.photo.endsWith('.png')){
+        p.photo = p.photo.replace(/\.png$/, '.jpg');
+        migrated++;
+      }
+      if(p.photo.startsWith('data:')){
+        try{ await idbPut(p.id, dataURLtoBlob(p.photo)); p.photo = 'idb:' + p.id; migrated++; }catch(e){ console.warn('migrate fail', p.id, e); }
+      }
     }
   }
   return migrated;
@@ -1008,7 +1014,19 @@ function toast(msg, type='ok'){
 async function load(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){ state = JSON.parse(raw); await preloadPhotos(); return; }
+    if(raw){ 
+      state = JSON.parse(raw); 
+      let migrated = false;
+      state.perfumes.forEach(p => {
+        if(typeof p.photo === 'string' && p.photo.startsWith('assets/perfumes/') && p.photo.endsWith('.png')){
+          p.photo = p.photo.replace(/\.png$/, '.jpg');
+          migrated = true;
+        }
+      });
+      if(migrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      await preloadPhotos(); 
+      return; 
+    }
     const res = await fetch(SEED_URL);
     const data = await res.json();
     state.perfumes = data.perfumes;
@@ -1127,7 +1145,10 @@ function hydrateTableImages(){
     const id = img.dataset.photoId;
     const p = state.perfumes.find(x => x.id === id);
     if(!p) return;
-    resolvePhoto(p).then(url => { img.src = url; });
+    resolvePhoto(p).then(url => { 
+      img.src = url; 
+      img.onerror = () => { img.src = 'assets/perfume-110ml.jpg'; };
+    });
   });
 }
 function renderAll(){
@@ -1687,6 +1708,7 @@ async function savePerfume(){
       }
       if(res.ok){
         p.photo = res.path;
+        try { photoCache[p.id] = URL.createObjectURL(file); } catch(e){} // mostrar de inmediato
         $('#f-photo-label').textContent = res.path.split('/').pop() + ' · publicada ✓';
         toast('Foto publicada en el repo');
         pendingPhotoFile = null;
