@@ -208,6 +208,8 @@
     saveCart();
     bumpCount();
     showToast(buildAddToast(item.ml));
+    const ga4Item = formatGA4Item(item, item.qty || 1);
+    trackGA4Event('add_to_cart', { currency: 'PEN', value: ga4Item.price * ga4Item.quantity, items: [ga4Item] });
   }
   // Mensaje del toast: induce a completar la oferta o celebra que ya está activa
   function buildAddToast(ml){
@@ -221,7 +223,16 @@
     if(applied) return `Agregado · ¡${applied.label} activo! Ahorras S/ ${applied.amount}`;
     return 'Agregado a la bolsa';
   }
-  function removeFromCart(id, ml){ cart = cart.filter(c => !(c.id===id && c.ml===ml)); saveCart(); renderCart(); }
+  function removeFromCart(id, ml){ 
+    const itemToRemove = cart.find(c => c.id===id && c.ml===ml);
+    if (itemToRemove) {
+      const ga4Item = formatGA4Item({id, ml}, itemToRemove.qty);
+      trackGA4Event('remove_from_cart', { currency: 'PEN', value: ga4Item.price * ga4Item.quantity, items: [ga4Item] });
+    }
+    cart = cart.filter(c => !(c.id===id && c.ml===ml)); 
+    saveCart(); 
+    renderCart(); 
+  }
   function changeQty(id, ml, d){
     const it = cart.find(c=>c.id===id && c.ml===ml);
     if(!it) return;
@@ -238,6 +249,25 @@
     document.querySelectorAll('[data-cart-count]').forEach(el=>{
       el.animate([{transform:'scale(1)'},{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:380,easing:'cubic-bezier(.2,.7,.2,1)'});
     });
+  }
+
+  // ─── Analytics (GA4) ───
+  function trackGA4Event(eventName, eventParams) {
+    if (typeof window.gtag === 'function') window.gtag('event', eventName, eventParams);
+  }
+  function formatGA4Item(item, qty = 1) {
+    const p = catalog.find(x => x.id === item.id);
+    const sz = p?.sizes?.find(s => s.ml === item.ml);
+    return {
+      item_id: p ? p.id : item.id,
+      item_name: p ? p.name : 'Unknown',
+      affiliation: 'Dolce Aroma',
+      item_brand: p ? (p.inspiration || 'Dolce Aroma') : '',
+      item_category: p ? (p.gender || '') : '',
+      price: sz ? (sz.price || 0) : 0,
+      quantity: qty,
+      item_variant: item.ml + 'ml'
+    };
   }
 
   // ─── UI: estilos inyectados ───
@@ -519,6 +549,13 @@
     const sizes = (p.sizes||[]).slice().sort((a,b)=>b.ml-a.ml).filter(s => s.stock > 0 && s.price);
     const firstAvailable = sizes[0];
     currentDetail = { id, ml: firstAvailable?.ml };
+    if (firstAvailable) {
+      trackGA4Event('view_item', {
+        currency: 'PEN',
+        value: firstAvailable.price,
+        items: [formatGA4Item({id: p.id, ml: firstAvailable.ml}, 1)]
+      });
+    }
 
     const card = document.getElementById('da-modal-card');
     const photo = resolvePhoto(p);
@@ -605,6 +642,13 @@
     document.getElementById('da-buy-wa').addEventListener('click', ()=>{
       const qty = parseInt(document.getElementById('da-qty-input').value,10)||1;
       const targetMl = currentDetail.ml || (p.sizes||[]).find(s=>s.price)?.ml || 0;
+      const ga4Item = formatGA4Item({id: p.id, ml: targetMl}, qty);
+      trackGA4Event('purchase', {
+        currency: 'PEN',
+        transaction_id: 'wa_fast_' + Date.now(),
+        value: ga4Item.price * qty,
+        items: [ga4Item]
+      });
       const msg = buildWhatsAppMessage([{id:p.id, ml:targetMl, qty}], true);
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
     });
@@ -634,7 +678,15 @@
   }
 
   // ─── Carrito UI ───
-  function openCart(){ giftMode = false; renderCart(); document.getElementById('da-bd').classList.add('open'); document.getElementById('da-cart').classList.add('open'); }
+  function openCart(){ 
+    giftMode = false; renderCart(); 
+    document.getElementById('da-bd').classList.add('open'); 
+    document.getElementById('da-cart').classList.add('open'); 
+    if (cart.length > 0) {
+      const offers = computeOffers();
+      trackGA4Event('view_cart', { currency: 'PEN', value: offers.total, items: cart.map(c => formatGA4Item(c, c.qty)) });
+    }
+  }
   function openGiftBuilder(){
     giftRole = 'comprador'; giftMode = true; giftStep = 'armar';
     giftList = []; giftDraft = { entregaPara:'regalada', compradorTelefono:'', compradorNombre:'', nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
@@ -751,6 +803,8 @@
     document.getElementById('da-checkout').addEventListener('click', ()=>{
       checkoutStep = 'form';
       renderCart();
+      const offers = computeOffers();
+      trackGA4Event('begin_checkout', { currency: 'PEN', value: offers.total, items: cart.map(c => formatGA4Item(c, c.qty)) });
     });
     document.getElementById('da-clear').addEventListener('click', ()=>{
       if(confirm('¿Vaciar la bolsa?')){ cart=[]; saveCart(); renderCart(); }
@@ -913,6 +967,11 @@
       const data = await r.json().catch(()=>({ok:false}));
       if(!r.ok || !data.ok) throw new Error(data.error || 'No se pudo registrar el pedido');
       lastOrder = { orderId: data.orderId || null, nombre, telefono, distrito, direccion, referencia, items, subtotal: offers.subtotal, total: offers.total };
+      trackGA4Event('add_shipping_info', {
+        currency: 'PEN',
+        value: offers.total,
+        items: cart.map(c => formatGA4Item(c, c.qty))
+      });
       checkoutStep = 'confirm';
       renderCart();
     }catch(err){
@@ -961,6 +1020,16 @@
     `;
     foot.innerHTML = '';
     if(pago.culqiPublicKey) document.getElementById('da-pay-culqi')?.addEventListener('click', payWithCulqi);
+    document.getElementById('da-pay-wa')?.addEventListener('click', ()=>{
+      if(lastOrder) {
+        trackGA4Event('purchase', {
+          currency: 'PEN',
+          transaction_id: lastOrder.orderId || 'wa_' + Date.now(),
+          value: lastOrder.total,
+          items: cart.map(c => formatGA4Item(c, c.qty))
+        });
+      }
+    });
     document.getElementById('da-confirm-close').addEventListener('click', ()=>{
       cart = []; saveCart();
       checkoutStep = 'cart'; lastOrder = null;
@@ -1020,6 +1089,12 @@
       const data = await r.json().catch(()=>({ok:false}));
       if(!r.ok || !data.ok) throw new Error(data.error || 'Pago rechazado');
       showToast('¡Pago confirmado! Gracias por tu compra 🌸');
+      trackGA4Event('purchase', {
+        currency: 'PEN',
+        transaction_id: lastOrder?.orderId || 'culqi_' + Date.now(),
+        value: lastOrder?.total || 0,
+        items: cart.map(c => formatGA4Item(c, c.qty))
+      });
       const card = document.getElementById('da-pay-card-tarjeta');
       if(card) card.innerHTML = `<div class="da-pay-title">✓ Pago confirmado</div><p class="da-pay-note">Ya registramos tu pago. Coordinamos la entrega por WhatsApp.</p>`;
     }catch(e){
@@ -1368,6 +1443,11 @@
       const data = await r.json().catch(()=>({ok:false}));
       if(!r.ok || !data.ok) throw new Error(data.error || 'No se pudo generar el regalo');
       currentGift = { id: data.giftId, items, total, compradorTelefono, compradorNombre, elegido: false, pagado: false };
+      trackGA4Event('begin_checkout', {
+        currency: 'PEN',
+        value: total,
+        items: items.map(c => formatGA4Item(c, c.qty))
+      });
       giftStep = 'pagar'; // el pago es obligatorio antes de compartir el link
       renderCart();
     }catch(e){
@@ -1451,6 +1531,12 @@
     `;
     foot.innerHTML = '';
     document.getElementById('da-gift-pay-wa').addEventListener('click', (e)=>{
+      trackGA4Event('purchase', {
+        currency: 'PEN',
+        transaction_id: g.id || 'gift_wa_' + Date.now(),
+        value: g.total,
+        items: g.items.map(c => formatGA4Item(c, c.qty))
+      });
       // No dejamos que el navegador salte a WhatsApp ANTES de que el registro del pago
       // llegue al servidor: en móvil, el cambio a la app de WhatsApp puede abortar un
       // fetch que todavía está en camino, y el pago nunca queda registrado (bug real
