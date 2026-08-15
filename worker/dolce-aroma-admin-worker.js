@@ -67,6 +67,88 @@ const REPO_NAME = 'dolce7aroma.github.io';
 const BRANCH = 'main';
 const ALLOWED_ORIGIN = 'https://dolce7aroma.github.io';
 
+async function fetchJSON(url) {
+  try {
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error();
+    return await res.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+async function checkRateLimit(ip, env) {
+  if (!ip || !env.ORDERS) return true;
+  const key = `rl:${ip}`;
+  let count = 0;
+  try {
+    const v = await env.ORDERS.get(key);
+    if (v) count = parseInt(v, 10);
+    if (count >= 5) return false;
+    await env.ORDERS.put(key, (count + 1).toString(), { expirationTtl: 3600 });
+  } catch(e) {}
+  return true;
+}
+
+const TRIO_TIERS = {
+  110: { perTrio: () => 30 },
+  50:  { perTrio: () => 15 },
+  10:  { perTrio: () => 10 }
+};
+const DUO_TIERS = {
+  110: { amount: 30 },
+  50:  { amount: 10 }
+};
+
+function calculateCartTotal(items, catalog) {
+  if(!catalog || !catalog.perfumes) return 0;
+  const groups = {};
+  items.forEach(it => {
+    const p = catalog.perfumes.find(x => (x.id === it.id) || (x.name === it.name));
+    if(!p) return;
+    const sz = p.sizes?.find(s => s.ml === it.ml);
+    if(!sz) return;
+    groups[it.ml] = groups[it.ml] || [];
+    for(let i=0; i<it.qty; i++) {
+      let price = sz.price || 0;
+      if(it.premium && p.frascoPremium?.disponible) price += p.frascoPremium.precio;
+      groups[it.ml].push(price);
+    }
+  });
+
+  let subtotal = Object.values(groups).reduce((s,arr)=> s + arr.reduce((a,b)=>a+b,0), 0);
+  let totalDiscount = 0;
+
+  Object.entries(groups).forEach(([mlStr, prices]) => {
+    const ml = +mlStr;
+    const trioTier = TRIO_TIERS[ml];
+    const duoTier = DUO_TIERS[ml];
+    const sorted = prices.slice().sort((a,b)=>a-b);
+    const n = sorted.length;
+
+    let trios = trioTier ? Math.floor(n / 3) : 0;
+    let resto = n - trios * 3;
+    if(resto === 1 && trios > 0 && duoTier){ trios -= 1; resto += 3; }
+    const duos = duoTier ? Math.floor(resto / 2) : 0;
+
+    let idx = 0;
+    for(let t=0;t<trios;t++){ totalDiscount += trioTier.perTrio(sorted[idx]); idx += 3; }
+    for(let d=0;d<duos;d++){ totalDiscount += duoTier.amount; idx += 2; }
+  });
+  return subtotal - totalDiscount;
+}
+
+function calculateShippingCost(provincia, distrito, zonas) {
+  if (!zonas || !zonas.distritosLima) return 0;
+  if (provincia && provincia !== 'Lima' && provincia !== 'Callao') return 0;
+  if (!distrito || distrito === '-') return 0;
+  const n = (distrito||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+  const d = zonas.distritosLima.find(z => (z.nombre||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim() === n);
+  return d ? (d.costo || 0) : 0;
+}
+
+
+
 function corsHeaders() {
   return {
     'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
@@ -310,6 +392,7 @@ function orderSummaryText(record) {
 Pedido: #${record.id}
 Cliente: ${record.nombre}
 Teléfono: ${record.telefono}
+Provincia: ${record.provincia || 'Lima'}
 Distrito: ${record.distrito}
 Dirección: ${record.direccion}
 Referencia: ${record.referencia || '-'}
@@ -319,6 +402,7 @@ Productos:
 ${itemsText}
 
 Subtotal: S/ ${record.subtotal}
+Envío: S/ ${record.envio || 0}
 Total: S/ ${record.total}`;
 }
 
@@ -326,10 +410,15 @@ Total: S/ ${record.total}`;
 // solo dispara avisos por correo/Telegram si esos secretos están configurados y lo guarda
 // en KV si el binding ORDERS está enlazado).
 async function handleSubmitOrder(request, env) {
+  const ip = request.headers.get('cf-connecting-ip');
+  if (!(await checkRateLimit(ip, env))) {
+    return json({ ok: false, error: 'Demasiados pedidos. Por favor, intenta de nuevo en una hora.' }, 429);
+  }
+
   const body = await request.json().catch(() => null);
   if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
 
-  const { nombre, telefono, distrito, direccion, referencia, items, subtotal, total, metodoPago, esRegalo } = body;
+  const { provincia, nombre, telefono, distrito, direccion, referencia, items, metodoPago, esRegalo } = body;
   if (!nombre || !telefono || !distrito || !direccion) {
     return json({ ok: false, error: 'Faltan datos del pedido' }, 400);
   }
@@ -337,10 +426,21 @@ async function handleSubmitOrder(request, env) {
     return json({ ok: false, error: 'El pedido no tiene productos' }, 400);
   }
 
+  const catalog = await fetchJSON('https://dolce7aroma.github.io/data/productos.json');
+  const zonas = await fetchJSON('https://dolce7aroma.github.io/data/zonas-envio.json');
+  
+  if(!catalog || !zonas) {
+    return json({ ok: false, error: 'Error interno conectando con el catálogo. Intenta más tarde.' }, 502);
+  }
+
+  const realSubtotal = calculateCartTotal(items, catalog);
+  const realShipping = calculateShippingCost(provincia, distrito, zonas);
+  const realTotal = realSubtotal + realShipping;
+
   const orderId = generateOrderId();
   const record = {
-    id: orderId, nombre, telefono, distrito, direccion, referencia,
-    items, subtotal, total, metodoPago: metodoPago || null, esRegalo: !!esRegalo,
+    id: orderId, nombre, telefono, provincia: provincia || 'Lima', distrito, direccion, referencia,
+    items, subtotal: realSubtotal, envio: realShipping, total: realTotal, metodoPago: metodoPago || null, esRegalo: !!esRegalo,
     estado: 'nuevo', creadoEn: new Date().toISOString(),
   };
 
@@ -575,11 +675,16 @@ async function handleMarkGiftPaid(request, env) {
 async function handleChargeCulqi(request, env) {
   const body = await request.json().catch(() => null);
   if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
-  const { orderId, token, email, amount } = body;
+  const { orderId, token, email } = body;
   if (!env.CULQI_SECRET_KEY) return json({ ok: false, error: 'El cobro con tarjeta no está activado todavía.' }, 400);
-  if (!token || !email || !amount) return json({ ok: false, error: 'Faltan datos del pago' }, 400);
+  if (!token || !email || !orderId) return json({ ok: false, error: 'Faltan datos del pago' }, 400);
 
   try {
+    const rawOrder = env.ORDERS ? await env.ORDERS.get(`order:${orderId}`) : null;
+    if (!rawOrder) return json({ ok: false, error: 'Pedido no encontrado para cobrar' }, 404);
+    const orderRecord = JSON.parse(rawOrder);
+    const calculatedAmount = Math.round(orderRecord.total * 100);
+
     const res = await fetch('https://api.culqi.com/v2/charges', {
       method: 'POST',
       headers: {
@@ -587,7 +692,7 @@ async function handleChargeCulqi(request, env) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        amount,
+        amount: calculatedAmount,
         currency_code: 'PEN',
         email,
         source_id: token,

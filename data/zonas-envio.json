@@ -1,42 +1,77 @@
 {
   "schema": {
-    "version": 2
+    "version": 3
   },
   "envioGratisMinimo": 100,
   "mensajeEstandarGratis": "¡Felicidades, tu zona tiene envío gratis! Coordinamos la entrega contigo por WhatsApp.",
-  "zonasGratis": [
+  "notaOtrasZonas": "Envío: Pago en destino / Coordinar por WhatsApp",
+  "provincias": [
+    "Lima",
+    "Callao",
+    "Amazonas",
+    "Áncash",
+    "Apurímac",
+    "Arequipa",
+    "Ayacucho",
+    "Cajamarca",
+    "Cusco",
+    "Huancavelica",
+    "Huánuco",
+    "Ica",
+    "Junín",
+    "La Libertad",
+    "Lambayeque",
+    "Loreto",
+    "Madre de Dios",
+    "Moquegua",
+    "Pasco",
+    "Piura",
+    "Puno",
+    "San Martín",
+    "Tacna",
+    "Tumbes",
+    "Ucayali"
+  ],
+  "distritosLima": [
     {
-      "distrito": "San Martín de Porres",
+      "nombre": "San Martín de Porres",
+      "costo": 0,
       "detalle": "Av. Perú y alrededores"
     },
     {
-      "distrito": "San Miguel",
+      "nombre": "San Miguel",
+      "costo": 0,
       "detalle": "Zonas específicas — se confirma por WhatsApp"
     },
     {
-      "distrito": "Miraflores",
+      "nombre": "Miraflores",
+      "costo": 0,
       "detalle": ""
     },
     {
-      "distrito": "Magdalena",
+      "nombre": "Magdalena",
+      "costo": 0,
       "detalle": ""
     },
     {
-      "distrito": "Lince",
+      "nombre": "Lince",
+      "costo": 0,
       "detalle": ""
     },
     {
-      "distrito": "San Isidro",
+      "nombre": "San Isidro",
+      "costo": 0,
       "detalle": ""
     },
     {
-      "distrito": "Los Olivos",
+      "nombre": "Los Olivos",
+      "costo": 0,
       "detalle": "Zonas específicas — se confirma por WhatsApp"
     },
     {
-      "distrito": "Callao",
-      "detalle": "Zonas específicas — se confirma por WhatsApp"
+      "nombre": "Otro Distrito (Lima/Callao)",
+      "costo": 10,
+      "detalle": "Se confirma exacto por WhatsApp"
     }
-  ],
-  "notaOtrasZonas": "Se envía por courier (Olva u otro) el cual obtiene un descuento especial. Te confirmamos el costo exacto por WhatsApp antes de coordinar el envío."
+  ]
 }

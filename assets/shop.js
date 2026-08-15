@@ -47,6 +47,13 @@
     'Callao (Cercado)','Bellavista','Carmen de la Legua Reynoso','La Perla','La Punta','Mi Perú','Ventanilla'
   ];
   function normText(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim(); }
+  function getShippingCost(provincia, distrito) {
+    if (provincia && provincia !== 'Lima' && provincia !== 'Callao') return 0;
+    if (!distrito || distrito === '-') return 0;
+    const n = normText(distrito);
+    const d = (zonas.distritosLima||[]).find(z => normText(z.nombre) === n);
+    return d ? (d.costo || 0) : 0;
+  }
   function findZonaMatch(distrito){
     if(!distrito) return null;
     const n = normText(distrito);
@@ -59,14 +66,14 @@
   let pago = { nombreYape: 'Cesar Fernandez', culqiPublicKey: '' };
   let checkoutStep = 'cart'; // 'cart' | 'form' | 'confirm'
   let lastOrder = null; // datos del último pedido confirmado (para el paso de pago)
-  let orderForm = { nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
+  let orderForm = { provincia:'Lima', nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
 
   // ─── Regalar un perfume ───
   let giftMode = false;             // true = el panel de la derecha muestra el armador de regalo
   let giftStep = 'armar';           // 'armar' | 'detalles' | 'compartir' | 'pagar'
   let giftList = [];                // [{id, ml, name, price, premium}] — lista curada del comprador
   let giftDraft = { entregaPara: 'regalada', compradorTelefono: '', compradorNombre: '',
-    nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
+    provincia:'Lima', nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
   let currentGift = null;           // el regalo cargado vía ?regalo= o ?pagar_regalo=
   let giftClaimStep = 'elegir';     // 'elegir' | 'gracias' (vista de la persona regalada)
   let giftClaimChoice = null;       // índice elegido por la persona regalada
@@ -827,9 +834,11 @@
         <label>Teléfono / WhatsApp
           <input type="tel" id="of-telefono" required inputmode="numeric" value="${escapeHtml(orderForm.telefono)}" placeholder="Ej. 987654321"/>
         </label>
+        <label>Provincia / Departamento
+          <select id="of-provincia" required></select>
+        </label>
         <label class="da-distrito-field">Distrito
-          <input type="text" id="of-distrito" required autocomplete="off" value="${escapeHtml(orderForm.distrito)}" placeholder="Escribe para buscar tu distrito"/>
-          <div class="da-autocomplete" id="of-distrito-list"></div>
+          <select id="of-distrito" required></select>
         </label>
         <label>Dirección
           <input type="text" id="of-direccion" required value="${escapeHtml(orderForm.direccion)}" placeholder="Calle, número, referencia de edificio"/>
@@ -845,7 +854,9 @@
     const missedOfferHtml = renderMissedOfferHint(offers);
     foot.innerHTML = `
       <div class="da-totals">
-        <div class="da-line da-line-total"><span>Total del pedido</span><b>S/ ${offers.total}</b></div>
+        <div class="da-line"><span>Subtotal perfumes</span><b>S/ ${offers.total}</b></div>
+        <div class="da-line"><span>Envío</span><b id="da-envio-calc">S/ 0</b></div>
+        <div class="da-line da-line-total"><span>Total del pedido</span><b id="da-total-calc">S/ ${offers.total}</b></div>
       </div>
       ${missedOfferHtml}
     `;
@@ -866,58 +877,63 @@
       e.target.value = digits;
       orderForm.telefono = digits;
     });
-    wireDistritoAutocomplete();
+    function updateDistritos(selProv, selDist, objForm) {
+      const prov = selProv.value;
+      objForm.provincia = prov;
+      if (prov === 'Lima' || prov === 'Callao') {
+        selDist.innerHTML = '<option value="">Selecciona un distrito...</option>' + 
+          (zonas.distritosLima||[]).map(d => `<option value="${escapeHtml(d.nombre)}" ${objForm.distrito === d.nombre ? 'selected' : ''}>${escapeHtml(d.nombre)}</option>`).join('');
+        selDist.disabled = false;
+      } else {
+        selDist.innerHTML = '<option value="-">- (No aplica)</option>';
+        selDist.disabled = true;
+        objForm.distrito = '-';
+      }
+      renderZonasInfo(objForm.distrito, objForm.provincia);
+      
+      const envio = getShippingCost(objForm.provincia, objForm.distrito);
+      const totalConEnvio = offers.total + envio;
+      const envEl = document.getElementById('da-envio-calc');
+      const totEl = document.getElementById('da-total-calc');
+      if(envEl) envEl.innerText = envio === 0 ? 'S/ 0' : `S/ ${envio}`;
+      if(totEl) totEl.innerText = `S/ ${totalConEnvio}`;
+    }
+
+    const selProv = document.getElementById('of-provincia');
+    const selDist = document.getElementById('of-distrito');
+    selProv.innerHTML = (zonas.provincias||[]).map(p => `<option value="${escapeHtml(p)}" ${orderForm.provincia === p ? 'selected' : ''}>${escapeHtml(p)}</option>`).join('');
+    
+    selProv.addEventListener('change', () => updateDistritos(selProv, selDist, orderForm));
+    selDist.addEventListener('change', (e) => {
+      orderForm.distrito = e.target.value;
+      updateDistritos(selProv, selDist, orderForm);
+    });
+    updateDistritos(selProv, selDist, orderForm); // init
     document.getElementById('da-order-form').addEventListener('submit', onSubmitOrderForm);
   }
 
-  // Sugerencias de distrito mientras el usuario escribe (tipo M → todos los distritos con M)
-  function wireDistritoAutocomplete(){
-    const input = document.getElementById('of-distrito');
-    const list = document.getElementById('of-distrito-list');
-    function closeList(){ list.innerHTML=''; list.classList.remove('open'); }
-    function openList(matches){
-      list.innerHTML = matches.map(d => `<button type="button" class="da-ac-item" data-d="${escapeHtml(d)}">${escapeHtml(d)}</button>`).join('');
-      list.classList.toggle('open', matches.length>0);
-    }
-    input.addEventListener('input', ()=>{
-      orderForm.distrito = input.value;
-      const q = normText(input.value);
-      if(!q){ closeList(); renderZonasInfo(''); return; }
-      const matches = LIMA_DISTRITOS.filter(d => normText(d).includes(q)).slice(0,8);
-      openList(matches);
-      renderZonasInfo(input.value);
-    });
-    input.addEventListener('focus', ()=>{ if(input.value) input.dispatchEvent(new Event('input')); });
-    list.addEventListener('click', e=>{
-      const b = e.target.closest('.da-ac-item');
-      if(!b) return;
-      input.value = b.dataset.d;
-      orderForm.distrito = b.dataset.d;
-      closeList();
-      renderZonasInfo(input.value);
-    });
-    document.addEventListener('click', e=>{
-      if(!e.target.closest('.da-distrito-field')) closeList();
-    }, { once:true });
-  }
-
   // Info de envío: general por defecto, o específica en cuanto el distrito coincide con una zona gratis
-  function renderZonasInfo(distrito){
+  function renderZonasInfo(distrito, provincia){
     const box = document.getElementById('da-zonas-info');
     if(!box) return;
-    const match = findZonaMatch(distrito);
+    if (provincia && provincia !== 'Lima' && provincia !== 'Callao') {
+      box.innerHTML = `<div class="da-zonas-title da-zonas-match">🚚 ${escapeHtml(zonas.notaOtrasZonas)}</div>`;
+      return;
+    }
+    const n = normText(distrito);
+    const match = (zonas.distritosLima||[]).find(z => normText(z.nombre) === n);
     if(match){
-      const mensaje = match.detalle || zonas.mensajeEstandarGratis || '';
-      box.innerHTML = `
-        <div class="da-zonas-title da-zonas-match">🎉 ¡Envío gratis a ${escapeHtml(match.distrito)}!</div>
-        ${mensaje ? `<p>${escapeHtml(mensaje)}</p>` : ''}
-      `;
+      if (match.costo === 0) {
+        box.innerHTML = `<div class="da-zonas-title da-zonas-match">🎉 ¡Envío gratis a ${escapeHtml(match.nombre)}!</div>
+                         ${match.detalle ? `<p>${escapeHtml(match.detalle)}</p>` : ''}`;
+      } else {
+        box.innerHTML = `<div class="da-zonas-title">🚚 Envío: S/ ${match.costo} a ${escapeHtml(match.nombre)}</div>
+                         ${match.detalle ? `<p>${escapeHtml(match.detalle)}</p>` : ''}`;
+      }
       return;
     }
     box.innerHTML = `
-      <div class="da-zonas-title">🚚 Envío gratis${zonas.envioGratisMinimo ? ` desde S/ ${zonas.envioGratisMinimo}` : ''}</div>
-      ${zonas.zonasGratis?.length ? `<ul>${zonas.zonasGratis.map(z=>`<li>${escapeHtml(z.distrito || '')}${z.distrito && z.detalle ? ' — ' : ''}${escapeHtml(z.detalle||'')}</li>`).join('')}</ul>` : ''}
-      ${zonas.notaOtrasZonas ? `<p>${escapeHtml(zonas.notaOtrasZonas)}</p>` : ''}
+      <div class="da-zonas-title">🚚 Envío: elige tu provincia y distrito para ver opciones</div>
     `;
   }
 
@@ -942,15 +958,18 @@
     e.preventDefault();
     const nombre = document.getElementById('of-nombre').value.trim();
     const telefono = document.getElementById('of-telefono').value.trim();
+    const provincia = document.getElementById('of-provincia').value;
     const distrito = document.getElementById('of-distrito').value.trim();
     const direccion = document.getElementById('of-direccion').value.trim();
     const referencia = document.getElementById('of-referencia').value.trim();
-    if(!nombre || !telefono || !distrito || !direccion){
+    if(!nombre || !telefono || !provincia || !distrito || !direccion){
       showToast('Completa los campos obligatorios');
       return;
     }
-    orderForm = { nombre, telefono, distrito, direccion, referencia };
+    orderForm = { provincia, nombre, telefono, distrito, direccion, referencia };
     const offers = computeOffers();
+    const envio = getShippingCost(provincia, distrito);
+    const totalFinal = offers.total + envio;
     const items = cart.map(it=>{
       const p = catalog.find(x=>x.id===it.id);
       const sz = p?.sizes?.find(s=>s.ml===it.ml);
@@ -962,11 +981,11 @@
       const r = await fetch(`${ORDER_API_BASE}/api/submit-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, telefono, distrito, direccion, referencia, items, subtotal: offers.subtotal, total: offers.total })
+        body: JSON.stringify({ nombre, telefono, provincia, distrito, direccion, referencia, items, subtotal: offers.total, envio, total: totalFinal })
       });
       const data = await r.json().catch(()=>({ok:false}));
       if(!r.ok || !data.ok) throw new Error(data.error || 'No se pudo registrar el pedido');
-      lastOrder = { orderId: data.orderId || null, nombre, telefono, distrito, direccion, referencia, items, subtotal: offers.subtotal, total: offers.total };
+      lastOrder = { orderId: data.orderId || null, nombre, telefono, provincia, distrito, direccion, referencia, items, subtotal: offers.total, envio, total: totalFinal };
       trackGA4Event('add_shipping_info', {
         currency: 'PEN',
         value: offers.total,
