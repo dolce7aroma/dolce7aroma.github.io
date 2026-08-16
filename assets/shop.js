@@ -401,6 +401,9 @@
       .da-order-form label{display:flex;flex-direction:column;gap:6px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#5d4c70}
       .da-order-form input{border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;color:#3c2f47;background:#fff}
       .da-order-form input:focus{outline:none;border-color:#a8895a}
+      .da-order-form select{border:1.5px solid rgba(60,47,71,0.15);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;color:#3c2f47;background:#fff;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233c2f47' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 14px center;background-size:16px;transition:border-color 0.2s}
+      .da-order-form select:focus{outline:none;border-color:#a8895a}
+      .da-order-form select:disabled{background:#f5f5f5;color:#aaa}
       .da-zonas-info{background:#efe9e0;border-radius:12px;padding:14px 16px;font-size:12.5px;color:#5d4c70;line-height:1.6}
       .da-zonas-info .da-zonas-title{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#3c2f47;font-weight:600;margin-bottom:6px}
       .da-zonas-info .da-zonas-match{color:#3c8f5a}
@@ -854,8 +857,6 @@
     const missedOfferHtml = renderMissedOfferHint(offers);
     foot.innerHTML = `
       <div class="da-totals">
-        <div class="da-line"><span>Subtotal perfumes</span><b>S/ ${offers.total}</b></div>
-        <div class="da-line"><span>Envío</span><b id="da-envio-calc">S/ 0</b></div>
         <div class="da-line da-line-total"><span>Total del pedido</span><b id="da-total-calc">S/ ${offers.total}</b></div>
       </div>
       ${missedOfferHtml}
@@ -882,7 +883,7 @@
       objForm.provincia = prov;
       if (prov === 'Lima' || prov === 'Callao') {
         selDist.innerHTML = '<option value="">Selecciona un distrito...</option>' + 
-          (zonas.distritosLima||[]).map(d => `<option value="${escapeHtml(d.nombre)}" ${objForm.distrito === d.nombre ? 'selected' : ''}>${escapeHtml(d.nombre)}</option>`).join('');
+          (typeof LIMA_DISTRITOS !== 'undefined' ? LIMA_DISTRITOS : []).map(d => `<option value="${escapeHtml(d)}" ${objForm.distrito === d ? 'selected' : ''}>${escapeHtml(d)}</option>`).join('');
         selDist.disabled = false;
       } else {
         selDist.innerHTML = '<option value="-">- (No aplica)</option>';
@@ -891,12 +892,8 @@
       }
       renderZonasInfo(objForm.distrito, objForm.provincia);
       
-      const envio = getShippingCost(objForm.provincia, objForm.distrito);
-      const totalConEnvio = offers.total + envio;
-      const envEl = document.getElementById('da-envio-calc');
       const totEl = document.getElementById('da-total-calc');
-      if(envEl) envEl.innerText = envio === 0 ? 'S/ 0' : `S/ ${envio}`;
-      if(totEl) totEl.innerText = `S/ ${totalConEnvio}`;
+      if(totEl) totEl.innerText = `S/ ${offers.total}`;
     }
 
     const selProv = document.getElementById('of-provincia');
@@ -916,20 +913,39 @@
   function renderZonasInfo(distrito, provincia){
     const box = document.getElementById('da-zonas-info');
     if(!box) return;
+    
+    // Check global exceptions first (covers both distritos and provincias)
+    const excepciones = zonas.excepciones || zonas.excepcionesLima || {};
+    
     if (provincia && provincia !== 'Lima' && provincia !== 'Callao') {
-      box.innerHTML = `<div class="da-zonas-title da-zonas-match">🚚 ${escapeHtml(zonas.notaOtrasZonas)}</div>`;
+      // Prioridad 1: Excepción en la provincia
+      if(excepciones[provincia]) {
+        box.innerHTML = `<div class="da-zonas-title">🚚 Envío a ${escapeHtml(provincia)}</div>
+                         <p>${escapeHtml(excepciones[provincia])}</p>`;
+        return;
+      }
+      // Prioridad 2: Speech general de provincias
+      const speech = zonas.speechProvincias || 'Envío por agencia con pago en destino. Te confirmamos por WhatsApp.';
+      box.innerHTML = `<div class="da-zonas-title da-zonas-match">🚚 ${escapeHtml(speech)}</div>`;
       return;
     }
-    const n = normText(distrito);
-    const match = (zonas.distritosLima||[]).find(z => normText(z.nombre) === n);
-    if(match){
-      if (match.costo === 0) {
-        box.innerHTML = `<div class="da-zonas-title da-zonas-match">🎉 ¡Envío gratis a ${escapeHtml(match.nombre)}!</div>
-                         ${match.detalle ? `<p>${escapeHtml(match.detalle)}</p>` : ''}`;
-      } else {
-        box.innerHTML = `<div class="da-zonas-title">🚚 Envío: S/ ${match.costo} a ${escapeHtml(match.nombre)}</div>
-                         ${match.detalle ? `<p>${escapeHtml(match.detalle)}</p>` : ''}`;
+    
+    if(distrito && distrito !== '-') {
+      // Prioridad 1: Excepción en el distrito
+      if(excepciones[distrito]) {
+        box.innerHTML = `<div class="da-zonas-title">🚚 Envío a ${escapeHtml(distrito)}</div>
+                         <p>${escapeHtml(excepciones[distrito])}</p>`;
+        return;
       }
+      // Prioridad 2: Gratis
+      if((zonas.distritosGratis || []).includes(distrito)) {
+        box.innerHTML = `<div class="da-zonas-title da-zonas-match">🎉 ¡Envío gratis a ${escapeHtml(distrito)}!</div>`;
+        return;
+      }
+      // Prioridad 3: General Lima No Gratis
+      const speechLima = zonas.speechLimaNoGratis || 'Envío por Courier. Te confirmamos el monto exacto por WhatsApp.';
+      box.innerHTML = `<div class="da-zonas-title">🚚 Envío a ${escapeHtml(distrito)}</div>
+                       <p>${escapeHtml(speechLima)}</p>`;
       return;
     }
     box.innerHTML = `
@@ -968,8 +984,8 @@
     }
     orderForm = { provincia, nombre, telefono, distrito, direccion, referencia };
     const offers = computeOffers();
-    const envio = getShippingCost(provincia, distrito);
-    const totalFinal = offers.total + envio;
+    const envio = 0;
+    const totalFinal = offers.total;
     const items = cart.map(it=>{
       const p = catalog.find(x=>x.id===it.id);
       const sz = p?.sizes?.find(s=>s.ml===it.ml);

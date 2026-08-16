@@ -434,8 +434,8 @@ async function handleSubmitOrder(request, env) {
   }
 
   const realSubtotal = calculateCartTotal(items, catalog);
-  const realShipping = calculateShippingCost(provincia, distrito, zonas);
-  const realTotal = realSubtotal + realShipping;
+  const realShipping = 0; // Se coordina luego
+  const realTotal = realSubtotal;
 
   const orderId = generateOrderId();
   const record = {

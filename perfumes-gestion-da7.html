@@ -570,30 +570,51 @@
   <section class="admin-section" data-section="envios" style="display:none">
     <div class="page-head">
       <div>
-        <h1>Zonas de <em>envío</em></h1>
-        <p class="sub">Esto es lo que ve el cliente en el formulario de pedido para saber si su zona tiene delivery gratis. Se publica igual que el catálogo.</p>
+        <h1>Gestión de <em>envíos</em></h1>
+        <p class="sub">Configura los mensajes generales y las excepciones por zona de entrega.</p>
       </div>
     </div>
-    <div style="background:#fff;border-radius:14px;padding:24px;max-width:640px;display:flex;flex-direction:column;gap:20px">
-      <div class="field">
-        <label>Monto mínimo para envío gratis (S/)</label>
-        <input type="number" id="env-minimo" min="0" step="1" />
+    <div style="background:#fff;border-radius:14px;padding:24px;max-width:800px;display:flex;flex-direction:column;gap:24px">
+      
+      <!-- Mensajes Generales -->
+      <div style="background:#f9f9f9;padding:16px;border-radius:10px;border:1px solid #eaeaea;">
+        <h3 style="margin:0 0 16px;font-size:16px;color:#3c2f47;">1. Mensajes Generales (Por defecto)</h3>
+        <div class="field" style="margin-bottom:16px;">
+          <label>Speech para Provincias</label>
+          <p class="sub" style="margin:-4px 0 4px">Mensaje para todo cliente fuera de Lima/Callao.</p>
+          <textarea id="env-speech-provincias" rows="2" placeholder="Ej. Envío por Olva/Shalom con pago en destino..."></textarea>
+        </div>
+        <div class="field">
+          <label>Speech para Lima y Callao (Zonas NO Gratis)</label>
+          <p class="sub" style="margin:-4px 0 4px">Mensaje por defecto para los distritos de Lima que no están marcados como gratis y no tienen una excepción.</p>
+          <textarea id="env-speech-lima" rows="2" placeholder="Ej. Envío por Courier a domicilio. Tienes un descuento especial..."></textarea>
+        </div>
       </div>
-      <div class="field">
-        <label>Mensaje estándar (para zonas sin detalle propio)</label>
-        <p class="sub" style="margin:-4px 0 4px">Se muestra cuando el cliente elige un distrito de la lista de abajo que no tiene un "Detalle" personalizado escrito. Si le pones un Detalle a una zona, ese texto reemplaza a este estándar solo para esa zona.</p>
-        <textarea id="env-mensaje-estandar" rows="2" placeholder="¡Felicidades, tu zona tiene envío gratis! Coordinamos la entrega contigo por WhatsApp."></textarea>
+
+      <!-- Distritos Gratis -->
+      <div style="background:#f9f9f9;padding:16px;border-radius:10px;border:1px solid #eaeaea;">
+        <h3 style="margin:0 0 16px;font-size:16px;color:#3c2f47;">2. Selección Rápida de Envíos Gratis</h3>
+        <p class="sub" style="margin:-12px 0 16px">Marca los distritos que tienen envío gratis permanentemente. Verán el mensaje "🎉 ¡Envío gratis a [Distrito]!".</p>
+        <div id="env-grid-gratis" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));gap:10px;max-height:300px;overflow-y:auto;padding:4px">
+          <!-- Generado por JS -->
+        </div>
       </div>
-      <div class="field">
-        <label>Zonas con envío gratis (una por línea, formato: Distrito | Detalle)</label>
-        <p class="sub" style="margin:-4px 0 4px">El distrito debe escribirse igual que en el listado del formulario (ej. "San Miguel", "San Martín de Porres") para que el cliente vea el mensaje de envío gratis automáticamente al elegir su distrito. Deja el "Detalle" vacío para usar el mensaje estándar de arriba, o escribe uno personalizado para esa zona en particular. Si dejas el distrito vacío, la zona solo aparece en la lista general.</p>
-        <textarea id="env-zonas" rows="6" placeholder="San Martín de Porres | Av. Perú y alrededores&#10;San Miguel | Zonas específicas — se confirma por WhatsApp&#10;Miraflores | "></textarea>
+
+      <!-- Excepciones -->
+      <div style="background:#fffcf5;padding:16px;border-radius:10px;border:1px solid #f2e6d9;">
+        <h3 style="margin:0 0 16px;font-size:16px;color:#8a6a43;">3. Excepciones (Promociones Específicas)</h3>
+        <p class="sub" style="margin:-12px 0 16px">Añade distritos con mensajes únicos que sobrescriben las reglas anteriores. Útil para promociones temporales (Ej. "Mitad de precio este mes").</p>
+        
+        <div id="env-lista-excepciones" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+          <!-- Excepciones agregadas dinámicamente -->
+        </div>
+        
+        <button class="btn btn-ghost" id="btn-add-excepcion" style="align-self:flex-start;font-size:13px;padding:8px 16px;">
+          + Añadir excepción
+        </button>
       </div>
-      <div class="field">
-        <label>Mensaje para el resto de zonas</label>
-        <textarea id="env-nota" rows="3"></textarea>
-      </div>
-      <button class="btn btn-primary" id="btn-publicar-envios" style="align-self:flex-start">
+
+      <button class="btn btn-primary" id="btn-publicar-envios" style="align-self:flex-start;margin-top:10px;">
         <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
         Publicar cambios de envío
       </button>
@@ -2032,30 +2053,123 @@ async function deletePhotoFromWorker(filename){
   return res.json();
 }
 /* ─── Zonas de envío ─── */
+const TODOS_LOS_DISTRITOS = ["Ancón","Ate","Barranco","Breña","Carabayllo","Chaclacayo","Chorrillos","Cieneguilla","Comas","El Agustino","Independencia","Jesús María","La Molina","La Victoria","Lima (Cercado)","Lince","Los Olivos","Lurigancho (Chosica)","Lurín","Magdalena del Mar","Miraflores","Pachacámac","Pucusana","Pueblo Libre","Puente Piedra","Punta Hermosa","Punta Negra","Rímac","San Bartolo","San Borja","San Isidro","San Juan de Lurigancho","San Juan de Miraflores","San Luis","San Martín de Porres","San Miguel","Santa Anita","Santa María del Mar","Santa Rosa","Santiago de Surco","Surquillo","Villa El Salvador","Villa María del Triunfo","Callao (Cercado)","Bellavista","Carmen de la Legua Reynoso","La Perla","La Punta","Mi Perú","Ventanilla"];
+const TODAS_LAS_PROVINCIAS = ["Amazonas","Áncash","Apurímac","Arequipa","Ayacucho","Cajamarca","Cusco","Huancavelica","Huánuco","Ica","Junín","La Libertad","Lambayeque","Loreto","Madre de Dios","Moquegua","Pasco","Piura","Puno","San Martín","Tacna","Tumbes","Ucayali"];
+
+function buildExcepcionHtml(zona = '', mensaje = '') {
+  const esProvincia = TODAS_LAS_PROVINCIAS.includes(zona);
+  const esDistrito = TODOS_LOS_DISTRITOS.includes(zona);
+  
+  const tipoValue = esProvincia ? 'provincia' : (esDistrito ? 'distrito' : '');
+  
+  const typeOptions = `
+    <option value="">Tipo...</option>
+    <option value="provincia" ${tipoValue === 'provincia' ? 'selected' : ''}>Provincia</option>
+    <option value="distrito" ${tipoValue === 'distrito' ? 'selected' : ''}>Distrito (Lima/Callao)</option>
+  `;
+  
+  let zonaOptions = '<option value="">Selecciona zona...</option>';
+  if (tipoValue === 'provincia') {
+    zonaOptions += TODAS_LAS_PROVINCIAS.map(p => `<option value="${p}" ${p===zona?'selected':''}>${p}</option>`).join('');
+  } else if (tipoValue === 'distrito') {
+    zonaOptions += TODOS_LOS_DISTRITOS.map(d => `<option value="${d}" ${d===zona?'selected':''}>${d}</option>`).join('');
+  }
+
+  return `
+    <div class="da-excepcion-row" style="display:flex;gap:10px;align-items:flex-start;">
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+        <select class="exc-tipo" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;font-family:inherit;">${typeOptions}</select>
+        <select class="exc-zona" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;font-family:inherit; ${tipoValue ? '' : 'display:none;'}">${zonaOptions}</select>
+      </div>
+      <textarea class="exc-mensaje" rows="2" style="flex:2;padding:8px;border-radius:6px;border:1px solid #ccc;font-family:inherit;font-size:13px;" placeholder="Ej. Envío especial S/ 5 solo por hoy...">${mensaje}</textarea>
+      <button class="btn btn-ghost exc-del" style="padding:8px;color:#d9534f;" type="button">X</button>
+    </div>
+  `;
+}
+
 async function loadZonasConfig(){
   try{
     const res = await fetch('data/zonas-envio.json', {cache:'no-cache'});
     const data = await res.json();
-    $('#env-minimo').value = data.envioGratisMinimo ?? 150;
-    $('#env-mensaje-estandar').value = data.mensajeEstandarGratis || '';
-    $('#env-zonas').value = (data.zonasGratis || []).map(z => `${z.distrito || ''} | ${z.detalle || ''}`).join('\n');
-    $('#env-nota').value = data.notaOtrasZonas || '';
+    window._currentProvincias = data.provincias;
+    $('#env-speech-provincias').value = data.speechProvincias || '';
+    $('#env-speech-lima').value = data.speechLimaNoGratis || '';
+    
+    // Generar cuadrícula de gratis
+    const gratisSet = new Set(data.distritosGratis || []);
+    const gridHtml = TODOS_LOS_DISTRITOS.map(d => `
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+        <input type="checkbox" class="chk-gratis" value="${d}" ${gratisSet.has(d)?'checked':''} />
+        ${d}
+      </label>
+    `).join('');
+    $('#env-grid-gratis').innerHTML = gridHtml;
+    
+    // Generar excepciones
+    const listExc = $('#env-lista-excepciones');
+    listExc.innerHTML = '';
+    const excepciones = data.excepciones || data.excepcionesLima || {};
+    Object.entries(excepciones).forEach(([zona, mensaje]) => {
+      listExc.insertAdjacentHTML('beforeend', buildExcepcionHtml(zona, mensaje));
+    });
+    
   }catch(e){ console.warn('No se pudo cargar zonas-envio.json', e); }
 }
+
+$('#btn-add-excepcion').addEventListener('click', () => {
+  $('#env-lista-excepciones').insertAdjacentHTML('beforeend', buildExcepcionHtml());
+});
+
+$('#env-lista-excepciones').addEventListener('click', (e) => {
+  if(e.target.classList.contains('exc-del')){
+    e.target.closest('.da-excepcion-row').remove();
+  }
+});
+
+$('#env-lista-excepciones').addEventListener('change', (e) => {
+  if(e.target.classList.contains('exc-tipo')){
+    const row = e.target.closest('.da-excepcion-row');
+    const zonaSel = row.querySelector('.exc-zona');
+    const tipo = e.target.value;
+    
+    zonaSel.style.display = tipo ? 'block' : 'none';
+    let opts = '<option value="">Selecciona zona...</option>';
+    if (tipo === 'provincia') {
+      opts += TODAS_LAS_PROVINCIAS.map(p => `<option value="${p}">${p}</option>`).join('');
+    } else if (tipo === 'distrito') {
+      opts += TODOS_LOS_DISTRITOS.map(d => `<option value="${d}">${d}</option>`).join('');
+    }
+    zonaSel.innerHTML = opts;
+  }
+});
+
 async function publishZonas(){
   if(!API_BASE){ toast('Configura API_BASE en el código para poder publicar', 'warn'); return; }
   const key = await getAuthKey();
   if(!key) return;
+  
+  // Recolectar distritos gratis
+  const distritosGratis = Array.from(document.querySelectorAll('.chk-gratis:checked')).map(el => el.value);
+  
+  // Recolectar excepciones
+  const excepciones = {};
+  document.querySelectorAll('.da-excepcion-row').forEach(row => {
+    const dist = row.querySelector('.exc-zona').value;
+    const msg = row.querySelector('.exc-mensaje').value.trim();
+    if(dist && msg) excepciones[dist] = msg;
+  });
+
   const config = {
-    schema: {version:2},
-    envioGratisMinimo: +$('#env-minimo').value || 0,
-    mensajeEstandarGratis: $('#env-mensaje-estandar').value.trim(),
-    zonasGratis: $('#env-zonas').value.split('\n').map(line => {
-      const [distrito, ...rest] = line.split('|');
-      const detalle = rest.join('|').trim();
-      return { distrito: (distrito||'').trim(), detalle };
-    }).filter(z => z.distrito || z.detalle),
-    notaOtrasZonas: $('#env-nota').value.trim()
+    schema: {version:4},
+    provincias: window._currentProvincias || [
+      "Amazonas","Áncash","Apurímac","Arequipa","Ayacucho","Cajamarca","Callao","Cusco",
+      "Huancavelica","Huánuco","Ica","Junín","La Libertad","Lambayeque","Lima","Loreto",
+      "Madre de Dios","Moquegua","Pasco","Piura","Puno","San Martín","Tacna","Tumbes","Ucayali"
+    ],
+    speechProvincias: $('#env-speech-provincias').value.trim(),
+    speechLimaNoGratis: $('#env-speech-lima').value.trim(),
+    distritosGratis: distritosGratis,
+    excepciones: excepciones
   };
   toast('Publicando zonas de envío…');
   try{

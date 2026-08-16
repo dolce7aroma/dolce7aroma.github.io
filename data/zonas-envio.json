@@ -2,9 +2,6 @@
   "schema": {
     "version": 3
   },
-  "envioGratisMinimo": 100,
-  "mensajeEstandarGratis": "¡Felicidades, tu zona tiene envío gratis! Coordinamos la entrega contigo por WhatsApp.",
-  "notaOtrasZonas": "Envío: Pago en destino / Coordinar por WhatsApp",
   "provincias": [
     "Lima",
     "Callao",
@@ -32,46 +29,8 @@
     "Tumbes",
     "Ucayali"
   ],
-  "distritosLima": [
-    {
-      "nombre": "San Martín de Porres",
-      "costo": 0,
-      "detalle": "Av. Perú y alrededores"
-    },
-    {
-      "nombre": "San Miguel",
-      "costo": 0,
-      "detalle": "Zonas específicas — se confirma por WhatsApp"
-    },
-    {
-      "nombre": "Miraflores",
-      "costo": 0,
-      "detalle": ""
-    },
-    {
-      "nombre": "Magdalena",
-      "costo": 0,
-      "detalle": ""
-    },
-    {
-      "nombre": "Lince",
-      "costo": 0,
-      "detalle": ""
-    },
-    {
-      "nombre": "San Isidro",
-      "costo": 0,
-      "detalle": ""
-    },
-    {
-      "nombre": "Los Olivos",
-      "costo": 0,
-      "detalle": "Zonas específicas — se confirma por WhatsApp"
-    },
-    {
-      "nombre": "Otro Distrito (Lima/Callao)",
-      "costo": 10,
-      "detalle": "Se confirma exacto por WhatsApp"
-    }
-  ]
+  "speechProvincias": "Envío por agencia (Olva/Shalom) con pago en destino. ¡Tienes un descuento especial en la tarifa de envío! Te confirmamos el monto exacto por WhatsApp.",
+  "speechLimaNoGratis": "Envío por Courier a domicilio. Tienes un descuento especial en tu tarifa de envío. ¡Te confirmaremos el monto exacto por WhatsApp!",
+  "distritosGratis": [],
+  "excepcionesLima": {}
 }
