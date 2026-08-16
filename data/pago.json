@@ -25,8 +25,8 @@
       "id": "extra_1786923808541",
       "nombre": "Bolsa Elegante",
       "precioRegular": 7,
-      "dscto": null,
-      "precio": 7,
+      "dscto": 100,
+      "precio": 0,
       "activo": true
     }
   ]
