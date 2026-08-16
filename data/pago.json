@@ -1,5 +1,33 @@
 {
-  "schema": { "version": 1 },
+  "schema": {
+    "version": 1
+  },
   "nombreYape": "Cesar Fernandez",
-  "culqiPublicKey": ""
+  "culqiPublicKey": "",
+  "packRegalo": [
+    {
+      "id": "extra_1786923777549",
+      "nombre": "Caja con Moño",
+      "precioRegular": 15,
+      "dscto": 50,
+      "precio": 7.5,
+      "activo": true
+    },
+    {
+      "id": "extra_1786923788285",
+      "nombre": "Frasco Premium",
+      "precioRegular": 10,
+      "dscto": null,
+      "precio": 10,
+      "activo": true
+    },
+    {
+      "id": "extra_1786923808541",
+      "nombre": "Bolsa Elegante",
+      "precioRegular": 7,
+      "dscto": null,
+      "precio": 7,
+      "activo": true
+    }
+  ]
 }
