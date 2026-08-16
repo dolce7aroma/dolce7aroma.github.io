@@ -741,10 +741,10 @@
         <h4>Tu bolsa está vacía</h4>
         <p style="font-size:13px">Explora la colección y elige tus aromas favoritos.</p>
         <div class="da-empty-links">
-          <a class="da-empty-chip gold" href="Dolce Aroma - Inicio.html#ofertas">🎁 Ver ofertas</a>
-          <a class="da-empty-chip" href="Dolce Aroma - Catalogo.html?gender=mujer">Perfumes mujer</a>
-          <a class="da-empty-chip" href="Dolce Aroma - Catalogo.html?gender=hombre">Perfumes hombre</a>
-          <a class="da-empty-chip" href="Dolce Aroma - Catalogo.html?tag=mas-vendido">Más vendidos</a>
+          <a class="da-empty-chip gold" href="index.html#ofertas">🎁 Ver ofertas</a>
+          <a class="da-empty-chip" href="catalogo.html?gender=mujer">Perfumes mujer</a>
+          <a class="da-empty-chip" href="catalogo.html?gender=hombre">Perfumes hombre</a>
+          <a class="da-empty-chip" href="catalogo.html?tag=mas-vendido">Más vendidos</a>
         </div>
       </div>`;
       foot.innerHTML = '';
