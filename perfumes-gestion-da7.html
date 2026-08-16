@@ -359,6 +359,7 @@
     <button class="btn btn-ghost admin-tab" data-section="envios">🚚 Envíos</button>
     <button class="btn btn-ghost admin-tab" data-section="pedidos">🧾 Pedidos</button>
     <button class="btn btn-ghost admin-tab" data-section="pago">💳 Pago</button>
+    <button class="btn btn-ghost admin-tab" data-section="regalo">🎁 Extras Regalo</button>
   </div>
 
   <!-- ─────────── DASHBOARD ─────────── -->
@@ -643,6 +644,38 @@
         Publicar cambios de pago
       </button>
     </div>
+  </section>
+
+  <section class="admin-section" data-section="regalo" style="display:none">
+    <div class="page-head" style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h1>Extras de <em>Regalo</em></h1>
+        <p class="sub">Complementos que el cliente puede sumar al armar un regalo (cajas, bolsas, moños).</p>
+      </div>
+      <button class="btn btn-primary" id="btn-add-extra-regalo">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Agregar extra
+      </button>
+    </div>
+    <div class="card" style="padding:0">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Nombre del extra (ej. Caja con moño)</th>
+            <th style="width:100px">P. Regular</th>
+            <th style="width:100px">Dscto (%)</th>
+            <th style="width:100px">Total (S/)</th>
+            <th style="width:90px;text-align:center">Activo</th>
+            <th style="width:50px"></th>
+          </tr>
+        </thead>
+        <tbody id="regalo-extras-tbody">
+        </tbody>
+      </table>
+    </div>
+    <button class="btn btn-primary" id="btn-publicar-regalo" style="margin-top:20px">
+      <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
+      Publicar configuración de regalos
+    </button>
   </section>
 
   <section class="admin-section" data-section="pedidos" style="display:none">
@@ -1946,6 +1979,10 @@ function applyBulk(mode){
 /* ─── events ─── */
 function wire(){
   $('#btn-new').addEventListener('click', ()=> openDrawer());
+  $('#btn-publicar-pago').addEventListener('click', publishPago);
+  $('#btn-add-extra-regalo').addEventListener('click', addRegaloExtraRow);
+  $('#btn-publicar-regalo').addEventListener('click', publishRegalos);
+  $('#btn-publicar-envios').addEventListener('click', publishZonas);
   $('#btn-export').addEventListener('click', exportJson);
   $('#btn-publish').addEventListener('click', publishCatalog);
   $('#btn-import').addEventListener('click', ()=> $('#import-file').click());
@@ -2186,33 +2223,100 @@ async function publishZonas(){
   }
 }
 
-/* ─── Datos de pago ─── */
+/* ─── Datos de pago y regalos ─── */
+let currentPagoConfig = null;
+
 async function loadPagoConfig(){
   try{
     const res = await fetch('data/pago.json', {cache:'no-cache'});
-    const data = await res.json();
-    $('#pago-nombre-yape').value = data.nombreYape || '';
-    $('#pago-culqi-key').value = data.culqiPublicKey || '';
-  }catch(e){ console.warn('No se pudo cargar pago.json', e); }
+    currentPagoConfig = await res.json();
+    $('#pago-nombre-yape').value = currentPagoConfig.nombreYape || '';
+    $('#pago-culqi-key').value = currentPagoConfig.culqiPublicKey || '';
+    renderRegaloExtras(currentPagoConfig.packRegalo || []);
+  }catch(e){ 
+    console.warn('No se pudo cargar pago.json', e);
+    currentPagoConfig = { nombreYape: '', culqiPublicKey: '', packRegalo: [] };
+  }
 }
 async function publishPago(){
   if(!API_BASE){ toast('Configura API_BASE en el código para poder publicar', 'warn'); return; }
   const key = await getAuthKey();
   if(!key) return;
-  const config = { schema:{version:1}, nombreYape: $('#pago-nombre-yape').value.trim(), culqiPublicKey: $('#pago-culqi-key').value.trim() };
+  currentPagoConfig.nombreYape = $('#pago-nombre-yape').value.trim();
+  currentPagoConfig.culqiPublicKey = $('#pago-culqi-key').value.trim();
   toast('Publicando datos de pago…');
   try{
     const res = await fetch(`${API_BASE}/api/save-config`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ key, file: 'data/pago.json', config })
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ key, file: 'data/pago.json', config: currentPagoConfig })
     });
     const out = await res.json();
     if(out.ok) toast('Datos de pago publicados');
     else toast('No se pudo publicar: ' + out.error, 'warn');
-  }catch(err){
-    toast('No se pudo publicar: ' + err.message, 'warn');
-  }
+  }catch(err){ toast('No se pudo publicar: ' + err.message, 'warn'); }
+}
+
+/* ─── Extras Regalo ─── */
+function renderRegaloExtras(extras){
+  const tbody = $('#regalo-extras-tbody');
+  tbody.innerHTML = '';
+  if(!extras.length) return;
+  extras.forEach(ext => addRegaloExtraRow(ext));
+}
+function addRegaloExtraRow(ext = {id:'', nombre:'', precioRegular:'', dscto:'', precio:0, activo:true}){
+  const id = ext.id || 'extra_' + Date.now();
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" class="inp-nombre" value="${escAdmin(ext.nombre)}" placeholder="Ej. Caja con moño" style="width:100%"/></td>
+    <td><input type="number" class="inp-precio-regular" value="${ext.precioRegular||''}" placeholder="Opcional" style="width:100%"/></td>
+    <td><input type="number" class="inp-dscto" value="${ext.dscto||''}" placeholder="Opcional" style="width:100%"/></td>
+    <td><input type="number" class="inp-precio" value="${ext.precio}" style="width:100%;font-weight:bold"/></td>
+    <td style="text-align:center"><input type="checkbox" class="chk-activo" ${ext.activo ? 'checked' : ''}/></td>
+    <td style="text-align:right">
+      <button class="btn btn-ghost" style="color:#d32f2f;padding:4px" onclick="this.closest('tr').remove()" title="Eliminar">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </td>
+  `;
+  const reg = tr.querySelector('.inp-precio-regular');
+  const dsc = tr.querySelector('.inp-dscto');
+  const tot = tr.querySelector('.inp-precio');
+  const calc = () => {
+    let r = parseFloat(reg.value)||0, d = parseFloat(dsc.value)||0;
+    if(r > 0) tot.value = Math.max(0, r * (1 - d/100)).toFixed(2);
+  };
+  reg.addEventListener('input', calc);
+  dsc.addEventListener('input', calc);
+
+  tr.dataset.id = id;
+  $('#regalo-extras-tbody').appendChild(tr);
+}
+async function publishRegalos(){
+  if(!API_BASE){ toast('Configura API_BASE en el código para poder publicar', 'warn'); return; }
+  const key = await getAuthKey();
+  if(!key) return;
+  
+  const extras = [];
+  document.querySelectorAll('#regalo-extras-tbody tr').forEach(tr => {
+    const nombre = tr.querySelector('.inp-nombre').value.trim();
+    const precioRegular = parseFloat(tr.querySelector('.inp-precio-regular').value) || null;
+    const dscto = parseFloat(tr.querySelector('.inp-dscto').value) || null;
+    const precio = parseFloat(tr.querySelector('.inp-precio').value) || 0;
+    const activo = tr.querySelector('.chk-activo').checked;
+    if(nombre) extras.push({ id: tr.dataset.id, nombre, precioRegular, dscto, precio, activo });
+  });
+  
+  currentPagoConfig.packRegalo = extras;
+  toast('Publicando configuración de regalos…');
+  try{
+    const res = await fetch(`${API_BASE}/api/save-config`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ key, file: 'data/pago.json', config: currentPagoConfig })
+    });
+    const out = await res.json();
+    if(out.ok) toast('Configuración de regalos publicada');
+    else toast('No se pudo publicar: ' + out.error, 'warn');
+  }catch(err){ toast('No se pudo publicar: ' + err.message, 'warn'); }
 }
 
 /* ─── Pedidos ─── */

@@ -72,6 +72,7 @@
   let giftMode = false;             // true = el panel de la derecha muestra el armador de regalo
   let giftStep = 'armar';           // 'armar' | 'detalles' | 'compartir' | 'pagar'
   let giftList = [];                // [{id, ml, name, price, premium}] — lista curada del comprador
+  let giftExtras = [];              // [{id, nombre, precio}] — extras seleccionados por el comprador
   let giftDraft = { entregaPara: 'regalada', compradorTelefono: '', compradorNombre: '',
     provincia:'Lima', nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
   let currentGift = null;           // el regalo cargado vía ?regalo= o ?pagar_regalo=
@@ -93,7 +94,7 @@
       const r = await fetch(PAGO_URL, {cache:'no-cache'});
       if(r.ok){
         const j = await r.json();
-        pago = Object.assign({ nombreYape:'Cesar Fernandez', culqiPublicKey:'' }, j);
+        pago = Object.assign({ nombreYape:'Cesar Fernandez', culqiPublicKey:'', packRegalo: [] }, j);
       }
     }catch(e){ /* se mantiene el valor por defecto */ }
   }
@@ -699,7 +700,7 @@
   }
   function openGiftBuilder(){
     giftRole = 'comprador'; giftMode = true; giftStep = 'armar';
-    giftList = []; giftDraft = { entregaPara:'regalada', compradorTelefono:'', compradorNombre:'', nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
+    giftList = []; giftExtras = []; giftDraft = { entregaPara:'regalada', compradorTelefono:'', compradorNombre:'', nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
     giftArmarModo = null; giftTallaMl = null;
     renderCart();
     document.getElementById('da-bd').classList.add('open');
@@ -1188,17 +1189,18 @@
   // "para otra persona" (ver computeGiftForOtherTotal): la persona regalada se queda con
   // UNA sola de las opciones curadas, no con todas.
   function computeGiftArmarTotal(){
-    if(giftArmarModo === 'talla') return giftTallaMl ? standardPriceForMl(giftTallaMl) : 0;
-    return giftList.reduce((s,it)=> s + it.price + (it.premium ? it.premiumPrecio : 0), 0);
+    const base = giftArmarModo === 'talla' ? (giftTallaMl ? standardPriceForMl(giftTallaMl) : 0) : giftList.reduce((s,it)=> s + it.price + (it.premium ? it.premiumPrecio : 0), 0);
+    const extrasTotal = giftExtras.reduce((s,e)=>s+e.precio, 0);
+    return base + extrasTotal;
   }
   // Total REAL a cobrar cuando el regalo es para otra persona: en talla es el precio fijo
   // del tamaño (todas las opciones cuestan lo mismo, por construcción); en curada, como solo
   // se entrega UNA de las opciones ofrecidas, se cobra la más cara del grupo — nunca menos
   // de lo que podría terminar costando, y nunca la suma de opciones que no se van a entregar.
   function computeGiftForOtherTotal(){
-    if(giftArmarModo === 'talla') return giftTallaMl ? standardPriceForMl(giftTallaMl) : 0;
-    if(!giftList.length) return 0;
-    return Math.max(...giftList.map(it => it.price + (it.premium ? it.premiumPrecio : 0)));
+    const base = giftArmarModo === 'talla' ? (giftTallaMl ? standardPriceForMl(giftTallaMl) : 0) : (giftList.length ? Math.max(...giftList.map(it => it.price + (it.premium ? it.premiumPrecio : 0))) : 0);
+    const extrasTotal = giftExtras.reduce((s,e)=>s+e.precio, 0);
+    return base + extrasTotal;
   }
 
   // Paso 1 (comprador): elige el modo (perfumes puntuales o solo tamaño), y luego arma
@@ -1288,11 +1290,35 @@
     const label = isTalla
       ? (giftTallaMl ? `Regalo de ${giftTallaMl} ml` : 'Elige un tamaño')
       : (giftList.length ? giftList[0].name : 'Elige un perfume');
+      
+    const packUI = (pago.packRegalo || []).filter(e => e.activo).map(e => {
+      const isChecked = giftExtras.some(x => x.id === e.id);
+      const hasDscto = e.precioRegular && e.precioRegular > e.precio;
+      const dsctoHtml = hasDscto ? `<del style="opacity:0.6;font-size:11px;margin-right:6px;font-weight:normal">S/ ${e.precioRegular}</del>` : '';
+      return `
+        <label style="display:flex;align-items:center;padding:12px 14px;border:1.5px solid ${isChecked?'var(--plum, #3c2f47)':'rgba(60,47,71,0.1)'};border-radius:12px;cursor:pointer;background:${isChecked?'#fff':'transparent'};transition:all .2s;margin-bottom:8px">
+          <input type="checkbox" class="chk-gift-extra" style="display:none" data-id="${e.id}" data-nombre="${escapeHtml(e.nombre)}" data-precio="${e.precio}" ${isChecked?'checked':''}/>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:13px;color:var(--plum, #3c2f47)">${escapeHtml(e.nombre)}</div>
+            <div style="font-size:13px;color:#5d4c70;margin-top:2px">${dsctoHtml}<b style="color:var(--plum, #3c2f47)">+S/ ${e.precio}</b></div>
+          </div>
+          <div style="width:22px;height:22px;border-radius:6px;border:1.5px solid ${isChecked?'var(--plum, #3c2f47)':'rgba(60,47,71,0.2)'};background:${isChecked?'var(--plum, #3c2f47)':'#fff'};display:flex;align-items:center;justify-content:center;transition:all .2s">
+            ${isChecked ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` : ''}
+          </div>
+        </label>`;
+    }).join('');
+
     foot.innerHTML = `
+      ${packUI ? `<div style="margin-bottom:20px;margin-top:10px"><div style="font-size:11px;font-weight:700;color:#5d4c70;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Añade un toque especial</div>${packUI}</div>` : ''}
       <div class="da-gift-total"><span>${label}</span><b>S/ ${total}</b></div>
       <button class="da-btn da-btn-ghost" style="width:100%;margin-bottom:8px" id="da-gift-cancel">Cancelar</button>
       <button class="da-btn da-btn-primary" style="width:100%" id="da-gift-next" ${canNext ? '' : 'disabled'}>Siguiente</button>
     `;
+    foot.querySelectorAll('.chk-gift-extra').forEach(chk => chk.addEventListener('change', e => {
+      if(e.target.checked) giftExtras.push({ id: e.target.dataset.id, nombre: e.target.dataset.nombre, precio: +e.target.dataset.precio });
+      else giftExtras = giftExtras.filter(x => x.id !== e.target.dataset.id);
+      renderGiftArmarFoot(foot);
+    }));
     document.getElementById('da-gift-cancel').addEventListener('click', ()=>{ giftMode = false; renderCart(); });
     document.getElementById('da-gift-next').addEventListener('click', ()=>{
       if(!canNext) return;
@@ -1466,7 +1492,11 @@
     const compradorTelefono = document.getElementById('gof-comprador-tel').value.trim();
     if(!compradorTelefono){ showToast('Déjanos tu WhatsApp para avisarte'); return; }
     giftDraft = { ...giftDraft, compradorNombre, compradorTelefono };
-    const items = giftList.map(g => ({ id: g.id, ml: g.ml, name: g.name, inspiration: g.inspiration || '', qty: 1, premium: g.premium, subtotal: g.price + (g.premium ? g.premiumPrecio : 0) }));
+    
+    const baseItems = giftList.map(g => ({ id: g.id, ml: g.ml, name: g.name, inspiration: g.inspiration || '', qty: 1, premium: g.premium, subtotal: g.price + (g.premium ? g.premiumPrecio : 0) }));
+    const extraItems = giftExtras.map(e => ({ id: `extra_${e.id}`, name: `🎁 Extra: ${e.nombre}`, isExtra: true, ml: '-', qty: 1, premium: false, subtotal: e.precio }));
+    const items = [...baseItems, ...extraItems];
+    
     const total = computeGiftForOtherTotal();
     const btn = document.getElementById('da-gift-submit');
     if(btn){ btn.disabled = true; btn.textContent = 'Generando...'; }
@@ -1676,6 +1706,7 @@
     const words = normText(giftClaimFilterText).split(/\s+/).filter(Boolean);
     const visible = g.items
       .map((it,i)=>({ it, i }))
+      .filter(({it}) => !it.isExtra)
       .filter(({it}) => !words.length || words.every(w => normText(`${it.name} ${it.inspiration||''}`).includes(w)));
     if(!visible.length){
       box.innerHTML = `<p style="text-align:center;color:#5d4c70;font-size:13px;padding:16px 0">No encontramos nada con esa búsqueda.</p>`;
