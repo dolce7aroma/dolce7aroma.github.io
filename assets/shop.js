@@ -1293,23 +1293,25 @@
       
     const packUI = (pago.packRegalo || []).filter(e => e.activo).map(e => {
       const isChecked = giftExtras.some(x => x.id === e.id);
+      const isFree = e.precio === 0;
       const hasDscto = e.precioRegular && e.precioRegular > e.precio;
-      const dsctoHtml = hasDscto ? `<del style="opacity:0.6;font-size:11px;margin-right:6px;font-weight:normal">S/ ${e.precioRegular}</del>` : '';
+      const priceText = isFree ? 'GRATIS' : `+S/ ${e.precio}`;
+      const dsctoHtml = (hasDscto && !isFree) ? `<del style="opacity:0.6;font-size:10px;margin-right:4px;font-weight:normal">S/ ${e.precioRegular}</del>` : '';
       return `
-        <label style="display:flex;align-items:center;padding:12px 14px;border:1.5px solid ${isChecked?'var(--plum, #3c2f47)':'rgba(60,47,71,0.1)'};border-radius:12px;cursor:pointer;background:${isChecked?'#fff':'transparent'};transition:all .2s;margin-bottom:8px">
+        <label style="display:flex;align-items:center;padding:8px 12px;border:1px solid ${isChecked?'var(--plum, #3c2f47)':'rgba(60,47,71,0.1)'};border-radius:8px;cursor:pointer;background:${isChecked?'rgba(60,47,71,0.03)':'transparent'};transition:all .2s;margin-bottom:6px">
           <input type="checkbox" class="chk-gift-extra" style="display:none" data-id="${e.id}" data-nombre="${escapeHtml(e.nombre)}" data-precio="${e.precio}" ${isChecked?'checked':''}/>
-          <div style="flex:1">
-            <div style="font-weight:600;font-size:13px;color:var(--plum, #3c2f47)">${escapeHtml(e.nombre)}</div>
-            <div style="font-size:13px;color:#5d4c70;margin-top:2px">${dsctoHtml}<b style="color:var(--plum, #3c2f47)">+S/ ${e.precio}</b></div>
+          <div style="width:16px;height:16px;border-radius:4px;border:1.5px solid ${isChecked?'var(--plum, #3c2f47)':'rgba(60,47,71,0.2)'};background:${isChecked?'var(--plum, #3c2f47)':'#fff'};display:flex;align-items:center;justify-content:center;transition:all .2s;margin-right:10px;flex-shrink:0">
+            ${isChecked ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` : ''}
           </div>
-          <div style="width:22px;height:22px;border-radius:6px;border:1.5px solid ${isChecked?'var(--plum, #3c2f47)':'rgba(60,47,71,0.2)'};background:${isChecked?'var(--plum, #3c2f47)':'#fff'};display:flex;align-items:center;justify-content:center;transition:all .2s">
-            ${isChecked ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` : ''}
+          <div style="flex:1;display:flex;justify-content:space-between;align-items:center;gap:8px">
+            <div style="font-weight:500;font-size:12px;color:var(--plum, #3c2f47)">${escapeHtml(e.nombre)}</div>
+            <div style="font-size:12px;color:var(--plum, #3c2f47);white-space:nowrap">${dsctoHtml}<b>${priceText}</b></div>
           </div>
         </label>`;
     }).join('');
 
     foot.innerHTML = `
-      ${packUI ? `<div style="margin-bottom:20px;margin-top:10px"><div style="font-size:11px;font-weight:700;color:#5d4c70;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Añade un toque especial</div>${packUI}</div>` : ''}
+      ${packUI ? `<div style="margin-bottom:20px;margin-top:10px"><div style="font-size:10px;font-weight:700;color:#5d4c70;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Añade un toque especial</div>${packUI}</div>` : ''}
       <div class="da-gift-total"><span>${label}</span><b>S/ ${total}</b></div>
       <button class="da-btn da-btn-ghost" style="width:100%;margin-bottom:8px" id="da-gift-cancel">Cancelar</button>
       <button class="da-btn da-btn-primary" style="width:100%" id="da-gift-next" ${canNext ? '' : 'disabled'}>Siguiente</button>
