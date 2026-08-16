@@ -1,6 +1,6 @@
 {
   "schema": {
-    "version": 3
+    "version": 4
   },
   "provincias": [
     "Lima",
@@ -29,8 +29,12 @@
     "Tumbes",
     "Ucayali"
   ],
-  "speechProvincias": "Envío por agencia (Olva/Shalom) con pago en destino. ¡Tienes un descuento especial en la tarifa de envío! Te confirmamos el monto exacto por WhatsApp.",
+  "speechProvincias": "Envío por agencia (Olva/Marvisur/Shalom) con pago en destino. ¡Tienes un descuento especial en la tarifa de envío! Te confirmamos el monto exacto por WhatsApp.",
   "speechLimaNoGratis": "Envío por Courier a domicilio. Tienes un descuento especial en tu tarifa de envío. ¡Te confirmaremos el monto exacto por WhatsApp!",
-  "distritosGratis": [],
-  "excepcionesLima": {}
+  "distritosGratis": [
+    "Magdalena del Mar",
+    "Pueblo Libre",
+    "San Miguel"
+  ],
+  "excepciones": {}
 }
