@@ -8,17 +8,17 @@
     {
       "id": "extra_1786923777549",
       "nombre": "Caja con Moño",
-      "precioRegular": 15,
+      "precioRegular": 13,
       "dscto": 50,
-      "precio": 7.5,
+      "precio": 6.5,
       "activo": true
     },
     {
       "id": "extra_1786923788285",
       "nombre": "Frasco Premium",
-      "precioRegular": 10,
+      "precioRegular": 12,
       "dscto": null,
-      "precio": 10,
+      "precio": 12,
       "activo": true
     },
     {
