@@ -691,8 +691,8 @@
     <div class="card" style="margin-bottom:20px">
       <h3 style="margin-bottom:12px">Información Principal</h3>
       <div class="form-group" style="margin-bottom:12px">
-        <label>WhatsApp (solo números, incluye código de país. Ej. 51123456789)</label>
-        <input type="text" id="contacto-wa" placeholder="Ej. 51123456789" />
+        <label>WhatsApp (puedes incluir espacios para que se vea bien en la web. Ej. +51 930 122 014)</label>
+        <input type="text" id="contacto-wa" placeholder="Ej. +51 930 122 014" />
       </div>
       <div class="form-group" style="margin-bottom:12px">
         <label>Correo Electrónico (opcional)</label>
@@ -2288,7 +2288,7 @@ async function loadPagoConfig(){
     renderRegaloExtras(currentPagoConfig.packRegalo || []);
     
     const c = currentPagoConfig.contacto || {};
-    $('#contacto-wa').value = c.whatsapp || '';
+    $('#contacto-wa').value = c.whatsappDisplay || c.whatsapp || '';
     $('#contacto-correo').value = c.correo || '';
     $('#contacto-direccion').value = c.direccion || '';
     renderContactoRedes(c.redes || []);
@@ -2439,8 +2439,24 @@ $('#btn-publicar-contacto').addEventListener('click', async () => {
     if(url) redes.push({ plataforma, url });
   });
   
+  const rawWa = $('#contacto-wa').value.trim();
+  const digitsWa = rawWa.replace(/\D/g, '');
+  
+  // Validar si el WhatsApp ha cambiado y requiere confirmación
+  const oldWa = (currentPagoConfig.contacto && currentPagoConfig.contacto.whatsapp) ? currentPagoConfig.contacto.whatsapp : '';
+  if (digitsWa && oldWa && digitsWa !== oldWa) {
+    const confirmacion = prompt(
+      `ATENCIÓN: Estás a punto de desviar TODAS las ventas de la página al nuevo número: ${rawWa}.\n\nPara evitar errores humanos, por favor escribe la palabra CONFIRMO en mayúsculas para proceder:`
+    );
+    if (confirmacion !== 'CONFIRMO') {
+      toast('Cambio de WhatsApp cancelado por seguridad.', 'warn');
+      return;
+    }
+  }
+  
   currentPagoConfig.contacto = {
-    whatsapp: $('#contacto-wa').value.replace(/\D/g, ''),
+    whatsappDisplay: rawWa,
+    whatsapp: digitsWa,
     correo: $('#contacto-correo').value.trim(),
     direccion: $('#contacto-direccion').value.trim(),
     redes

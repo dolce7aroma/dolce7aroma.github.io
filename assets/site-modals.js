@@ -7,6 +7,7 @@
    ─────────────────────────────────────────────── */
 (function(){
   let WA = '51930122014';
+  let WADisplay = '+51 930 122 014';
   let EMAIL = 'Dolce7aroma@gmail.com';
   let DIRECCION = 'Bazar Sport Shirley · SMP';
   let REDES = [
@@ -19,6 +20,8 @@
   fetch('data/pago.json', {cache:'no-cache'}).then(r=>r.json()).then(data=>{
     if(data.contacto){
       if(data.contacto.whatsapp) WA = data.contacto.whatsapp;
+      if(data.contacto.whatsappDisplay) WADisplay = data.contacto.whatsappDisplay;
+      else WADisplay = '+' + WA;
       if('correo' in data.contacto) EMAIL = data.contacto.correo; // Allow empty
       if('direccion' in data.contacto) DIRECCION = data.contacto.direccion;
       if(data.contacto.redes) REDES = data.contacto.redes;
@@ -31,10 +34,10 @@
         // si el enlace empieza con wa.me/ y luego números, lo reemplazamos
         a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${WA}`);
       });
-      // Actualizar textos duros si dicen 930 122 014
+      // Actualizar textos duros si dicen 930 122 014 (reemplazar por WADisplay)
       document.querySelectorAll('*').forEach(el => {
         if(el.children.length === 0 && el.textContent.includes('930 122 014')){
-          el.textContent = el.textContent.replace('930 122 014', `+${WA}`);
+          el.textContent = el.textContent.replace('930 122 014', WADisplay.includes('930 122 014') ? WADisplay : WADisplay);
         }
       });
     }
@@ -172,7 +175,7 @@
           <p>Estamos pendientes todos los días. Escríbenos para recomendaciones, ofertas del momento o coordinar tu pedido.</p>
           <a class="sm-contact-row wa" href="https://wa.me/${WA}" target="_blank" rel="noopener">
             <span class="ico">${ICONS.whatsapp}</span>
-            <span><span class="l">WhatsApp</span><span class="v">+${WA}</span></span>
+            <span><span class="l">WhatsApp</span><span class="v">${WADisplay}</span></span>
             <span class="arr">${ICONS.arrow}</span>
           </a>
           ${emailHtml}
