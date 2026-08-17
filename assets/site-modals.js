@@ -34,6 +34,24 @@
         // si el enlace empieza con wa.me/ y luego números, lo reemplazamos
         a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${WA}`);
       });
+      // Hidratar enlaces limpios (HTML limpio)
+      document.querySelectorAll('[data-contacto]').forEach(el => {
+        const type = el.getAttribute('data-contacto');
+        if(type === 'correo' && EMAIL) {
+          el.href = `mailto:${EMAIL}`;
+          if(el.textContent.includes('Cargando')) el.textContent = EMAIL;
+        } else {
+          // Buscar en redes
+          const red = REDES.find(r => r.plataforma === type);
+          if(red && red.url) {
+            el.href = red.url;
+            el.style.display = ''; // mostrar si estaba oculto
+          } else {
+            el.style.display = 'none'; // ocultar si la red no existe en config
+          }
+        }
+      });
+      
       // Actualizar textos duros si dicen 930 122 014 (reemplazar por WADisplay)
       document.querySelectorAll('*').forEach(el => {
         if(el.children.length === 0 && el.textContent.includes('930 122 014')){

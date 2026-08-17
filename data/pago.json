@@ -29,5 +29,29 @@
       "precio": 0,
       "activo": true
     }
-  ]
+  ],
+  "contacto": {
+    "whatsappDisplay": "+51 930 122 014",
+    "whatsapp": "51930122014",
+    "correo": "Dolce7aroma@gmail.com",
+    "direccion": "Bazar Sport Shirley · SMP",
+    "redes": [
+      {
+        "plataforma": "facebook",
+        "url": "https://www.facebook.com/dolce7aroma/"
+      },
+      {
+        "plataforma": "instagram",
+        "url": "https://www.instagram.com/dolce7aroma/"
+      },
+      {
+        "plataforma": "tiktok",
+        "url": "https://www.tiktok.com/@dolce7aroma"
+      },
+      {
+        "plataforma": "mercadolibre",
+        "url": "https://www.mercadolibre.com.pe/pagina/dolce7aroma"
+      }
+    ]
+  }
 }
