@@ -6,15 +6,27 @@
      window.SiteModals.open('contacto')
    ─────────────────────────────────────────────── */
 (function(){
-  const WA = '51930122014';
-  const EMAIL = 'Dolce7aroma@gmail.com';
-  const SOCIAL = {
-    facebook: 'https://www.facebook.com/dolce7aroma/',
-    tiktok:   'https://www.tiktok.com/@dolce7aroma',
-    instagram:'https://www.instagram.com/dolce7aroma/',
-    mercadolibre:'https://www.mercadolibre.com.pe/pagina/dolce7aroma',
-    facebookReviews:'https://www.facebook.com/dolce7aroma/'
-  };
+  let WA = '51930122014';
+  let EMAIL = 'Dolce7aroma@gmail.com';
+  let DIRECCION = 'Bazar Sport Shirley · SMP';
+  let REDES = [
+    {plataforma:'facebook', url:'https://www.facebook.com/dolce7aroma/'},
+    {plataforma:'instagram', url:'https://www.instagram.com/dolce7aroma/'},
+    {plataforma:'tiktok', url:'https://www.tiktok.com/@dolce7aroma'},
+    {plataforma:'mercadolibre', url:'https://www.mercadolibre.com.pe/pagina/dolce7aroma'}
+  ];
+
+  fetch('data/pago.json', {cache:'no-cache'}).then(r=>r.json()).then(data=>{
+    if(data.contacto){
+      if(data.contacto.whatsapp) WA = data.contacto.whatsapp;
+      if('correo' in data.contacto) EMAIL = data.contacto.correo; // Allow empty
+      if('direccion' in data.contacto) DIRECCION = data.contacto.direccion;
+      if(data.contacto.redes) REDES = data.contacto.redes;
+      
+      const floatBtn = document.querySelector('.sm-wa-float');
+      if(floatBtn) floatBtn.href = `https://wa.me/${WA}?text=${encodeURIComponent('Hola, tengo una consulta sobre perfumes')}`;
+    }
+  }).catch(()=>{});
 
   const ICONS = {
     facebook: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 22v-8h3l.5-4H13V7.5c0-1 .3-1.8 1.8-1.8H17V2.2c-.4 0-1.6-.2-3-.2-3 0-5 1.8-5 5v3H6v4h3v8h4z"/></svg>',
@@ -118,31 +130,44 @@
     contacto: {
       title: 'Conversemos por <em>WhatsApp</em>',
       eyebrow: 'Contacto',
-      body: () => `
-        <p>Estamos pendientes todos los días. Escríbenos para recomendaciones, ofertas del momento o coordinar tu pedido.</p>
-        <a class="sm-contact-row wa" href="https://wa.me/${WA}" target="_blank" rel="noopener">
-          <span class="ico">${ICONS.whatsapp}</span>
-          <span><span class="l">WhatsApp</span><span class="v">+51 930 122 014</span></span>
-          <span class="arr">${ICONS.arrow}</span>
-        </a>
-        <a class="sm-contact-row" href="mailto:${EMAIL}">
-          <span class="ico">${ICONS.mail}</span>
-          <span><span class="l">Correo</span><span class="v">${EMAIL}</span></span>
-          <span class="arr">${ICONS.arrow}</span>
-        </a>
-        <a class="sm-contact-row" href="index.html#boutique">
-          <span class="ico">${ICONS.pin}</span>
-          <span><span class="l">Boutique física</span><span class="v">Bazar Sport Shirley · SMP</span></span>
-          <span class="arr">${ICONS.arrow}</span>
-        </a>
-        <h3>Síguenos</h3>
-        <div class="sm-social-grid">
-          <a href="${SOCIAL.facebook}" target="_blank" rel="noopener">${ICONS.facebook}<span class="label">Facebook</span></a>
-          <a href="${SOCIAL.instagram}" target="_blank" rel="noopener">${ICONS.instagram}<span class="label">Instagram</span></a>
-          <a href="${SOCIAL.tiktok}" target="_blank" rel="noopener">${ICONS.tiktok}<span class="label">TikTok</span></a>
-          <a href="${SOCIAL.mercadolibre}" target="_blank" rel="noopener">${ICONS.mercadolibre}<span class="label">Mercado Libre</span></a>
-        </div>
-      `
+      body: () => {
+        let redesHtml = '';
+        if(REDES.length > 0){
+          redesHtml = `<h3>Síguenos</h3><div class="sm-social-grid">` + 
+            REDES.map(r => `<a href="${r.url}" target="_blank" rel="noopener">${ICONS[r.plataforma]||''}<span class="label">${r.plataforma}</span></a>`).join('') +
+            `</div>`;
+        }
+        
+        let emailHtml = '';
+        if(EMAIL){
+          emailHtml = `<a class="sm-contact-row" href="mailto:${EMAIL}">
+            <span class="ico">${ICONS.mail}</span>
+            <span><span class="l">Correo</span><span class="v">${EMAIL}</span></span>
+            <span class="arr">${ICONS.arrow}</span>
+          </a>`;
+        }
+
+        let dirHtml = '';
+        if(DIRECCION){
+          dirHtml = `<a class="sm-contact-row" href="index.html#boutique">
+            <span class="ico">${ICONS.pin}</span>
+            <span><span class="l">Boutique física</span><span class="v">${DIRECCION}</span></span>
+            <span class="arr">${ICONS.arrow}</span>
+          </a>`;
+        }
+
+        return `
+          <p>Estamos pendientes todos los días. Escríbenos para recomendaciones, ofertas del momento o coordinar tu pedido.</p>
+          <a class="sm-contact-row wa" href="https://wa.me/${WA}" target="_blank" rel="noopener">
+            <span class="ico">${ICONS.whatsapp}</span>
+            <span><span class="l">WhatsApp</span><span class="v">+${WA.replace(/(\d{2})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4')}</span></span>
+            <span class="arr">${ICONS.arrow}</span>
+          </a>
+          ${emailHtml}
+          ${dirHtml}
+          ${redesHtml}
+        `;
+      }
     },
 
     envios: {

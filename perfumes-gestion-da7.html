@@ -360,6 +360,7 @@
     <button class="btn btn-ghost admin-tab" data-section="pedidos">🧾 Pedidos</button>
     <button class="btn btn-ghost admin-tab" data-section="pago">💳 Pago</button>
     <button class="btn btn-ghost admin-tab" data-section="regalo">🎁 Extras Regalo</button>
+    <button class="btn btn-ghost admin-tab" data-section="contacto">📱 Contacto</button>
   </div>
 
   <!-- ─────────── DASHBOARD ─────────── -->
@@ -660,6 +661,7 @@
       <table class="admin-table">
         <thead>
           <tr>
+            <th style="width:30px"></th>
             <th>Nombre del extra (ej. Caja con moño)</th>
             <th style="width:100px">P. Regular</th>
             <th style="width:100px">Dscto (%)</th>
@@ -675,6 +677,57 @@
     <button class="btn btn-primary" id="btn-publicar-regalo" style="margin-top:20px">
       <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
       Publicar configuración de regalos
+    </button>
+  </section>
+
+  <section class="admin-section" data-section="contacto" style="display:none">
+    <div class="page-head" style="margin-bottom:20px">
+      <div>
+        <h1>Datos de <em>Contacto</em></h1>
+        <p class="sub">Configura tu WhatsApp, correo, dirección y redes sociales (opcionales).</p>
+      </div>
+    </div>
+    
+    <div class="card" style="margin-bottom:20px">
+      <h3 style="margin-bottom:12px">Información Principal</h3>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>WhatsApp (solo números, incluye código de país ej. 51930122014)</label>
+        <input type="text" id="contacto-wa" placeholder="519..." />
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label>Correo Electrónico (opcional)</label>
+        <input type="email" id="contacto-correo" placeholder="ejemplo@gmail.com" />
+      </div>
+      <div class="form-group">
+        <label>Dirección de Boutique Física (opcional)</label>
+        <input type="text" id="contacto-direccion" placeholder="Ej. Bazar Sport Shirley · SMP" />
+      </div>
+    </div>
+
+    <div class="page-head" style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0">Redes Sociales</h3>
+      <button class="btn btn-primary btn-sm" id="btn-add-red-social">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Agregar red
+      </button>
+    </div>
+    <div class="card" style="padding:0;margin-bottom:20px">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width:30px"></th>
+            <th style="width:160px">Plataforma</th>
+            <th>Enlace (URL)</th>
+            <th style="width:50px"></th>
+          </tr>
+        </thead>
+        <tbody id="contacto-redes-tbody">
+        </tbody>
+      </table>
+    </div>
+
+    <button class="btn btn-primary" id="btn-publicar-contacto" style="margin-top:20px">
+      <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
+      Publicar datos de contacto
     </button>
   </section>
 
@@ -2233,9 +2286,15 @@ async function loadPagoConfig(){
     $('#pago-nombre-yape').value = currentPagoConfig.nombreYape || '';
     $('#pago-culqi-key').value = currentPagoConfig.culqiPublicKey || '';
     renderRegaloExtras(currentPagoConfig.packRegalo || []);
+    
+    const c = currentPagoConfig.contacto || {};
+    $('#contacto-wa').value = c.whatsapp || '';
+    $('#contacto-correo').value = c.correo || '';
+    $('#contacto-direccion').value = c.direccion || '';
+    renderContactoRedes(c.redes || []);
   }catch(e){ 
     console.warn('No se pudo cargar pago.json', e);
-    currentPagoConfig = { nombreYape: '', culqiPublicKey: '', packRegalo: [] };
+    currentPagoConfig = { nombreYape: '', culqiPublicKey: '', packRegalo: [], contacto: {} };
   }
 }
 async function publishPago(){
@@ -2256,17 +2315,40 @@ async function publishPago(){
   }catch(err){ toast('No se pudo publicar: ' + err.message, 'warn'); }
 }
 
-/* ─── Extras Regalo ─── */
 function renderRegaloExtras(extras){
   const tbody = $('#regalo-extras-tbody');
   tbody.innerHTML = '';
+  if(!tbody.dataset.dragInit){
+    tbody.dataset.dragInit = '1';
+    tbody.addEventListener('dragover', e => {
+      e.preventDefault();
+      const dragging = tbody.querySelector('.dragging');
+      if(!dragging) return;
+      const arr = [...tbody.querySelectorAll('tr:not(.dragging)')];
+      const afterElement = arr.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = e.clientY - box.top - box.height / 2;
+        if(offset < 0 && offset > closest.offset) return { offset, element: child };
+        return closest;
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+      if(afterElement == null) tbody.appendChild(dragging);
+      else tbody.insertBefore(dragging, afterElement);
+    });
+  }
   if(!extras.length) return;
   extras.forEach(ext => addRegaloExtraRow(ext));
 }
 function addRegaloExtraRow(ext = {id:'', nombre:'', precioRegular:'', dscto:'', precio:0, activo:true}){
   const id = ext.id || 'extra_' + Date.now();
   const tr = document.createElement('tr');
+  tr.draggable = true;
+  tr.style.cursor = 'grab';
+  tr.addEventListener('dragstart', () => { tr.classList.add('dragging'); tr.style.opacity = '0.5'; });
+  tr.addEventListener('dragend', () => { tr.classList.remove('dragging'); tr.style.opacity = '1'; });
   tr.innerHTML = `
+    <td style="width:30px;color:#a8895a;cursor:grab">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h16M4 16h16"/></svg>
+    </td>
     <td><input type="text" class="inp-nombre" value="${escAdmin(ext.nombre)}" placeholder="Ej. Caja con moño" style="width:100%"/></td>
     <td><input type="number" class="inp-precio-regular" value="${ext.precioRegular||''}" placeholder="Opcional" style="width:100%"/></td>
     <td><input type="number" class="inp-dscto" value="${ext.dscto||''}" placeholder="Opcional" style="width:100%"/></td>
@@ -2318,6 +2400,63 @@ async function publishRegalos(){
     else toast('No se pudo publicar: ' + out.error, 'warn');
   }catch(err){ toast('No se pudo publicar: ' + err.message, 'warn'); }
 }
+
+/* ─── Contacto ─── */
+function renderContactoRedes(redes){
+  const tbody = $('#contacto-redes-tbody');
+  tbody.innerHTML = '';
+  redes.forEach(red => addRedSocialRow(red));
+}
+function addRedSocialRow(red = {plataforma:'facebook', url:''}){
+  const plataformas = { facebook:'Facebook', instagram:'Instagram', tiktok:'TikTok', mercadolibre:'Mercado Libre' };
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td style="width:30px;color:#a8895a"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg></td>
+    <td>
+      <select class="sel-plataforma" style="width:100%;font-size:13px;padding:6px;border:1px solid rgba(60,47,71,0.2);border-radius:4px">
+        ${Object.entries(plataformas).map(([k,v]) => `<option value="${k}" ${red.plataforma===k?'selected':''}>${v}</option>`).join('')}
+      </select>
+    </td>
+    <td><input type="url" class="inp-url" value="${escAdmin(red.url)}" placeholder="https://..." style="width:100%"/></td>
+    <td style="text-align:right">
+      <button class="btn btn-ghost" style="color:#d32f2f;padding:4px" onclick="this.closest('tr').remove()" title="Eliminar">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </td>
+  `;
+  $('#contacto-redes-tbody').appendChild(tr);
+}
+$('#btn-add-red-social').addEventListener('click', () => addRedSocialRow());
+$('#btn-publicar-contacto').addEventListener('click', async () => {
+  if(!API_BASE){ toast('Configura API_BASE en el código para poder publicar', 'warn'); return; }
+  const key = await getAuthKey();
+  if(!key) return;
+  
+  const redes = [];
+  document.querySelectorAll('#contacto-redes-tbody tr').forEach(tr => {
+    const plataforma = tr.querySelector('.sel-plataforma').value;
+    const url = tr.querySelector('.inp-url').value.trim();
+    if(url) redes.push({ plataforma, url });
+  });
+  
+  currentPagoConfig.contacto = {
+    whatsapp: $('#contacto-wa').value.replace(/\D/g, ''),
+    correo: $('#contacto-correo').value.trim(),
+    direccion: $('#contacto-direccion').value.trim(),
+    redes
+  };
+  
+  toast('Publicando datos de contacto…');
+  try{
+    const res = await fetch(`${API_BASE}/api/save-config`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ key, file: 'data/pago.json', config: currentPagoConfig })
+    });
+    const out = await res.json();
+    if(out.ok) toast('Datos de contacto publicados');
+    else toast('No se pudo publicar: ' + out.error, 'warn');
+  }catch(err){ toast('No se pudo publicar: ' + err.message, 'warn'); }
+});
 
 /* ─── Pedidos ─── */
 const ORDER_STATUS_LABELS = { nuevo:'Nuevo', pagado:'Pagado', en_camino:'En camino', entregado:'Entregado', cancelado:'Cancelado' };
