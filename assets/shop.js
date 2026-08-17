@@ -10,7 +10,7 @@
      DA.openCart()         → abre el panel
    ─────────────────────────────────────────────────────────── */
 (function(){
-  const WHATSAPP_NUMBER = '51930122014'; // +51 930 122 014
+  let WHATSAPP_NUMBER = '51930122014'; // +51 930 122 014
   const EMAIL = 'Dolce7aroma@gmail.com';
   const ORDER_API_BASE = 'https://dolce7aroma-github-io.cesarfernandezh7.workers.dev';
   const GIFT_EXPIRY_DAYS = 15; // debe coincidir con GIFT_EXPIRY_DAYS en el Worker
@@ -69,7 +69,9 @@
   let orderForm = { provincia:'Lima', nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
 
   // ─── Regalar un perfume ───
-  let giftMode = false;             // true = el panel de la derecha muestra el armador de regalo
+  let giftMode = false;             
+  
+  // Yape / Culqi / Pack configuración
   let giftStep = 'armar';           // 'armar' | 'detalles' | 'compartir' | 'pagar'
   let giftList = [];                // [{id, ml, name, price, premium}] — lista curada del comprador
   let giftExtras = [];              // [{id, nombre, precio}] — extras seleccionados por el comprador
@@ -95,6 +97,9 @@
       if(r.ok){
         const j = await r.json();
         pago = Object.assign({ nombreYape:'Cesar Fernandez', culqiPublicKey:'', packRegalo: [] }, j);
+        if(pago.contacto && pago.contacto.whatsapp) {
+          WHATSAPP_NUMBER = pago.contacto.whatsapp;
+        }
       }
     }catch(e){ /* se mantiene el valor por defecto */ }
   }

@@ -25,6 +25,18 @@
       
       const floatBtn = document.querySelector('.sm-wa-float');
       if(floatBtn) floatBtn.href = `https://wa.me/${WA}?text=${encodeURIComponent('Hola, tengo una consulta sobre perfumes')}`;
+
+      // Actualizar cualquier botón duro de WhatsApp en el HTML de las otras páginas
+      document.querySelectorAll('a[href*="wa.me/"]').forEach(a => {
+        // si el enlace empieza con wa.me/ y luego números, lo reemplazamos
+        a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${WA}`);
+      });
+      // Actualizar textos duros si dicen 930 122 014
+      document.querySelectorAll('*').forEach(el => {
+        if(el.children.length === 0 && el.textContent.includes('930 122 014')){
+          el.textContent = el.textContent.replace('930 122 014', `+${WA}`);
+        }
+      });
     }
   }).catch(()=>{});
 
@@ -160,7 +172,7 @@
           <p>Estamos pendientes todos los días. Escríbenos para recomendaciones, ofertas del momento o coordinar tu pedido.</p>
           <a class="sm-contact-row wa" href="https://wa.me/${WA}" target="_blank" rel="noopener">
             <span class="ico">${ICONS.whatsapp}</span>
-            <span><span class="l">WhatsApp</span><span class="v">+${WA.replace(/(\d{2})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4')}</span></span>
+            <span><span class="l">WhatsApp</span><span class="v">+${WA}</span></span>
             <span class="arr">${ICONS.arrow}</span>
           </a>
           ${emailHtml}
