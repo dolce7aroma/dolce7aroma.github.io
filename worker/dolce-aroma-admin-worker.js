@@ -65,7 +65,12 @@
 const REPO_OWNER = 'dolce7aroma';
 const REPO_NAME = 'dolce7aroma.github.io';
 const BRANCH = 'main';
-const ALLOWED_ORIGIN = 'https://dolce7aroma.github.io';
+const ALLOWED_ORIGINS = new Set([
+  'https://dolce7aroma.com',
+  'https://www.dolce7aroma.com',
+  'https://dolce7aroma.github.io'
+]);
+let currentOrigin = 'https://dolce7aroma.com';
 
 async function fetchJSON(url) {
   try {
@@ -151,9 +156,10 @@ function calculateShippingCost(provincia, distrito, zonas) {
 
 function corsHeaders() {
   return {
-    'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Origin': currentOrigin,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Key',
+    'Vary': 'Origin',
   };
 }
 
@@ -426,8 +432,10 @@ async function handleSubmitOrder(request, env) {
     return json({ ok: false, error: 'El pedido no tiene productos' }, 400);
   }
 
-  const catalog = await fetchJSON('https://dolce7aroma.github.io/data/productos.json');
-  const zonas = await fetchJSON('https://dolce7aroma.github.io/data/zonas-envio.json');
+  const catalog = await fetchJSON('https://dolce7aroma.com/data/productos.json')
+               || await fetchJSON('https://dolce7aroma.github.io/data/productos.json');
+  const zonas = await fetchJSON('https://dolce7aroma.com/data/zonas-envio.json')
+             || await fetchJSON('https://dolce7aroma.github.io/data/zonas-envio.json');
   
   if(!catalog || !zonas) {
     return json({ ok: false, error: 'Error interno conectando con el catálogo. Intenta más tarde.' }, 502);
@@ -725,6 +733,13 @@ async function handleChargeCulqi(request, env) {
 
 export default {
   async fetch(request, env) {
+    const origin = request.headers.get('Origin');
+    if (origin && ALLOWED_ORIGINS.has(origin)) {
+      currentOrigin = origin;
+    } else {
+      currentOrigin = 'https://dolce7aroma.com';
+    }
+
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders() });
     }

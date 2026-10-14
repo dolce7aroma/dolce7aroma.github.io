@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /perfumes-gestion-da7.html
 
-Sitemap: https://dolce7aroma.github.io/sitemap.xml
+Sitemap: https://dolce7aroma.com/sitemap.xml

@@ -15,18 +15,18 @@
 <title>Dolce Aroma | Perfumes Alternativos y Dupes en Lima</title>
 <meta name="description" content="Descubre perfumes alternativos y dupes de alta calidad inspirados en marcas de diseñador. Fragancias de larga duración en presentación exclusiva de 110ml. Envíos en Lima." />
 <meta name="keywords" content="dupes de perfumes, perfumes alternativos Lima, perfumes inspirados, fragancias 110ml, clones de perfumes de diseñador, perfumes de equivalencia Lima, perfumes económicos que huelen a caro" />
-<link rel="canonical" href="https://dolce7aroma.github.io/" />
+<link rel="canonical" href="https://dolce7aroma.com/" />
 
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://dolce7aroma.github.io/index.html" />
+<meta property="og:url" content="https://dolce7aroma.com/" />
 <meta property="og:title" content="Dolce Aroma | Perfumes Alternativos y Dupes en Lima" />
 <meta property="og:description" content="Descubre perfumes alternativos y dupes de alta calidad inspirados en marcas de diseñador. Fragancias de larga duración en presentación exclusiva de 110ml. Envíos en Lima." />
-<meta property="og:image" content="https://dolce7aroma.github.io/assets/frascos-dolcearoma.jpg" />
+<meta property="og:image" content="https://dolce7aroma.com/assets/frascos-dolcearoma.jpg" />
 <meta property="og:locale" content="es_PE" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Dolce Aroma | Perfumes Alternativos y Dupes en Lima" />
 <meta name="twitter:description" content="Descubre perfumes alternativos y dupes de alta calidad inspirados en marcas de diseñador. Fragancias de larga duración en presentación exclusiva de 110ml. Envíos en Lima." />
-<meta name="twitter:image" content="https://dolce7aroma.github.io/assets/frascos-dolcearoma.jpg" />
+<meta name="twitter:image" content="https://dolce7aroma.com/assets/frascos-dolcearoma.jpg" />
 
 <script type="application/ld+json">
 {
@@ -34,8 +34,8 @@
   "@type": "Store",
   "name": "Dolce Aroma",
   "alternateName": "Bazar Sport Shirley",
-  "image": "https://dolce7aroma.github.io/assets/frascos-dolcearoma.jpg",
-  "url": "https://dolce7aroma.github.io/index.html",
+  "image": "https://dolce7aroma.com/assets/frascos-dolcearoma.jpg",
+  "url": "https://dolce7aroma.com/",
   "telephone": "+51930122014",
   "email": "Dolce7aroma@gmail.com",
   "address": {
@@ -53,10 +53,6 @@
   ]
 }
 </script>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YXYWYS5LCJ"></script>
-<script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-YXYWYS5LCJ');</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -77,7 +73,7 @@
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{background:var(--ivory);color:var(--plum);font-family:'Jost',sans-serif;font-weight:400;line-height:1.55;-webkit-font-smoothing:antialiased}
+  html,body{background:var(--ivory);color:var(--plum);font-family:'Jost',sans-serif;font-weight:400;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   body{overflow-x:hidden}
 
   .serif{font-family:'Cormorant Garamond',serif;font-weight:400;letter-spacing:-0.01em}
@@ -105,7 +101,9 @@
   /* ───────── Nav ───────── */
   nav.top{
     position:sticky;top:0;z-index:50;
-    background:var(--ivory);
+    background:rgba(246, 242, 236, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom:1px solid var(--rule);
   }
   .nav-inner{
@@ -605,6 +603,20 @@
     .footer-grid{grid-template-columns:1fr;gap:32px}
     footer{padding:60px 20px 30px}
   }
+
+  /* Reveal Animations */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+  }
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* Smoother product hover */
+  .cat-card { transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+
 </style>
 </head>
 <body>
@@ -681,7 +693,7 @@
     <div class="hero-visual">
       <div class="hero-frame">
         <div class="hero-bottle" id="hero-bottle-stack">
-          <img id="hero-bottle-img" src="assets/perfume-110ml.jpg" alt="Frasco insignia" style="border-radius:8px"/>
+          <img id="hero-bottle-img" src="assets/perfume-110ml.jpg" alt="Frasco insignia" fetchpriority="high" style="border-radius:8px"/>
         </div>
         <div class="hero-anuncio-overlay" id="hero-anuncio-overlay">
           <div class="hao-title" id="hao-title"></div>
@@ -737,7 +749,7 @@
 <section class="filosofia" id="filosofia" data-screen-label="Filosofia">
   <div class="filo-grid">
     <div class="filo-img filo-img-photo">
-      <img class="filo-photo" src="assets/filosofia-bottle.jpg" alt="Frasco Dolce Aroma con pétalos" />
+      <img class="filo-photo" src="assets/filosofia-bottle.jpg" alt="Frasco Dolce Aroma" loading="lazy" />
       <span class="filo-tag"><span class="line"></span> Perfumería fina · Lima</span>
       <p class="filo-quote">El perfume es la forma más intensa del recuerdo.<br/><span style="display:block;margin-top:14px;font-style:normal;font-size:11.5px;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);font-family:'Jost',sans-serif">— Jean-Paul Guerlain</span></p>
     </div>
@@ -986,7 +998,7 @@
 <footer data-screen-label="Footer">
   <div class="footer-grid">
     <div class="footer-brand">
-      <img class="mark" src="assets/frascos-dolcearoma.jpg" alt="Frascos Dolce Aroma" style="width:340px;max-width:100%;margin-bottom:18px;border-radius:14px;display:block;background:#f6f4ef;padding:8px" />
+      <img class="mark" src="assets/frascos-dolcearoma.jpg" alt="Frascos Dolce Aroma" loading="lazy" style="width:340px;max-width:100%;margin-bottom:18px;border-radius:14px;display:block;background:#f6f4ef;padding:8px" />
       <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:var(--gold);margin-bottom:14px">Perfumería equivalente · Lima, Perú</div>
       <p>Inspiradas en los perfumes más icónicos del mundo, elaboradas con esencias de calidad importadas de Grasse, Francia.</p>
       <div class="footer-social" style="gap:12px;margin-top:22px">

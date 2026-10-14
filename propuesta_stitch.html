@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dolce Aroma - Luxury Fragrances</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Jost:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "secondary": "#615c6a",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f7f3ed",
+                        "on-primary-fixed-variant": "#4f415a",
+                        "surface-variant": "#e6e2dc",
+                        "surface-container-highest": "#e6e2dc",
+                        "on-background": "#1c1c18",
+                        "surface-tint": "#685973",
+                        "outline": "#7b757d",
+                        "on-tertiary-container": "#b89867",
+                        "on-primary-container": "#a896b3",
+                        "surface-bright": "#fdf9f3",
+                        "on-primary-fixed": "#22162d",
+                        "surface": "#fdf9f3",
+                        "on-tertiary-fixed-variant": "#5b431a",
+                        "tertiary-container": "#463009",
+                        "primary": "#261a31",
+                        "primary-fixed": "#efdcfb",
+                        "surface-container": "#f1ede7",
+                        "outline-variant": "#ccc4cc",
+                        "tertiary-fixed": "#ffdeae",
+                        "secondary-fixed": "#e7dff0",
+                        "primary-fixed-dim": "#d3c0de",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#1d1a25",
+                        "primary-container": "#3c2f47",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#4a454c",
+                        "on-error": "#ffffff",
+                        "on-secondary-container": "#676270",
+                        "tertiary-fixed-dim": "#e4c18d",
+                        "surface-dim": "#ddd9d4",
+                        "tertiary": "#2d1c00",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#ebe8e2",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#31302d",
+                        "inverse-on-surface": "#f4f0ea",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#e7dff0",
+                        "on-tertiary-fixed": "#281800",
+                        "inverse-primary": "#d3c0de",
+                        "background": "#fdf9f3",
+                        "secondary-fixed-dim": "#cbc4d4",
+                        "on-secondary-fixed-variant": "#494552",
+                        "on-surface": "#1c1c18"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "margin-desktop": "80px",
+                        "section-gap": "120px",
+                        "unit": "8px",
+                        "gutter": "32px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Jost"],
+                        "headline-md": ["EB Garamond"],
+                        "label-caps": ["Jost"],
+                        "headline-sm": ["EB Garamond"],
+                        "display-lg-mobile": ["EB Garamond"],
+                        "display-lg": ["EB Garamond"],
+                        "body-lg": ["Jost"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-md": ["32px", { "lineHeight": "1.3", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "600" }],
+                        "headline-sm": ["24px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "display-lg-mobile": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #f6f2ec; /* Ivory custom per prompt */
+            color: #1c1c18;
+        }
+        .text-gold { color: #a8895a; }
+        .bg-gold { background-color: #a8895a; }
+        .border-gold { border-color: #a8895a; }
+        
+        .text-plum { color: #3c2f47; }
+        .bg-plum { background-color: #3c2f47; }
+        .border-plum { border-color: #3c2f47; }
+
+        .bg-lavender { background-color: #cfc8d8; }
+
+        /* Custom Hover for Buttons based on Style Guidance */
+        .btn-primary {
+            @apply bg-plum text-on-primary font-label-caps text-label-caps uppercase py-4 px-8 rounded-none transition-colors duration-300;
+        }
+        .btn-primary:hover {
+            @apply bg-gold shadow-[0_4px_12px_rgba(60,47,71,0.1)]; /* Micro shadow plum tinted */
+        }
+        
+        .btn-secondary {
+            @apply bg-transparent border border-plum text-plum font-label-caps text-label-caps uppercase py-4 px-8 rounded-none transition-colors duration-300;
+        }
+        .btn-secondary:hover {
+            @apply bg-lavender;
+        }
+
+        .cta-link {
+            @apply font-label-caps text-label-caps text-plum border-b border-gold transition-all duration-300 inline-block pb-1;
+        }
+        .cta-link:hover {
+            @apply border-plum; /* Expand visual wait */
+        }
+
+        /* Product Card Styles */
+        .product-card {
+            @apply relative border border-transparent transition-colors duration-500 overflow-hidden;
+        }
+        .product-card:hover {
+            @apply border-gold;
+        }
+
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md antialiased overflow-x-hidden">
+<!-- Sticky Announcement Bar -->
+<div class="fixed top-0 w-full z-[60] bg-gold text-plum font-label-caps text-label-caps py-2 text-center uppercase tracking-widest">
+        Fragancias de Lujo, Precios de Autor. Envío Gratis en Lima.
+    </div>
+<!-- TopAppBar -->
+<header class="fixed top-10 w-full z-50 bg-surface/90 dark:bg-surface-dim/90 border-b border-outline-variant/30 flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 backdrop-blur-md transition-all duration-300">
+<button class="text-primary hover:text-tertiary transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-primary tracking-widest uppercase">DOLCE AROMA</h1>
+<button class="text-primary hover:text-tertiary transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">shopping_bag</span>
+</button>
+</header>
+<main class="pt-[120px] md:pt-[140px]">
+<!-- Hero Section -->
+<section class="px-margin-mobile md:px-margin-desktop mb-section-gap relative">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter items-center min-h-[618px]">
+<div class="order-2 md:order-1 z-10 flex flex-col items-start gap-6 pt-10 md:pt-0">
+<h2 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-plum leading-tight">
+                        El Arte de<br/>la Fragancia
+                    </h2>
+<p class="font-body-lg text-body-lg text-secondary max-w-md">
+                        Inspiraciones de diseñador en formato de 110ml. Lujo accesible en cada gota, formuladas para evocar emociones duraderas.
+                    </p>
+<button class="btn-primary mt-4">
+                        Descubrir Colección
+                    </button>
+</div>
+<div class="order-1 md:order-2 relative h-[442px] md:h-full min-h-[400px] w-full">
+<!-- Editorial Image Placeholder -->
+<img class="absolute inset-0 w-full h-full object-cover rounded-sm object-center" data-alt="A highly stylized, editorial photograph of elegant 110ml perfume bottles arranged asymmetrically on a minimalist ivory plinth. The lighting is soft, diffused, and cinematic, casting delicate shadows that emphasize the premium, heavy glass construction. Deep plum accents and subtle gold reflections enhance the luxury aesthetic. The background is a clean, expansive, off-white studio space, perfectly aligning with a minimalist high-end fragrance brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQiLn1WXB8btnVJqFomUOwwBSyJ6FcdSIPIf2MCjM03F-FCmJbhW7_7mZcZQJMEz0JKh3-KJKGRB8bdKr5f00LrhktvctmYTi_vdMGvuCw8GDbjtaxf4YfyoSj3JKgANRb5hDXpo6uJoA0yv6CH6_c4OlQkFkEsCx3oJU-_kzU5SQy4WT2wtAww6deB4vmYSTns0jieLSz2szJdOFGd6EgD9KXL5C_FV680erOp_DdlBtfmjYtFY_wrjs5uI2YMwAHzr_cm07OaHz8"/>
+<!-- Decorative Element -->
+<div class="absolute -bottom-8 -left-8 w-24 h-24 border border-gold opacity-50 hidden md:block"></div>
+</div>
+</div>
+</section>
+<!-- Divider -->
+<div class="w-full flex justify-center mb-section-gap px-margin-mobile">
+<div class="h-px w-24 bg-plum opacity-20"></div>
+</div>
+<!-- Product Showcase -->
+<section class="px-margin-mobile md:px-margin-desktop mb-section-gap max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h3 class="font-headline-md text-headline-md text-plum mb-4">Colección de Autor</h3>
+<p class="font-body-md text-body-md text-secondary uppercase tracking-widest text-xs">Formato 110ml</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-gutter gap-y-16">
+<!-- Product 1 -->
+<div class="group flex flex-col gap-6">
+<div class="product-card aspect-[3/4] bg-surface-container-low relative flex items-center justify-center p-8">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A macro, beautifully lit studio shot of a sleek, minimalist perfume bottle with a heavy gold cap, resting on a smooth lavender-tinted surface. The label reads 'Aura Floral'. The composition is elegant and minimal, with soft, directional light creating a sophisticated highlight on the glass, capturing a luxury aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbULeDphOaVIpfYXfONSzh-2OhHrseF8_Sqkg2V2in4gGgJxmNgg_JRu_CXdl93cHwQWlLLDtQsNABatb6Mb6WF8X23jJpwMPCoFmyEeVvfFK9ESjKGBtv9-40JZFutuRPBSzERi59sBSqC0CUjFXRlZOKed79toMycVL-p9wH5joMJdylGo-3Nvs5AR8JTzGT3TGTWhl-wvYKeg2B3cpVXJS9h735GPfJP8vhxgOFYB7r48O5t-fWKiySvUhDbjZlNja8hjHdDftu"/>
+<div class="absolute inset-x-0 bottom-0 p-6 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-4 group-hover:translate-y-0">
+<button class="btn-secondary w-full bg-surface/90 backdrop-blur-sm">
+                                Agregar al Bolso
+                            </button>
+</div>
+</div>
+<div class="text-center">
+<h4 class="font-headline-sm text-headline-sm text-plum">Aura Floral</h4>
+<p class="font-body-md text-body-md text-secondary italic text-sm mt-1">Inspiración: Baccarat Rouge</p>
+<p class="font-label-caps text-label-caps text-plum mt-3">S/ 120.00</p>
+</div>
+</div>
+<!-- Product 2 -->
+<div class="group flex flex-col gap-6 md:mt-24">
+<div class="product-card aspect-[3/4] bg-surface-container-low relative flex items-center justify-center p-8">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A sophisticated, high-contrast studio photograph of a dark, mysterious perfume bottle, hinting at deep, woody notes. The bottle is positioned off-center on an ivory background with a subtle plum shadow. The lighting is dramatic yet soft, highlighting the luxurious texture of the glass and the minimal, elegant branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxtmEiJGmfhMNZ3_YCQDS5M7C1sP2w3sjS0x9s6zqO19DsSUIWmXRKPmYflYwyckcprkFvAl0qkQNvqqzUsqiJxwIgWkyz66Isv2i4IvHNVdjs32tYxFXFxes91A9S6dJ77GZyoZnr6venyWHPVikOGgS_-mfgfI93x6NLTv5zvEwjXiHg1p3eftdvKhcA1xxhXd5fEpQU9UJzbtk6u9gRmWh4Z9AISX84GvUbJ3rIdOOMEVdnSzRVPlCn1psO0_OhIeypxVqSZ9jJ"/>
+<div class="absolute inset-x-0 bottom-0 p-6 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-4 group-hover:translate-y-0">
+<button class="btn-secondary w-full bg-surface/90 backdrop-blur-sm">
+                                Agregar al Bolso
+                            </button>
+</div>
+</div>
+<div class="text-center">
+<h4 class="font-headline-sm text-headline-sm text-plum">Esencia del Sur</h4>
+<p class="font-body-md text-body-md text-secondary italic text-sm mt-1">Inspiración: Santal 33</p>
+<p class="font-label-caps text-label-caps text-plum mt-3">S/ 120.00</p>
+</div>
+</div>
+<!-- Product 3 -->
+<div class="group flex flex-col gap-6">
+<div class="product-card aspect-[3/4] bg-surface-container-low relative flex items-center justify-center p-8">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="An ethereal, light-filled photograph of a fresh, citrus-inspired perfume bottle. The composition features delicate water droplets and soft, natural sunlight filtering through a subtle linen texture in the background. The aesthetic is clean, vibrant, and luxurious, matching a premium niche perfumery style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcSyuiciWZZ1mpU-XFJkYVg29IQ6U8OgnKEYDwW82XzhHTY7QUhrzragjZpLeWuSV8AEVJJwLjCTXgiegUqX_10wfPDisV1nnLDmCnzTQ8GULyCEpEYA6-9a4_c_OCz9NA0sP5K1VOBjeYJvm5iufK-W-Movm4OMaX9b0v2dsCQPy7IPBLfQLo8GSZSu_Z0C9o7_XwT6TWICSz4n1MHygDR0mtzDB7QORMUK4ryetIf7YtbiV9zMLuEmWQd_41ZDYhmAMsDXyW2F-d"/>
+<div class="absolute inset-x-0 bottom-0 p-6 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-4 group-hover:translate-y-0">
+<button class="btn-secondary w-full bg-surface/90 backdrop-blur-sm">
+                                Agregar al Bolso
+                            </button>
+</div>
+</div>
+<div class="text-center">
+<h4 class="font-headline-sm text-headline-sm text-plum">Cítrico Noir</h4>
+<p class="font-body-md text-body-md text-secondary italic text-sm mt-1">Inspiración: Aventus</p>
+<p class="font-label-caps text-label-caps text-plum mt-3">S/ 120.00</p>
+</div>
+</div>
+<!-- Product 4 -->
+<div class="group flex flex-col gap-6 md:mt-24">
+<div class="product-card aspect-[3/4] bg-surface-container-low relative flex items-center justify-center p-8">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A rich, textural image focusing on a single, elegant perfume bottle surrounded by abstract suggestions of raw ingredients like vanilla pods and dark woods. The color palette is warm, featuring deep browns, ivory, and subtle gold highlights. The lighting is cinematic, evoking a sense of slow, deliberate luxury and sensory richness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZ-hE8QaV8kINq0mFleXRfGEAjpQ2rTsiQg1823tU7J0q7KYQ8qQc9_GtGE_ntmxQGnLCeur9e650RGiVv_IrFaWCsvqz368U3p2atONvh8aRIGN5G8f5XhXQe9wE2qHoP6FZosw15P72I8IuTqm8DU51aMZc4742V2718H8vH9GlkI6dXsVmOvURbx3eM00z1FDPVZiMvehE5FRJ7DWb42aKoIey6ycSU5iANwjPLY3QaNV_TrBbQa4NBynWjFpoOoIwmT8WQm5Jb"/>
+<div class="absolute inset-x-0 bottom-0 p-6 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-4 group-hover:translate-y-0">
+<button class="btn-secondary w-full bg-surface/90 backdrop-blur-sm">
+                                Agregar al Bolso
+                            </button>
+</div>
+</div>
+<div class="text-center">
+<h4 class="font-headline-sm text-headline-sm text-plum">Vainilla Ahumada</h4>
+<p class="font-body-md text-body-md text-secondary italic text-sm mt-1">Inspiración: Tobacco Vanille</p>
+<p class="font-label-caps text-label-caps text-plum mt-3">S/ 120.00</p>
+</div>
+</div>
+</div>
+<div class="mt-20 flex justify-center">
+<a class="cta-link" href="#">Ver Toda la Colección</a>
+</div>
+</section>
+<!-- Fragrance Notes (Bento-ish concept) -->
+<section class="bg-lavender/30 py-section-gap px-margin-mobile md:px-margin-desktop mb-section-gap">
+<div class="max-w-container-max mx-auto">
+<div class="text-center mb-12">
+<h3 class="font-headline-md text-headline-md text-plum">Notas Olfativas</h3>
+</div>
+<div class="flex flex-wrap justify-center gap-4">
+<div class="px-6 py-3 bg-surface border border-plum/20 font-label-caps text-label-caps text-plum cursor-pointer hover:bg-gold hover:text-white transition-colors duration-300">Oud &amp; Maderas</div>
+<div class="px-6 py-3 bg-surface border border-plum/20 font-label-caps text-label-caps text-plum cursor-pointer hover:bg-gold hover:text-white transition-colors duration-300">Cítricos Frescos</div>
+<div class="px-6 py-3 bg-surface border border-plum/20 font-label-caps text-label-caps text-plum cursor-pointer hover:bg-gold hover:text-white transition-colors duration-300">Florales Blancos</div>
+<div class="px-6 py-3 bg-surface border border-plum/20 font-label-caps text-label-caps text-plum cursor-pointer hover:bg-gold hover:text-white transition-colors duration-300">Ámbar &amp; Vainilla</div>
+<div class="px-6 py-3 bg-surface border border-plum/20 font-label-caps text-label-caps text-plum cursor-pointer hover:bg-gold hover:text-white transition-colors duration-300">Especias Cálidas</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer from JSON Blueprint -->
+<footer class="w-full border-t border-outline-variant/20 bg-surface-container dark:bg-surface-container-low text-primary dark:text-primary-fixed font-body-md text-body-md">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter px-margin-mobile md:px-margin-desktop py-section-gap max-w-container-max mx-auto">
+<div class="flex flex-col gap-6">
+<h2 class="font-headline-sm text-headline-sm text-primary tracking-widest uppercase">DOLCE AROMA</h2>
+<p class="text-on-surface-variant max-w-xs">
+                    El arte de la perfumería de lujo, reinterpretada.
+                </p>
+<div class="flex gap-4 mt-2">
+<a class="text-on-surface-variant hover:text-tertiary transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">camera_alt</span>
+</a>
+<a class="text-on-surface-variant hover:text-tertiary transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">mail</span>
+</a>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h3 class="font-label-caps text-label-caps mb-2 text-primary">Navegación</h3>
+<a class="text-on-surface-variant hover:text-tertiary transition-all duration-300 hover:translate-x-1" href="#">Fragancias</a>
+<a class="text-on-surface-variant hover:text-tertiary transition-all duration-300 hover:translate-x-1" href="#">Nuestra Historia</a>
+<a class="text-on-surface-variant hover:text-tertiary transition-all duration-300 hover:translate-x-1" href="#">Contacto</a>
+<a class="text-on-surface-variant hover:text-tertiary transition-all duration-300 hover:translate-x-1" href="#">Términos</a>
+</div>
+<div class="flex flex-col gap-4">
+<h3 class="font-label-caps text-label-caps mb-2 text-primary">Boutique</h3>
+<p class="text-on-surface-variant flex items-start gap-2">
+<span class="material-symbols-outlined text-sm mt-1">location_on</span>
+<span>San Isidro, Lima<br/>Atención por cita previa.</span>
+</p>
+<div class="mt-4">
+<a class="cta-link" href="#">Reservar Cita</a>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/10 py-6 text-center text-sm text-on-surface-variant px-margin-mobile">
+            © 2024 DOLCE AROMA PERFUMERÍA. LIMA, PERÚ.
+        </div>
+</footer>
+</body></html>
