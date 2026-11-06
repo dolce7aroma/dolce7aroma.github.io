@@ -380,7 +380,8 @@
     background:radial-gradient(ellipse 50% 60% at 50% 50%, rgba(168,137,90,0.10), transparent 70%);
     pointer-events:none;
   }
-  .filo-img-photo .filo-photo{
+  .filo-img-photo .filo-photo,
+  .filo-img-photo .filo-video{
     position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
   }
   .filo-img-photo::after{
@@ -761,7 +762,11 @@
 <section class="filosofia" id="filosofia" data-screen-label="Filosofia">
   <div class="filo-grid">
     <div class="filo-img filo-img-photo">
-      <img class="filo-photo" src="assets/filosofia-bottle.jpg" alt="Frasco Dolce Aroma" loading="lazy" />
+      <video id="filo-video" class="filo-photo filo-video" autoplay muted loop playsinline poster="assets/filosofia-bottle.jpg">
+        <source src="assets/Filosofia.mp4" type="video/mp4" />
+        <source src="assets/filosofia.mp4" type="video/mp4" />
+        <img class="filo-photo" src="assets/filosofia-bottle.jpg" alt="Frasco Dolce Aroma" loading="lazy" />
+      </video>
       <span class="filo-tag"><span class="line"></span> Perfumería fina · Lima</span>
       <p class="filo-quote">El perfume es la forma más intensa del recuerdo.<br/><span style="display:block;margin-top:14px;font-style:normal;font-size:11.5px;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);font-family:'Jost',sans-serif">— Jean-Paul Guerlain</span></p>
     </div>
@@ -1378,6 +1383,46 @@
       const q = inp.value.trim();
       if(!q) return closeSearch();
       location.href = 'catalogo.html?q=' + encodeURIComponent(q);
+    });
+  })();
+
+  // ── Video Filosofía: Bucle continuo exacto hasta el segundo 6 ──
+  (function(){
+    const v = document.getElementById('filo-video') || document.querySelector('.filo-video');
+    if(!v) return;
+    const LOOP_END = 6.0;
+
+    function enforceLoop(mediaTime){
+      const t = typeof mediaTime === 'number' ? mediaTime : v.currentTime;
+      if(t >= LOOP_END){
+        v.currentTime = 0;
+        if(v.paused) v.play().catch(()=>{});
+      }
+    }
+
+    if('requestVideoFrameCallback' in HTMLVideoElement.prototype){
+      const onFrame = (now, metadata) => {
+        enforceLoop(metadata.mediaTime);
+        v.requestVideoFrameCallback(onFrame);
+      };
+      v.requestVideoFrameCallback(onFrame);
+    } else {
+      v.addEventListener('timeupdate', () => enforceLoop());
+    }
+
+    v.addEventListener('ended', () => {
+      v.currentTime = 0;
+      v.play().catch(()=>{});
+    });
+
+    const tryPlay = () => {
+      if(v.paused){
+        v.muted = true;
+        v.play().catch(()=>{});
+      }
+    };
+    ['touchstart', 'click', 'scroll'].forEach(evt => {
+      window.addEventListener(evt, tryPlay, {once:true, passive:true});
     });
   })();
 </script>

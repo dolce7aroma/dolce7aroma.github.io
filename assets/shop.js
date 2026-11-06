@@ -1910,10 +1910,12 @@
 
   // ─── Helpers ───
   function resolvePhoto(p){
-    if(!p.photo) return 'assets/perfume-110ml.jpg';
+    if(!p || !p.photo) return 'assets/perfume-110ml.jpg';
     if(p.photo.startsWith('idb:') || p.photo.startsWith('data:')) return 'assets/perfume-110ml.jpg';
-    if(p.photo.startsWith('assets/') || p.photo.startsWith('http')) return p.photo;
-    return 'assets/perfumes/' + p.photo;
+    let photo = p.photo;
+    if(photo.endsWith('.png')) photo = photo.replace(/\.png$/i, '.jpg');
+    if(photo.startsWith('assets/') || photo.startsWith('http')) return photo;
+    return 'assets/perfumes/' + photo;
   }
   function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 

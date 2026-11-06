@@ -86,7 +86,7 @@
         "madera de roble"
       ],
       "description": "El triunfo en estado puro.\nVenta con su frasco original sin marcas.",
-      "photo": "idb:p-o6knri",
+      "photo": "assets/perfumes/Invictus Perfum D7A.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -232,7 +232,7 @@
         "haba tonka"
       ],
       "description": "Glamour y sensualidad en un frasco icónico.",
-      "photo": "assets/perfumes/212 Vip.png",
+      "photo": "assets/perfumes/212 Vip.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -477,7 +477,7 @@
         "ámbar"
       ],
       "description": "Frescura floral inspirada en el Mediterráneo.",
-      "photo": "assets/perfumes/Acqua di Gio Woman.png",
+      "photo": "assets/perfumes/Acqua di Gio Woman.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -525,7 +525,7 @@
         "almizcle"
       ],
       "description": "Sensualidad envuelta en un aura de misterio.",
-      "photo": "assets/perfumes/Amethyst.png",
+      "photo": "assets/perfumes/Amethyst.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -719,7 +719,7 @@
         "azúcar"
       ],
       "description": "La fragancia más codiciada del mundo.",
-      "photo": "assets/perfumes/Baccarat Rouge 540.png",
+      "photo": "assets/perfumes/Baccarat Rouge 540.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -866,7 +866,7 @@
         "cedro"
       ],
       "description": "Adictiva y moderna con un corazón de café.",
-      "photo": "assets/perfumes/Black Opium Over Red.png",
+      "photo": "assets/perfumes/Black Opium Over Red.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1107,7 +1107,7 @@
         "vainilla"
       ],
       "description": "Dulce y femenina con un toque frutal irresistible.",
-      "photo": "assets/perfumes/Can Can.png",
+      "photo": "assets/perfumes/Can Can.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1156,7 +1156,7 @@
         "ámbar"
       ],
       "description": "Delicada y luminosa, perfecta para el día.",
-      "photo": "assets/perfumes/Celeste.png",
+      "photo": "assets/perfumes/Celeste.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1204,7 +1204,7 @@
         "almizcle"
       ],
       "description": "Suave, dulce y adictiva.",
-      "photo": "assets/perfumes/Cloud.png",
+      "photo": "assets/perfumes/Cloud.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1402,7 +1402,7 @@
         "cedro"
       ],
       "description": "Libertad y frescura femenina.",
-      "photo": "assets/perfumes/Escape.png",
+      "photo": "assets/perfumes/Escape.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1450,7 +1450,7 @@
         "almizcle"
       ],
       "description": "Intensidad femenina con elegancia italiana.",
-      "photo": "assets/perfumes/Extradose Donna.png",
+      "photo": "assets/perfumes/Extradose Donna.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1595,7 +1595,7 @@
         "almizcle"
       ],
       "description": "Ambición y glamour en forma de perfume.",
-      "photo": "assets/perfumes/Fame.png",
+      "photo": "assets/perfumes/Fame.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1644,7 +1644,7 @@
         "madera"
       ],
       "description": "Juguetona y femenina con alma golosa.",
-      "photo": "assets/perfumes/Fantasy.png",
+      "photo": "assets/perfumes/Fantasy.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1692,7 +1692,7 @@
         "ámbar"
       ],
       "description": "Limpieza y frescura floral inigualable.",
-      "photo": "assets/perfumes/For Women.png",
+      "photo": "assets/perfumes/For Women.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1740,7 +1740,7 @@
         "vainilla"
       ],
       "description": "Dualidad entre el bien y el mal en un frasco icónico.",
-      "photo": "assets/perfumes/Good Girl.png",
+      "photo": "assets/perfumes/Good Girl.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1787,7 +1787,7 @@
         "almizcle"
       ],
       "description": "La versión más romántica de Good Girl.",
-      "photo": "assets/perfumes/Good Girl Supreme.png",
+      "photo": "assets/perfumes/Good Girl Supreme.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1837,7 +1837,7 @@
         "vainilla"
       ],
       "description": "Dulce herencia de glamour y feminidad.",
-      "photo": "assets/perfumes/Heiress.png",
+      "photo": "assets/perfumes/Heiress.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -1886,7 +1886,7 @@
         "almizcle"
       ],
       "description": "Una confesión de elegancia y sensualidad.",
-      "photo": "assets/perfumes/Her Confession.png",
+      "photo": "assets/perfumes/Her Confession.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -2128,7 +2128,7 @@
         "vainilla"
       ],
       "description": "Feminidad en su máxima expresión.",
-      "photo": "assets/perfumes/Jadore.png",
+      "photo": "assets/perfumes/Jadore.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -2275,7 +2275,7 @@
         "patchouli"
       ],
       "description": "La vida es bella cuando hueles así.",
-      "photo": "assets/perfumes/La vie est belle.png",
+      "photo": "assets/perfumes/La vie est belle.jpg",
       "sizes": [
         {
           "ml": 110,
