@@ -752,6 +752,31 @@ async function sendTelegramMessage(chatId, text, env, extra = {}) {
   }
 }
 
+async function sendTelegramPhoto(chatId, photoUrl, caption, env, extra = {}) {
+  if (!env.TELEGRAM_BOT_TOKEN) return false;
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        photo: photoUrl,
+        caption: (caption || '').slice(0, 1024),
+        parse_mode: 'HTML',
+        ...extra
+      }),
+    });
+    if (!res.ok) {
+      await sendTelegramMessage(chatId, `${caption}\n\n📊 <a href="${photoUrl}">Ver Gráfico Estadístico</a>`, env);
+    }
+    return res.ok;
+  } catch (e) {
+    await sendTelegramMessage(chatId, `${caption}\n\n📊 <a href="${photoUrl}">Ver Gráfico Estadístico</a>`, env);
+    return false;
+  }
+}
+
+
 function getNextCampaign(now = new Date()) {
   const currentYear = now.getUTCFullYear();
   const peruNow = new Date(now.getTime() - 5 * 3600 * 1000);
@@ -818,8 +843,8 @@ async function handleTelegramWebhook(request, env) {
 • <b>/campana</b> — Días restantes para la próxima fecha comercial masiva.
 
 📊 <b>REPORTES & ANÁLISIS:</b>
-• <b>/semana</b> — Reporte semanal con gráfico comparativo <i>(Hito 2)</i>.
-• <b>/cro</b> — Embudo de conversión y tasa de abandono en checkout <i>(Hito 2)</i>.
+• <b>/semana</b> — Reporte semanal con gráfico comparativo de barras.
+• <b>/cro</b> — Embudo de conversión y tasa de abandono en checkout.
 • <b>/seo</b> — Palabras clave y clics orgánicos en Google <i>(Hito 6)</i>.
 
 ℹ️ <b>AYUDA:</b>
@@ -964,11 +989,260 @@ ${alertStatus}`;
     return json({ ok: true });
   }
 
-  // 5. Placeholders para Hitos posteriores
-  if (command === '/semana' || command === '/cro' || command === '/seo') {
-    await sendTelegramMessage(chatId, `📊 El comando <b>${command}</b> está asignado al siguiente hito de desarrollo (Hito 2 / Generador de Gráficos e IA). ¡Muy pronto activo!`, env);
+
+  // 5. Comando /semana (Reporte Semanal con Gráfico QuickChart)
+  if (command === '/semana') {
+    if (!env.ORDERS) {
+      await sendTelegramMessage(chatId, '⚠️ <b>Alerta:</b> El almacenamiento KV (<code>ORDERS</code>) no está enlazado.', env);
+      return json({ ok: true });
+    }
+
+    try {
+      const listed = await env.ORDERS.list({ prefix: 'order:', limit: 300 });
+      const orders = (await Promise.all(
+        listed.keys.map(k => env.ORDERS.get(k.name).then(v => v ? JSON.parse(v) : null))
+      )).filter(Boolean);
+
+      const peruNow = new Date(Date.now() - 5 * 3600 * 1000);
+      const currentDayOfWeek = (peruNow.getUTCDay() + 6) % 7; // 0=Lun, 1=Mar, ..., 6=Dom
+
+      const startOfThisWeek = new Date(peruNow);
+      startOfThisWeek.setUTCDate(peruNow.getUTCDate() - currentDayOfWeek);
+      startOfThisWeek.setUTCHours(0, 0, 0, 0);
+
+      const startOfPrevWeek = new Date(startOfThisWeek);
+      startOfPrevWeek.setUTCDate(startOfThisWeek.getUTCDate() - 7);
+
+      const endOfThisWeek = new Date(startOfThisWeek);
+      endOfThisWeek.setUTCDate(startOfThisWeek.getUTCDate() + 7);
+
+      const thisWeekDaily = [0, 0, 0, 0, 0, 0, 0];
+      const prevWeekDaily = [0, 0, 0, 0, 0, 0, 0];
+      const thisWeekOrders = [];
+      const prevWeekOrders = [];
+      const perfumeCounts = {};
+
+      for (const o of orders) {
+        if (!o.creadoEn || o.estado === 'cancelado') continue;
+        const oPeru = new Date(new Date(o.creadoEn).getTime() - 5 * 3600 * 1000);
+        const t = oPeru.getTime();
+        const total = Number(o.total || 0);
+
+        if (t >= startOfThisWeek.getTime() && t < endOfThisWeek.getTime()) {
+          const dayIdx = (oPeru.getUTCDay() + 6) % 7;
+          thisWeekDaily[dayIdx] += total;
+          thisWeekOrders.push(o);
+
+          for (const it of (o.items || [])) {
+            const name = it.name || it.titulo || 'Perfume';
+            perfumeCounts[name] = (perfumeCounts[name] || 0) + (Number(it.qty) || 1);
+          }
+        } else if (t >= startOfPrevWeek.getTime() && t < startOfThisWeek.getTime()) {
+          const dayIdx = (oPeru.getUTCDay() + 6) % 7;
+          prevWeekDaily[dayIdx] += total;
+          prevWeekOrders.push(o);
+        }
+      }
+
+      const thisWeekTotal = thisWeekDaily.reduce((a, b) => a + b, 0);
+      const prevWeekTotal = prevWeekDaily.reduce((a, b) => a + b, 0);
+
+      let wowBadge = '➖ Sin datos previos';
+      if (prevWeekTotal > 0) {
+        const pct = ((thisWeekTotal - prevWeekTotal) / prevWeekTotal) * 100;
+        wowBadge = pct >= 0 ? `📈 +${pct.toFixed(1)}%` : `📉 ${pct.toFixed(1)}%`;
+      } else if (thisWeekTotal > 0) {
+        wowBadge = '📈 +100% (nueva semana)';
+      }
+
+      const ticketProm = thisWeekOrders.length > 0 ? (thisWeekTotal / thisWeekOrders.length).toFixed(2) : '0.00';
+
+      const topSorted = Object.entries(perfumeCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      let topText = '• Sin ventas aún esta semana';
+      if (topSorted.length > 0) {
+        topText = topSorted.map(([name, qty], idx) => {
+          const m = idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉';
+          return `${m} <b>${name}</b>: ${qty} uds`;
+        }).join('\n');
+      }
+
+      const chartConfig = {
+        type: 'bar',
+        data: {
+          labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+          datasets: [
+            {
+              label: 'Esta semana (S/)',
+              data: thisWeekDaily.map(v => Number(v.toFixed(2))),
+              backgroundColor: 'rgba(212, 175, 55, 0.85)',
+              borderColor: '#B8972E',
+              borderWidth: 1.5,
+              borderRadius: 6
+            },
+            {
+              label: 'Semana anterior (S/)',
+              data: prevWeekDaily.map(v => Number(v.toFixed(2))),
+              backgroundColor: 'rgba(148, 163, 184, 0.45)',
+              borderColor: '#94A3B8',
+              borderWidth: 1,
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          title: { display: true, text: 'Ventas Semanales — Dolce 7 Aroma (S/)' },
+          legend: { position: 'bottom' },
+          scales: {
+            yAxes: [{ ticks: { beginAtZero: true } }]
+          }
+        }
+      };
+
+      const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=650&h=380&bkg=white`;
+
+      const caption = `📊 <b>[REPORTE SEMANAL · VENTAS]</b> 🌸
+🗓 <i>Lun - Dom (Hora Perú)</i>
+
+💰 <b>Facturación:</b> S/ ${thisWeekTotal.toFixed(2)} (${wowBadge})
+📦 <b>Pedidos:</b> ${thisWeekOrders.length} (Ticket prom: S/ ${ticketProm})
+⏮️ <b>Semana anterior:</b> S/ ${prevWeekTotal.toFixed(2)} (${prevWeekOrders.length} pedidos)
+
+🏆 <b>Top Perfumes de la Semana:</b>
+${topText}
+
+<i>💡 Tip: Escribe /cro para ver el embudo de conversión.</i>`;
+
+      await sendTelegramPhoto(chatId, chartUrl, caption, env);
+    } catch (e) {
+      await sendTelegramMessage(chatId, `❌ Error generando reporte semanal: ${e.message}`, env);
+    }
     return json({ ok: true });
   }
+
+  // 6. Comando /cro (Embudo de Conversión & Checkout)
+  if (command === '/cro') {
+    if (!env.ORDERS) {
+      await sendTelegramMessage(chatId, '⚠️ <b>Alerta:</b> El almacenamiento KV (<code>ORDERS</code>) no está enlazado.', env);
+      return json({ ok: true });
+    }
+
+    try {
+      const listedOrders = await env.ORDERS.list({ prefix: 'order:', limit: 300 });
+      const orders = (await Promise.all(
+        listedOrders.keys.map(k => env.ORDERS.get(k.name).then(v => v ? JSON.parse(v) : null))
+      )).filter(Boolean);
+
+      const listedGifts = await env.ORDERS.list({ prefix: 'gift:', limit: 100 });
+      const gifts = (await Promise.all(
+        listedGifts.keys.map(k => env.ORDERS.get(k.name).then(v => v ? JSON.parse(v) : null))
+      )).filter(Boolean);
+
+      const totalOrdersCount = orders.length;
+      const paidOrdersCount = orders.filter(o => o.estado === 'pagado' || o.estado === 'en_camino' || o.estado === 'entregado').length;
+      const pendingOrdersCount = orders.filter(o => o.estado === 'nuevo').length;
+      const cancelledOrdersCount = orders.filter(o => o.estado === 'cancelado').length;
+
+      // Distritos
+      const districtCounts = {};
+      let trioOrdersCount = 0;
+      for (const o of orders) {
+        if (o.distrito) {
+          districtCounts[o.distrito] = (districtCounts[o.distrito] || 0) + 1;
+        }
+        const totalItemsCount = (o.items || []).reduce((sum, it) => sum + (Number(it.qty) || 1), 0);
+        if (totalItemsCount >= 3) {
+          trioOrdersCount++;
+        }
+      }
+
+      const topDistricts = Object.entries(districtCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      let distText = '• Sin datos de distritos';
+      if (topDistricts.length > 0) {
+        distText = topDistricts.map(([dist, qty], i) => ` ${i + 1}. <b>${dist}</b>: ${qty} entregas`).join('\n');
+      }
+
+      // Regalos
+      const totalGiftsCount = gifts.length;
+      const claimedGiftsCount = gifts.filter(g => g.orderId || g.estado === 'reclamado').length;
+      const giftSuccessRate = totalGiftsCount > 0 ? Math.round((claimedGiftsCount / totalGiftsCount) * 100) : 0;
+
+      // Tasa de conversión de pedidos registrados
+      const checkoutSuccessRate = totalOrdersCount > 0 ? Math.round((paidOrdersCount / totalOrdersCount) * 100) : 0;
+      const trioRate = totalOrdersCount > 0 ? Math.round((trioOrdersCount / totalOrdersCount) * 100) : 0;
+
+      // Gráfico de Embudo Horizontal
+      const croChartConfig = {
+        type: 'horizontalBar',
+        data: {
+          labels: [
+            'Pedidos Totales',
+            'Pagados / Enviados',
+            'Esperando WhatsApp',
+            'Cancelados',
+            'Regalos Canjeados'
+          ],
+          datasets: [{
+            label: 'Cantidad',
+            data: [totalOrdersCount, paidOrdersCount, pendingOrdersCount, cancelledOrdersCount, claimedGiftsCount],
+            backgroundColor: [
+              '#6366F1',
+              '#10B981',
+              '#F59E0B',
+              '#EF4444',
+              '#EC4899'
+            ],
+            borderRadius: 5
+          }]
+        },
+        options: {
+          title: { display: true, text: 'Embudo CRO & Comportamiento de Checkout' },
+          legend: { display: false },
+          scales: {
+            xAxes: [{ ticks: { beginAtZero: true } }]
+          }
+        }
+      };
+
+      const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(croChartConfig))}&w=650&h=380&bkg=white`;
+
+      // Diagnóstico accionable
+      let croTip = 'Buen flujo. Mantén el botón de WhatsApp visible tras la confirmación de Yape.';
+      if (pendingOrdersCount > paidOrdersCount) {
+        croTip = '🚨 <b>Fricción detectada:</b> Varios clientes inician pedido pero no envían captura a WhatsApp. Agrega un recordatorio automático.';
+      } else if (trioRate < 15) {
+        croTip = '💡 <b>Oportunidad AOV:</b> Solo el ' + trioRate + '% aprovecha la promo del Trío. Destaca el ahorro en el carrito.';
+      }
+
+      const caption = `🎯 <b>[EMBUDO DE CONVERSIÓN & CRO]</b> 🌸
+<i>Radiografía de Comportamiento y Checkout</i>
+
+📈 <b>Efectividad de Checkout:</b> ${checkoutSuccessRate}%
+• Pagados / Completados: ${paidOrdersCount} 🟢
+• Pendientes de WhatsApp: ${pendingOrdersCount} 🟡
+• Cancelados / Abandonos: ${cancelledOrdersCount} 🔴
+
+🎁 <b>Módulo Regalos:</b> ${claimedGiftsCount}/${totalGiftsCount} canjeados (${giftSuccessRate}%)
+🛍️ <b>Tasa de Tríos (Upsell):</b> ${trioRate}% de pedidos
+
+📍 <b>Top Distritos:</b>
+${distText}
+
+💡 <b>Recomendación Táctica:</b>
+${croTip}`;
+
+      await sendTelegramPhoto(chatId, chartUrl, caption, env);
+    } catch (e) {
+      await sendTelegramMessage(chatId, `❌ Error generando reporte CRO: ${e.message}`, env);
+    }
+    return json({ ok: true });
+  }
+
+  // 7. Placeholder para SEO (Hito 6)
+  if (command === '/seo') {
+    await sendTelegramMessage(chatId, '📈 El comando <b>/seo</b> se conectará a Google Search Console en el Hito 6. ¡Muy pronto activo!', env);
+    return json({ ok: true });
+  }
+
 
   // 6. Mensaje desconocido
   await sendTelegramMessage(chatId, '❓ Comando no reconocido.\nEscribe <b>/help</b> para ver la lista de comandos disponibles.', env);
