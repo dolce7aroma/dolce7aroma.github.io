@@ -19,3 +19,14 @@ id = "4618ca47d7094c31acf4b3219c25d7ed"
 [vars]
 ORDER_EMAIL_TO = "dolce7aroma@gmail.com"
 TELEGRAM_CHAT_ID = "8616800327"
+
+# Disparadores Automáticos (Cron Triggers)
+# 1) Lunes 8:00 AM Perú (13:00 UTC) -> Reporte Semanal
+# 2) Día 16 de cada mes 6:00 AM Perú (11:00 UTC) -> Reporte Quincenal CRO
+# 3) Día 1 de cada mes 6:00 AM Perú (11:00 UTC) -> Reporte Mensual Estratégico
+[triggers]
+crons = [
+  "0 13 * * 1",
+  "0 11 16 * *",
+  "0 11 1 * *"
+]
