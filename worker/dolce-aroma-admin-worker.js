@@ -795,7 +795,7 @@ async function handleTelegramWebhook(request, env) {
 
   // Validación estricta de seguridad: solo responde al administrador
   if (!authorizedChatId || chatId !== authorizedChatId) {
-    await sendTelegramMessage(chatId, '⛔ <b>Acceso Restringido</b>\nEste bot es privado para la administración de Dolce 7 Aroma.', env);
+    await sendTelegramMessage(chatId, `⛔ <b>Acceso Restringido</b>\nEste bot es privado para la administración de Dolce 7 Aroma.\n\n🆔 <b>Tu Chat ID es:</b> <code>${chatId}</code>`, env);
     return json({ ok: true });
   }
 
