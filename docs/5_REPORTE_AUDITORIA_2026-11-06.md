@@ -1,33 +1,39 @@
-# 📋 Reporte de Auditoría y Estado Técnico — Dolce 7 Aroma
+# 📋 Reporte de Auditoría y Plan Estratégico — Dolce 7 Aroma
 **Fecha de corte:** 7 de noviembre de 2026  
-**Versión del informe:** 1.3  
+**Versión del informe:** 2.2 (Fase 2 Desplegada en Producción)  
 **Ecosistema:** GitHub Pages (Frontend) + Cloudflare Workers / KV (Backend) + Dominio `dolce7aroma.com`
 
 ---
 
 ## 1. Resumen Ejecutivo del Estado del Sistema
 
-El proyecto **Dolce 7 Aroma** se encuentra desplegado y operativo en producción bajo un esquema *Headless* desacoplado.
+El ecosistema digital de **Dolce 7 Aroma** ha completado y desplegado exitosamente las **Fases 1 y 2** de su plan de consolidación web y punto físico de venta en San Martín de Porres.
 
-### Diagnóstico de Infraestructura y Servicios (Cloudflare Worker):
-* **Estado del Worker:** **Activo y saludable.** En las métricas recientes de Cloudflare registra 0 errores y tiempo de CPU óptimo (~433 µs).
-* **Secreto `ADMIN_KEY`:** Actualizado con éxito a la nueva clave en producción.
-* **Base de datos KV:** Enlazado a `ORDERS` (`dolce-aroma-pedidos`) funcionando con normalidad.
+### 🌐 Estado en Producción (`https://dolce7aroma.com/`):
+* **Pop-up Web Punto Físico SMP (Fase 2):** Modal interactivo nativo (HTML/CSS/JS) activo en producción. Aparece a los 2.5s con control de sesión (`sessionStorage`), informando sobre el local en Jr. Callao 482-A, frascos de 10 ml a S/ 20, recojo gratuito y muestra de regalo por compra de ropa en el bazar. Cuenta con botón de desplazamiento suave hacia la sección Boutique activando la pestaña de aromas.
+* **Boutique Física SMP (`index.html`):** Pestañas interactivas compartidas (`🗺️ Ver Mapa` y `🌸 Aromas en Tienda`) con catálogo físico y enlace directo de GPS a Jr. Callao 482.
+* **Checkout Inteligente (`assets/shop.js`):** Regla comercial de S/ 50 en vivo (recojo sin fricción para compras menores; delivery a domicilio desbloqueado para montos $\ge$ S/ 50).
+* **Multimedia de Marca:** Video de Filosofía en reproducción completa y bucle suave continuo.
+* **Panel de Administración (`perfumes-gestion-da7.html`):** Hash SHA-256 actualizado (`SoaD.2027`) y sincronizado con 66 perfumes en `productos.json`.
+* **Backend Cloudflare:** Worker activo (`dolce7aroma-pedidos-bot`) enlazado a KV `ORDERS` con 0 errores y reportería interactiva (Hitos 1 y 2).
 
 ---
 
-## 2. Matriz de Seguimiento de Tareas y Pendientes
+## 2. Matriz de Seguimiento de Tareas y Entregables
 
-| Código | Tarea / Hallazgo | Área | Prioridad | Estado | Impacto Operativo |
+| Código | Tarea / Entregable | Área | Prioridad | Estado | Impacto Operativo |
 | :--- | :--- | :--- | :---: | :---: | :--- |
-| **AUD-01** | **Riesgo en Admin (`SEED_URL`):** Carga de datos y exportación en Admin. | Backend / Admin | 🔴 Alta | 🟢 Resuelto | `SEED_URL` apunta a `data/productos.json` con fallback. Exportación fijada en `productos.json`. Catálogo sincronizado en 66 perfumes. |
-| **AUD-Local** | **Punto Físico SMP en la Web:** Boutique con pestañas compartidas y Checkout sin fricción. | Frontend / UX | 🔴 Alta | 🟢 Resuelto | Ventana compartida con pestañas (Ver Mapa / Aromas en Tienda), botón Google Maps directo, y para compras < S/ 50 se desactivaron los campos de dirección/referencia y se ocultó la tarjeta de delivery. |
-| **AUD-02** | **Pasarela Culqi:** Integración en código pero inactiva en producción. | Pagos / Checkout | 🟡 Media | 🛑 En pausa | La web muestra "Próximamente" para tarjeta; opera con Yape/Plin y Transferencia. |
-| **AUD-03** | **Seguimiento Automático de Regalos:** Falta Cron Trigger en Cloudflare. | Workers / Cron | 🔵 Baja | 📋 Backlog | Regalos vencen a los 15 días por consulta pasiva; falta aviso automático push al comprador. |
-| **AUD-04** | **Banners de Hero:** `data/anuncios-hero.json` sin campañas registradas. | Marketing / Admin | 🟡 Media | ⏳ Pendiente | Carrusel principal rota solo perfumes destacados; pendiente subir ofertas de temporada. |
-| **AUD-05** | **Propuesta de Rediseño (`propuesta_stitch.html`):** Boceto Tailwind/Garamond. | Frontend / UX | 🔵 Baja | 💡 Evaluación | Evaluación para rediseño editorial futuro o archivo. |
-| **AUD-06** | **Zonas de Envíos:** Tarifa y cobertura en Lima Metropolitana y Provincias. | Logística / Datos | 🟡 Media | ⏳ Pendiente | Configurado recojo gratis en SMP; compras >= S/ 50 tienen delivery habilitado. |
-| **AUD-07** | **Actualización de Sitemap:** Refrescar fechas `lastmod`. | SEO Técnico | 🟢 Baja | ⏳ Pendiente | Actualizar fecha tras mejoras de noviembre en multimedia y catálogo. |
+| **AUD-01** | **Riesgo en Admin (`SEED_URL`):** Carga y exportación desincronizada. | Backend / Admin | 🔴 Alta | 🟢 Desplegado | Resuelto. `SEED_URL` y exportación apuntan a `productos.json` (66 perfumes). |
+| **AUD-Local** | **Punto Físico SMP en la Web:** Boutique con pestañas duales y Checkout sin fricción. | Frontend / UX | 🔴 Alta | 🟢 Desplegado | En vivo en producción. Menos de S/ 50 = recojo en tienda sin datos de dirección innecesarios. |
+| **AUD-Video** | **Video Filosofía en Bucle:** Extracción de límite forzado de 6s. | Multimedia / UX | 🟡 Media | 🟢 Desplegado | Video nuevo de 6.3MB reproduce completo y en bucle continuo. |
+| **AUD-Pass** | **Actualización Credencial Admin:** Clave de acceso administrativa. | Seguridad | 🔴 Alta | 🟢 Desplegado | Hash SHA-256 actualizado en código (`SoaD.2027`). |
+| **AUD-Popup** | **Pop-up Web Punto SMP:** Anuncio interactivo del punto físico y recojo. | Frontend / CRO | 🔴 Alta | 🟢 Desplegado | Activo en producción con retardo de 2.5s, control de frecuencia y enlace a Boutique. |
+| **AUD-Maps** | **Ficha Google Business / Maps:** Registro y posicionamiento local. | Marketing / SEO | 🔴 Alta | ⏳ Siguiente Hito | Alta en Google Maps para búsquedas locales en SMP (Bazar Sport Shirley / Dolce Aroma). |
+| **AUD-Letrero**| **Letrero Desmontable Exterior:** Cartel visual para fachada. | Punto Físico / Venta | 🟡 Media | ⏳ Siguiente Hito | Diseño y especificaciones para letrero colgante desmontable. |
+| **AUD-Sheets**| **Conexión Google Sheets:** Registro automático de pedidos y métricas. | Backend / Datos | 🟡 Media | 📋 Planificado | Webhook del Worker hacia Google Sheets para contabilidad y análisis sin costo. |
+| **AUD-POP** | **Material POP para Mostrador A4:** Lámina 2 caras para pedestal acrílico. | Punto Físico / Venta | 🟡 Media | 📋 Planificado | Carta de aromas + Cartel de cobro con Yape/Plin y gancho de ropa. |
+| **AUD-02** | **Pasarela Culqi:** Pago con tarjeta de crédito/débito. | Pagos / Checkout | 🟡 Media | 🛑 En pausa | La web opera con Yape/Plin y transferencias; pasarela retenida temporalmente. |
+| **AUD-03** | **Vencimiento de Regalos:** Alerta push de caducidad a los 15 días. | Workers / Cron | 🔵 Baja | 📋 Backlog | Regalos vencen pasivamente; falta Cron Trigger para recordatorio proactivo. |
 
 ---
 
@@ -35,31 +41,32 @@ El proyecto **Dolce 7 Aroma** se encuentra desplegado y operativo en producción
 
 ```mermaid
 flowchart TD
-    Fase1["Fase 1: Auditoría Web & Punto SMP<br/>(COMPLETADA EN LOCAL)"] --> Fase2["Fase 2: Material POP Mostrador A4<br/>(Diseño 2 caras mica)"]
-    Fase2 --> Fase3["Fase 3: Letrero Desmontable & Google Maps<br/>(Visibilidad Exterior)"]
-    Fase3 --> Fase4["Fase 4: Pop-up Web & Sinergia Ropa<br/>(Impulso Cruzado)"]
-    Fase4 --> Fase5["Fase 5: Upgrade Admin & Mejoras Worker<br/>(Evolución del Backend)"]
+    Fase1["Fase 1: Auditoría Web & Punto SMP<br/>(🟢 100% EN PRODUCCIÓN)"] --> Fase2["Fase 2: Pop-up Web Punto Físico SMP<br/>(🟢 100% EN PRODUCCIÓN)"]
+    Fase2 --> Fase3["Fase 3: Visibilidad Exterior & Google Maps<br/>(⏳ SIGUIENTE HITO ACTIVO)"]
+    Fase3 --> Fase4["Fase 4: Conexión Google Sheets & Worker<br/>(Automatización de Pedidos y Métricas)"]
+    Fase4 --> Fase5["Fase 5: Material POP Mostrador A4 & Manuales<br/>(Diseño Lámina 2 Caras + Manual Operativo)"]
 ```
 
-### Fase 1: Auditoría Web Inmediata (✅ Completada en Local)
-1. **Sección Boutique con Ventana Compartida (`index.html`):**
-   * Pestaña 1: **Ver Mapa** (iframe de Google Maps enfocado en Jr. Callao 482-A).
-   * Pestaña 2: **Aromas en Tienda** (14 aromas de tus láminas A4: 7 Dama / 7 Caballero con precios y sensaciones olfativas).
-   * Columna izquierda compacta: información de tienda, recojo en 5 a 10 hrs y botón Google Maps directo.
-2. **Checkout Inteligente de Recojo en Tienda (`shop.js`):**
-   * Para pedidos menores a S/ 50.00: se eliminan los campos de dirección y referencia, se oculta la tarjeta de delivery y solo se solicita Nombre y Teléfono.
-   * Para pedidos iguales o mayores a S/ 50.00: se desbloquea el formulario completo con delivery a domicilio.
-3. **SEO Local Estructurado (`Schema.org`):**
-   * Coordenadas exactas y enlace de mapa integrados.
+---
 
-### Fase 2: Material POP Físico para Mostrador (⏳ Próximo Paso)
-* Maquetación para la lámina A4 de doble cara del pedestal acrílico.
+## 4. Detalle de las Siguientes Fases
 
-### Fase 3: Visibilidad Exterior & Google Maps (📋 Planificado)
-* Letrero desmontable y ficha oficial en Google Maps / Business Profile.
+### 📍 Fase 3: Visibilidad Exterior y Google Maps (Próximo Hito a Iniciar)
+1. **Ficha en Google Business Profile / Google Maps:**
+   * Registro del punto físico bajo nombre estratégico (ej. *Dolce Aroma Perfumes — Punto SMP (Bazar Shirley)* o asociarlo a la ubicación comercial).
+   * Categorías clave: Perfumería, Tienda de Regalos, Tienda de Ropa.
+   * Carga de fotos de perfumes, frascos pocket y fachada.
+2. **Letrero Desmontable Exterior:**
+   * Medidas recomendadas y estructura liviana (ganchos o base portátil) que tu prima pueda sacar y entrar fácilmente todos los días.
+   * Contraste visual de alto impacto (logotipo Dolce Aroma en negro/dorado sobre fondo claro, texto visible a distancia).
 
-### Fase 4: Sinergia de Ropa & Pop-up Web (📋 Planificado)
-* Pop-up de inicio y catálogo de prendas del bazar de la prima.
+---
 
-### Fase 5: Upgrade de Panel Admin & Optimizaciones del Worker (📋 Planificado)
-* Interconexión avanzada del Admin y bot interactivo de Telegram.
+### 📊 Fase 4: Conexión Google Sheets & Métricas
+* Webhook en Cloudflare Worker para volcar cada pedido confirmado y métricas del bot en tiempo real en una hoja de Google Sheets.
+
+---
+
+### 🎨 Fase 5: Material POP A4 (Mostrador de Mica) & Manual Operativo
+* Maquetación para impresión de la lámina A4 doble cara (Carta de aromas / Cartel Yape + gancho de probador de 0.5 ml).
+* Actualización final del manual operativo del negocio (`docs/3_MANUAL_OPERATIVO.md`).

@@ -636,6 +636,164 @@
   /* Smoother product hover */
   .cat-card { transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
 
+
+  /* ───────── Pop-up Bienvenida SMP ───────── */
+  .da-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 20, 36, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 250;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    opacity: 0;
+    transition: opacity .25s ease;
+  }
+  .da-popup-overlay.show {
+    opacity: 1;
+  }
+  .da-popup-dialog {
+    position: relative;
+    background: var(--ivory, #f6f2ec);
+    border: 1.5px solid var(--gold, #a8895a);
+    border-radius: 20px;
+    max-width: 480px;
+    width: 100%;
+    padding: 26px 22px 20px;
+    box-shadow: 0 20px 45px rgba(25, 12, 33, 0.28);
+    transform: scale(0.95);
+    transition: transform .25s ease;
+    color: var(--plum, #3c2f47);
+    box-sizing: border-box;
+  }
+  .da-popup-overlay.show .da-popup-dialog {
+    transform: scale(1);
+  }
+  .da-popup-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(60, 47, 71, 0.08);
+    color: var(--plum, #3c2f47);
+    font-size: 20px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .da-popup-close:hover {
+    background: var(--plum, #3c2f47);
+    color: #fff;
+  }
+  .da-popup-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Jost', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold, #a8895a);
+    background: rgba(168, 137, 90, 0.12);
+    padding: 5px 10px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  .da-popup-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--plum, #3c2f47);
+    margin: 0 0 6px 0;
+  }
+  .da-popup-title em {
+    font-style: italic;
+    color: var(--gold, #a8895a);
+  }
+  .da-popup-sub {
+    font-size: 13px;
+    color: var(--plum-700, #5e4d6a);
+    line-height: 1.4;
+    margin: 0 0 16px 0;
+  }
+  .da-popup-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 18px;
+  }
+  .da-popup-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--plum-700, #5e4d6a);
+    background: #fff;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(60, 47, 71, 0.07);
+  }
+  .da-popup-item strong {
+    color: var(--plum, #3c2f47);
+    display: inline-block;
+    margin-right: 4px;
+  }
+  .da-popup-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    line-height: 1.2;
+  }
+  .da-popup-gift {
+    background: var(--lavender-soft, #ede7f6);
+    border-color: rgba(168, 137, 90, 0.25);
+  }
+  .da-popup-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .da-popup-btn {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-family: 'Jost', sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .2s;
+    border: none;
+  }
+  .da-popup-btn-primary {
+    background: var(--plum, #3c2f47);
+    color: var(--ivory, #f6f2ec);
+  }
+  .da-popup-btn-primary:hover {
+    background: #251c2d;
+    color: #fff;
+  }
+  .da-popup-btn-secondary {
+    background: transparent;
+    color: var(--plum-700, #5e4d6a);
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+  .da-popup-btn-secondary:hover {
+    color: var(--plum, #3c2f47);
+  }
+
 </style>
 </head>
 <body>
@@ -1537,6 +1695,128 @@
     <a class="imitem" href="#" data-modal="contacto" data-close-im><div><div class="l">Contacto</div><div class="s">WhatsApp, redes y boutique</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></a>
   </div>
 </div>
+
+
+<!-- POP-UP MODAL: BIENVENIDA PUNTO SMP -->
+<div class="da-popup-overlay" id="da-popup-smp" aria-hidden="true">
+  <div class="da-popup-dialog" role="dialog" aria-modal="true" aria-labelledby="da-popup-title">
+    <button type="button" class="da-popup-close" id="da-popup-close" aria-label="Cerrar aviso">&times;</button>
+    
+    <div class="da-popup-badge">
+      <span>🏬</span> Punto de Venta y Recojo en SMP
+    </div>
+    
+    <h3 id="da-popup-title" class="da-popup-title">
+      ¡Visítanos en persona en <em>Jr. Callao 482-A!</em>
+    </h3>
+    
+    <p class="da-popup-sub">
+      A unas casas de la Av. Perú · Pregunta por <strong>Tienda Bazar Sport Shirley</strong> (al lado del Mercado San Antonio).
+    </p>
+    
+    <div class="da-popup-grid">
+      <div class="da-popup-item">
+        <span class="da-popup-icon">🌸</span>
+        <div>
+          <strong>Prueba en persona:</strong>
+          <span>Huele y conoce nuestros aromas antes de comprar.</span>
+        </div>
+      </div>
+      <div class="da-popup-item">
+        <span class="da-popup-icon">💼</span>
+        <div>
+          <strong>Frascos Pocket 10 ml:</strong>
+          <span>Llévalos al paso a solo <strong style="color:var(--gold,#a8895a)">S/ 20.00</strong>.</span>
+        </div>
+      </div>
+      <div class="da-popup-item">
+        <span class="da-popup-icon">🛍️</span>
+        <div>
+          <strong>Recojo gratis (S/ 0.00):</strong>
+          <span>Haz tu pedido web y recógelo coordinado en 5 a 10 horas hábiles.</span>
+        </div>
+      </div>
+      <div class="da-popup-item da-popup-gift">
+        <span class="da-popup-icon">🎁</span>
+        <div>
+          <strong>Regalo especial:</strong>
+          <span>Por la compra de cualquier prenda en el bazar, ¡reclama tu muestra de 0.5 ml!</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="da-popup-actions">
+      <button type="button" class="da-popup-btn da-popup-btn-primary" id="da-popup-action">
+        🌸 Ver Aromas y Cómo Llegar
+      </button>
+      <button type="button" class="da-popup-btn da-popup-btn-secondary" id="da-popup-dismiss">
+        Continuar viendo la tienda
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // ── Pop-up Bienvenida Punto SMP ──
+  (function(){
+    const overlay = document.getElementById('da-popup-smp');
+    const btnClose = document.getElementById('da-popup-close');
+    const btnDismiss = document.getElementById('da-popup-dismiss');
+    const btnAction = document.getElementById('da-popup-action');
+    if(!overlay) return;
+
+    const STORAGE_KEY = 'da_popup_smp_seen_v1';
+
+    function openPopup(){
+      overlay.style.display = 'flex';
+      requestAnimationFrame(() => overlay.classList.add('show'));
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function closePopup(){
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden', 'true');
+      setTimeout(() => { overlay.style.display = 'none'; }, 250);
+      try {
+        sessionStorage.setItem(STORAGE_KEY, '1');
+      } catch(e){}
+    }
+
+    // Auto-abrir a los 2.5s si no se ha visto en esta sesión
+    try {
+      if(!sessionStorage.getItem(STORAGE_KEY)){
+        setTimeout(openPopup, 2500);
+      }
+    } catch(e){
+      setTimeout(openPopup, 2500);
+    }
+
+    [btnClose, btnDismiss].forEach(btn => {
+      btn?.addEventListener('click', closePopup);
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) closePopup();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && overlay.classList.contains('show')) closePopup();
+    });
+
+    btnAction?.addEventListener('click', () => {
+      closePopup();
+      const secBoutique = document.getElementById('boutique');
+      const btnAromas = document.getElementById('btn-tab-aromas');
+      if(btnAromas) btnAromas.click();
+      if(secBoutique){
+        secBoutique.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    window.daOpenSmpPopup = openPopup;
+  })();
+</script>
 
 </body>
 </html>
