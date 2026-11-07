@@ -746,6 +746,20 @@ async function sendTelegramMessage(chatId, text, env, extra = {}) {
         ...extra
       }),
     });
+    if (!res.ok) {
+      // Reintento en texto plano si Telegram rechaza las etiquetas o entidades HTML
+      const plainText = (text || '').replace(/<[^>]*>/g, '');
+      const retryRes = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: plainText,
+          ...extra
+        }),
+      });
+      return retryRes.ok;
+    }
     return res.ok;
   } catch (e) {
     return false;
@@ -1311,6 +1325,7 @@ async function handleScheduledReports(event, env) {
 }
 
 async function handleTelegramWebhook(request, env) {
+  try {
   const update = await request.json().catch(() => null);
   if (!update) return json({ ok: true });
 
@@ -1331,6 +1346,7 @@ async function handleTelegramWebhook(request, env) {
   const rawText = (msg.text || '').trim();
   const parts = rawText.split(/\s+/);
   const command = parts[0].toLowerCase().split('@')[0];
+  const args = parts.slice(1).map(s => s.toLowerCase());
 
   // 1. Comando /help o /start
   if (command === '/help' || command === '/ayuda' || command === '/start') {
@@ -1564,9 +1580,16 @@ Máximo 320 palabras.`;
   // 6. Mensaje desconocido
   await sendTelegramMessage(chatId, '❓ Comando no reconocido.\nEscribe <b>/help</b> para ver la lista de comandos disponibles.', env);
   return json({ ok: true });
+
+  } catch (err) {
+    console.error('Telegram webhook error:', err);
+    try {
+      const chatId = String(env.TELEGRAM_CHAT_ID || '8616800327');
+      await sendTelegramMessage(chatId, `⚠️ <b>Error en procesamiento:</b> ${err.message}`, env);
+    } catch (_) {}
+    return json({ ok: true });
+  }
 }
-
-
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin');
@@ -1618,6 +1641,38 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/api/mark-gift-paid') {
       return handleMarkGiftPaid(request, env);
+    }
+    if (url.pathname === '/api/debug-telegram') {
+      const token = env.TELEGRAM_BOT_TOKEN;
+      if (!token) return json({ ok: false, error: 'TELEGRAM_BOT_TOKEN no configurado en secretos' });
+      const [webhookRes, meRes] = await Promise.all([
+        fetch(`https://api.telegram.org/bot${token}/getWebhookInfo`),
+        fetch(`https://api.telegram.org/bot${token}/getMe`)
+      ]);
+      const webhookInfo = await webhookRes.json().catch(() => null);
+      const me = await meRes.json().catch(() => null);
+
+      const testChatId = env.TELEGRAM_CHAT_ID || '8616800327';
+      const pingRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: testChatId,
+          text: '🩺 <b>Test de Conexión:</b> Bot reactivado y respondiendo exitosamente en Dolce 7 Aroma.',
+          parse_mode: 'HTML'
+        })
+      });
+      const ping = await pingRes.json().catch(() => null);
+
+      return json({ ok: true, me, webhookInfo, ping });
+    }
+    if (url.pathname === '/api/setup-webhook') {
+      const token = env.TELEGRAM_BOT_TOKEN;
+      if (!token) return json({ ok: false, error: 'TELEGRAM_BOT_TOKEN no configurado en secretos' });
+      const webhookUrl = 'https://dolce7aroma-pedidos-bot.cesarfernandezh7.workers.dev/api/telegram-webhook';
+      const setupRes = await fetch(`https://api.telegram.org/bot${token}/setWebhook?url=${encodeURIComponent(webhookUrl)}&drop_pending_updates=true`);
+      const setupData = await setupRes.json().catch(() => null);
+      return json({ ok: true, setup: setupData, webhookUrl });
     }
     if (url.pathname === '/api/telegram-webhook') {
       if (request.method === 'POST') {
