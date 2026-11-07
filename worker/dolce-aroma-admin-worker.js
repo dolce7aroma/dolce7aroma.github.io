@@ -1439,6 +1439,121 @@ async function handleScheduledReports(event, env) {
   await generateWeeklyReport(chatId, env, `⚡ <b>[DISPARADOR AUTOMÁTICO · TEST]</b> 🌸${campAlert}`);
 }
 
+async function handlePreciosCommand(chatId, args, env) {
+  const query = args.join(' ').trim().toLowerCase();
+
+  // 1. Si no hay query, mostrar lista general de precios y escalas oficiales
+  if (!query) {
+    const generalMsg = `💎 <b>[CATÁLOGO & LISTA DE PRECIOS OFICIALES]</b> 🌸
+<i>Dolce 7 Aroma — Fragancias Contratipo y Árabes Maceradas</i>
+
+📏 <b>PRESENTACIONES Y PRECIOS ESTÁNDAR:</b>
+• <b>Pocket 10 ml:</b> S/ 20.00 — <i>Ideal para llevar siempre contigo o probar nuevos aromas.</i>
+• <b>Frasco 50 ml:</b> S/ 55.00 a S/ 60.00 — <i>Uso diario con fijación de 8 a 12 horas.</i>
+• <b>Frasco 110 ml:</b> S/ 90.00 a S/ 95.00 — <i>Máximo rendimiento y ahorro.</i>
+
+🎁 <b>BENEFICIOS COMERCIALES ACTIVOS:</b>
+• 🚚 <b>Delivery Gratis:</b> Envíos a todo Lima Metropolitana en pedidos seleccionados.
+• 📍 <b>Punto Físico SMP:</b> Jr. Callao 482-A (Bazar Sport Shirley). <i>¡Muestra gratis de 0.5ml con cualquier compra!</i>
+• 💳 <b>Métodos de Pago:</b> Yape, Plin, Transferencia BCP/BBVA y Contraentrega.
+
+🔎 <b>CONSULTA UN PERFUME EN TIEMPO REAL:</b>
+Escribe <code>/precios [nombre o marca]</code>
+<i>Ejemplos:</i>
+• <code>/precios asad</code>
+• <code>/precios bleu</code>
+• <code>/precios yara</code>
+• <code>/precios dior</code>
+• <code>/precios chanel</code>`;
+    await sendTelegramMessage(chatId, generalMsg, env);
+    return;
+  }
+
+  // 2. Consulta en tiempo real al catálogo de productos
+  const catalog = await fetchJSON('https://dolce7aroma.com/data/productos.json')
+               || await fetchJSON('https://dolce7aroma.github.io/data/productos.json');
+
+  const perfumes = catalog?.perfumes || [];
+  if (!perfumes.length) {
+    await sendTelegramMessage(chatId, '⚠️ No se pudo conectar con el catálogo en vivo en este momento.', env);
+    return;
+  }
+
+  const matches = perfumes.filter(p =>
+    (p.name && p.name.toLowerCase().includes(query)) ||
+    (p.inspiration && p.inspiration.toLowerCase().includes(query)) ||
+    (p.family && p.family.toLowerCase().includes(query)) ||
+    (p.sku && p.sku.toLowerCase().includes(query))
+  );
+
+  if (matches.length === 0) {
+    const notFoundMsg = `🔍 <b>[BÚSQUEDA DE PRECIOS]</b>
+No se encontró ningún perfume con "<b>${query}</b>" en el catálogo actual.
+
+💡 <b>Sugerencia:</b>
+• Intenta con una parte del nombre (ej. <code>/precios sauva</code> o <code>/precios bacca</code>).
+• O busca por marca de inspiración (ej. <code>/precios lattafa</code>, <code>/precios carolina</code>).
+• Puedes ver todo el catálogo en: <a href="https://dolce7aroma.com/catalogo.html">dolce7aroma.com/catalogo.html</a>`;
+    await sendTelegramMessage(chatId, notFoundMsg, env);
+    return;
+  }
+
+  // 3. Si hay 1 coincidencia exacta (o solo 1 resultado), mostrar ficha completa con foto
+  if (matches.length === 1) {
+    const p = matches[0];
+    const sizesText = (p.sizes || []).map(s => {
+      const stockBadge = (s.stock > 0) ? `🟢 ${s.stock} disp.` : '🔴 Agotado';
+      return `• <b>${s.ml} ml:</b> S/ ${Number(s.price).toFixed(2)} (${stockBadge})`;
+    }).join('\n');
+
+    const descText = p.description ? `\n<i>"${p.description}"</i>\n` : '';
+    const inspText = p.inspiration ? ` (Insp: <b>${p.inspiration}</b>)` : '';
+    const famText = p.family ? `\n🌿 <b>Familia:</b> ${p.family} · Género: ${p.gender || 'Unisex'}` : '';
+
+    const singleCaption = `🌸 <b>${p.name}</b>${inspText}
+SKU: <code>${p.sku || p.id}</code>${famText}
+${descText}
+💰 <b>PRESENTACIONES & STOCK:</b>
+${sizesText}
+
+🔗 <a href="https://dolce7aroma.com/catalogo.html?q=${encodeURIComponent(p.name)}">Ver en la Web / Comprar</a>`;
+
+    const photoUrl = p.photo ? `https://dolce7aroma.com/${p.photo.replace(/^\/+/, '')}` : null;
+    if (photoUrl) {
+      await sendTelegramPhoto(chatId, photoUrl, singleCaption, env);
+    } else {
+      await sendTelegramMessage(chatId, singleCaption, env);
+    }
+    return;
+  }
+
+  // 4. Si hay múltiples coincidencias (hasta 5)
+  const topMatches = matches.slice(0, 5);
+  const itemsText = topMatches.map((p, idx) => {
+    const insp = p.inspiration ? ` (Insp: ${p.inspiration})` : '';
+    const minPrice = (p.sizes || []).reduce((min, s) => s.price < min ? s.price : min, 999);
+    const maxPrice = (p.sizes || []).reduce((max, s) => s.price > max ? s.price : max, 0);
+    const priceRange = (minPrice === maxPrice || minPrice === 999) 
+      ? `S/ ${Number(maxPrice || 20).toFixed(2)}` 
+      : `S/ ${Number(minPrice).toFixed(2)} - S/ ${Number(maxPrice).toFixed(2)}`;
+    return `${idx + 1}. 🌸 <b>${p.name}</b>${insp}
+   💰 Precios: ${priceRange} (10ml, 50ml, 110ml)
+   🔗 <a href="https://dolce7aroma.com/catalogo.html?q=${encodeURIComponent(p.name)}">Ver Ficha</a>`;
+  }).join('\n\n');
+
+  const moreCount = matches.length - topMatches.length;
+  const moreText = moreCount > 0 ? `\n\n<i>...y ${moreCount} perfumes más coinciden. Sé más específico en tu búsqueda.</i>` : '';
+
+  const multiMsg = `🔍 <b>[RESULTADOS DE BÚSQUEDA (${matches.length})]</b> 🌸
+<i>Coincidencias encontradas para: "<b>${query}</b>"</i>
+
+${itemsText}${moreText}
+
+💡 <i>Escribe el nombre completo de uno de ellos (ej. <code>/precios ${topMatches[0].name.toLowerCase()}</code>) para ver su foto y stock detallado.</i>`;
+
+  await sendTelegramMessage(chatId, multiMsg, env);
+}
+
 async function handleTelegramWebhook(request, env) {
   try {
   const update = await request.json().catch(() => null);
@@ -1481,6 +1596,7 @@ async function handleTelegramWebhook(request, env) {
 • <b>/mes</b> — Reporte mensual estratégico con gráfico de categorías.
 • <b>/probar_cron</b> — Simula los 3 reportes automáticos programados.
 • <b>/seo</b> — Auditoría SEO, palabras clave de alta conversión y fuentes de tráfico.
+• <b>/precios</b> — Consulta de precios, presentaciones y stock en vivo (ej. <code>/precios asad</code>).
 
 ℹ️ <b>AYUDA:</b>
 • <b>/help</b> — Ver este menú de comandos.
@@ -1688,6 +1804,12 @@ Máximo 320 palabras.`;
   // 9. Comando /seo (Auditoría SEO, Palabras Clave y Tráfico Orgánico - Hito 6)
   if (command === '/seo') {
     await generateSeoReport(chatId, env);
+    return json({ ok: true });
+  }
+
+  // 10. Comando /precios o /precio (Catálogo de Precios y Stock en Tiempo Real - Hito 7)
+  if (command === '/precios' || command === '/precio') {
+    await handlePreciosCommand(chatId, args, env);
     return json({ ok: true });
   }
 
