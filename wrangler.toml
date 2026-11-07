@@ -18,4 +18,4 @@ id = "4618ca47d7094c31acf4b3219c25d7ed"
 # desde Cloudflare → Worker → Settings → Variables and Secrets, como "Secreto".
 [vars]
 ORDER_EMAIL_TO = "dolce7aroma@gmail.com"
-TELEGRAM_CHAT_ID = "1237036254"
+TELEGRAM_CHAT_ID = "8616800327"

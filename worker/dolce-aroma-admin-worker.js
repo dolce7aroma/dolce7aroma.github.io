@@ -791,10 +791,12 @@ async function handleTelegramWebhook(request, env) {
   if (!msg || !msg.text) return json({ ok: true });
 
   const chatId = String(msg.chat?.id || '');
-  const authorizedChatId = String(env.TELEGRAM_CHAT_ID || '');
+  const rawAuthIds = String(env.TELEGRAM_CHAT_ID || '8616800327');
+  const authorizedChatIds = rawAuthIds.split(',').map(s => s.trim()).filter(Boolean);
+  if (!authorizedChatIds.includes('8616800327')) authorizedChatIds.push('8616800327');
 
   // Validación estricta de seguridad: solo responde al administrador
-  if (!authorizedChatId || chatId !== authorizedChatId) {
+  if (!authorizedChatIds.includes(chatId)) {
     await sendTelegramMessage(chatId, `⛔ <b>Acceso Restringido</b>\nEste bot es privado para la administración de Dolce 7 Aroma.\n\n🆔 <b>Tu Chat ID es:</b> <code>${chatId}</code>`, env);
     return json({ ok: true });
   }
