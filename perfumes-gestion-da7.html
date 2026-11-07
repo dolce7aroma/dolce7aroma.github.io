@@ -252,7 +252,7 @@
   // Copia el hash resultante y pégalo en ADMIN_PASSWORD_HASH abajo.
   // ⚠️ Esta protección es "client-side": disuade el acceso casual pero un usuario técnico
   //    podría leer el código fuente. Para seguridad real necesitas un backend.
-  const ADMIN_PASSWORD_HASH = 'ceb51dcaf98654194afca2b44f599e6873b20429b9c3df77f2fca278fa6c04a0'; // CÁMBIALA cuando quieras (ver instrucciones abajo)
+  const ADMIN_PASSWORD_HASH = '8a08736ce3e83ecdda3463d53491910b3eb0d7d945b3f6ac0934b005385cfdae'; // CÁMBIALA cuando quieras (ver instrucciones abajo)
   const GATE_KEY = 'da-admin-session-v1';
   // Contraseña en texto plano de la sesión activa, SOLO en memoria (nunca se guarda ni se escribe
   // en el HTML). Es lo que se manda al Worker para autenticar — así, aunque alguien vea el código
@@ -1029,10 +1029,11 @@
 <script>
 /* ─────────────────────────────────────────────
    Dolce Aroma · Admin
-   Datos en localStorage, con seed desde data/perfumes.json
+   Datos en localStorage, con seed desde data/productos.json
    ───────────────────────────────────────────── */
 const STORAGE_KEY = 'dolce-aroma-perfumes-v1';
-const SEED_URL = 'data/perfumes.json';
+const SEED_URL = 'data/productos.json';
+const SEED_FALLBACK_URL = 'data/perfumes.json';
 // URL del Worker que publica fotos/catálogo directo al repo (ver worker/dolce-aroma-admin-worker.js).
 // Déjalo vacío ('') mientras no esté desplegado: el Admin sigue funcionando en modo local/manual.
 const API_BASE = 'https://dolce7aroma-github-io.cesarfernandezh7.workers.dev';
@@ -1142,9 +1143,10 @@ async function load(){
       await preloadPhotos(); 
       return; 
     }
-    const res = await fetch(SEED_URL);
+    let res = await fetch(SEED_URL);
+    if(!res.ok) res = await fetch(SEED_FALLBACK_URL);
     const data = await res.json();
-    state.perfumes = data.perfumes;
+    state.perfumes = data.perfumes || data.productos || [];
     await save();
   }catch(e){
     console.warn('seed failed', e);
@@ -1892,7 +1894,7 @@ function exportJson(){
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'perfumes.json';
+  a.download = 'productos.json';
   a.click();
   URL.revokeObjectURL(a.href);
   toast('JSON exportado');

@@ -828,13 +828,15 @@
     document.getElementById('da-keep-shopping')?.addEventListener('click', closeCart);
   }
 
-  // ─── Paso 2: formulario de datos de entrega ───
+    // ─── Paso 2: formulario de datos de entrega ───
   function renderCheckoutForm(list, foot){
     const offers = computeOffers();
+    const isUnder50 = offers.total < 50;
+
     list.innerHTML = `
       <div class="da-checkout-head">
         <button class="da-back" type="button" id="da-form-back">← Volver a la bolsa</button>
-        <h4>Tus datos de entrega</h4>
+        <h4>${isUnder50 ? 'Datos para recojo en tienda' : 'Tus datos de entrega'}</h4>
       </div>
       <form id="da-order-form" class="da-order-form" novalidate>
         <label>Nombre completo
@@ -843,23 +845,44 @@
         <label>Teléfono / WhatsApp
           <input type="tel" id="of-telefono" required inputmode="numeric" value="${escapeHtml(orderForm.telefono)}" placeholder="Ej. 987654321"/>
         </label>
-        <label>Provincia / Departamento
-          <select id="of-provincia" required></select>
-        </label>
-        <label class="da-distrito-field">Distrito
-          <select id="of-distrito" required></select>
-        </label>
-        <label>Dirección
-          <input type="text" id="of-direccion" required value="${escapeHtml(orderForm.direccion)}" placeholder="Calle, número, referencia de edificio"/>
-        </label>
-        <label>Referencia (opcional)
-          <input type="text" id="of-referencia" value="${escapeHtml(orderForm.referencia)}" placeholder="Ej. cerca al parque, casa azul"/>
-        </label>
-        <div class="da-zonas-info" id="da-zonas-info"></div>
-        <button type="submit" class="da-btn da-btn-primary" style="width:100%" id="da-form-submit">Continuar</button>
+        ${isUnder50 ? `
+          <div style="background:#f6f2ec;border:1.5px solid #a8895a;border-radius:12px;padding:14px;margin:12px 0 14px;font-size:13px;color:#3c2f47">
+            <div style="font-weight:600;font-size:13px;color:#3c2f47;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+              <span>🏬</span> Punto de Recojo en Tienda
+            </div>
+            <div style="line-height:1.45;color:#5e4d6a">
+              <strong>Tienda Bazar Sport Shirley</strong><br/>
+              Jr. Callao 482-A, San Martín de Porres<br/>
+              <span style="font-size:11.5px;color:#7b757d">(A unas casas de la Av. Perú · al lado del Mercado San Antonio)</span>
+            </div>
+            <div style="margin-top:8px;font-size:12px;color:#a8895a;font-weight:600">
+              Costo de entrega: S/ 0.00 (GRATIS)
+            </div>
+          </div>
+          <div style="font-size:12px;color:#7b757d;line-height:1.4;margin-bottom:14px">
+            💡 <em>Nota: Para compras menores a S/ 50.00 la entrega es exclusivamente mediante recojo en tienda SMP. Si deseas delivery a tu domicilio, el pedido debe ser igual o mayor a S/ 50.00.</em>
+          </div>
+        ` : `
+          <label>Provincia / Departamento
+            <select id="of-provincia" required></select>
+          </label>
+          <label class="da-distrito-field">Distrito
+            <select id="of-distrito" required></select>
+          </label>
+          <label>Dirección
+            <input type="text" id="of-direccion" required value="${escapeHtml(orderForm.direccion)}" placeholder="Calle, número, referencia de edificio"/>
+          </label>
+          <label>Referencia (opcional)
+            <input type="text" id="of-referencia" value="${escapeHtml(orderForm.referencia)}" placeholder="Ej. cerca al parque, casa azul"/>
+          </label>
+          <div class="da-zonas-info" id="da-zonas-info"></div>
+        `}
+        <button type="submit" class="da-btn da-btn-primary" style="width:100%" id="da-form-submit">${isUnder50 ? 'Confirmar Recojo en Tienda' : 'Continuar'}</button>
       </form>
     `;
-    renderZonasInfo(orderForm.distrito);
+    if(!isUnder50){
+      renderZonasInfo(orderForm.distrito);
+    }
     const missedOfferHtml = renderMissedOfferHint(offers);
     foot.innerHTML = `
       <div class="da-totals">
@@ -875,43 +898,47 @@
       checkoutStep = 'cart';
       renderCart();
     });
-    ['nombre','direccion','referencia'].forEach(f=>{
-      document.getElementById('of-'+f).addEventListener('input', e=>{ orderForm[f] = e.target.value; });
-    });
-    document.getElementById('of-telefono').addEventListener('input', e=>{
-      // Últimos 9 dígitos: si pegan un número con +51 u otro prefijo, igual queda el celular correcto.
+    document.getElementById('of-nombre')?.addEventListener('input', e=>{ orderForm.nombre = e.target.value; });
+    document.getElementById('of-telefono')?.addEventListener('input', e=>{
       const digits = e.target.value.replace(/\D/g,'').slice(-9);
       e.target.value = digits;
       orderForm.telefono = digits;
     });
-    function updateDistritos(selProv, selDist, objForm) {
-      const prov = selProv.value;
-      objForm.provincia = prov;
-      if (prov === 'Lima' || prov === 'Callao') {
-        selDist.innerHTML = '<option value="">Selecciona un distrito...</option>' + 
-          (typeof LIMA_DISTRITOS !== 'undefined' ? LIMA_DISTRITOS : []).map(d => `<option value="${escapeHtml(d)}" ${objForm.distrito === d ? 'selected' : ''}>${escapeHtml(d)}</option>`).join('');
-        selDist.disabled = false;
-      } else {
-        selDist.innerHTML = '<option value="-">- (No aplica)</option>';
-        selDist.disabled = true;
-        objForm.distrito = '-';
-      }
-      renderZonasInfo(objForm.distrito, objForm.provincia);
-      
-      const totEl = document.getElementById('da-total-calc');
-      if(totEl) totEl.innerText = `S/ ${offers.total}`;
-    }
 
-    const selProv = document.getElementById('of-provincia');
-    const selDist = document.getElementById('of-distrito');
-    selProv.innerHTML = (zonas.provincias||[]).map(p => `<option value="${escapeHtml(p)}" ${orderForm.provincia === p ? 'selected' : ''}>${escapeHtml(p)}</option>`).join('');
-    
-    selProv.addEventListener('change', () => updateDistritos(selProv, selDist, orderForm));
-    selDist.addEventListener('change', (e) => {
-      orderForm.distrito = e.target.value;
-      updateDistritos(selProv, selDist, orderForm);
-    });
-    updateDistritos(selProv, selDist, orderForm); // init
+    if(!isUnder50){
+      ['direccion','referencia'].forEach(f=>{
+        document.getElementById('of-'+f)?.addEventListener('input', e=>{ orderForm[f] = e.target.value; });
+      });
+      function updateDistritos(selProv, selDist, objForm) {
+        const prov = selProv.value;
+        objForm.provincia = prov;
+        if (prov === 'Lima' || prov === 'Callao') {
+          selDist.innerHTML = '<option value="">Selecciona un distrito...</option>' + 
+            (typeof LIMA_DISTRITOS !== 'undefined' ? LIMA_DISTRITOS : []).map(d => `<option value="${escapeHtml(d)}" ${objForm.distrito === d ? 'selected' : ''}>${escapeHtml(d)}</option>`).join('');
+          selDist.disabled = false;
+        } else {
+          selDist.innerHTML = '<option value="-">- (No aplica)</option>';
+          selDist.disabled = true;
+          objForm.distrito = '-';
+        }
+        renderZonasInfo(objForm.distrito, objForm.provincia);
+        
+        const totEl = document.getElementById('da-total-calc');
+        if(totEl) totEl.innerText = `S/ ${offers.total}`;
+      }
+
+      const selProv = document.getElementById('of-provincia');
+      const selDist = document.getElementById('of-distrito');
+      if(selProv && selDist){
+        selProv.innerHTML = (zonas.provincias||[]).map(p => `<option value="${escapeHtml(p)}" ${orderForm.provincia === p ? 'selected' : ''}>${escapeHtml(p)}</option>`).join('');
+        selProv.addEventListener('change', () => updateDistritos(selProv, selDist, orderForm));
+        selDist.addEventListener('change', (e) => {
+          orderForm.distrito = e.target.value;
+          updateDistritos(selProv, selDist, orderForm);
+        });
+        updateDistritos(selProv, selDist, orderForm);
+      }
+    }
     document.getElementById('da-order-form').addEventListener('submit', onSubmitOrderForm);
   }
 
@@ -980,16 +1007,30 @@
     e.preventDefault();
     const nombre = document.getElementById('of-nombre').value.trim();
     const telefono = document.getElementById('of-telefono').value.trim();
-    const provincia = document.getElementById('of-provincia').value;
-    const distrito = document.getElementById('of-distrito').value.trim();
-    const direccion = document.getElementById('of-direccion').value.trim();
-    const referencia = document.getElementById('of-referencia').value.trim();
-    if(!nombre || !telefono || !provincia || !distrito || !direccion){
-      showToast('Completa los campos obligatorios');
-      return;
+    const offers = computeOffers();
+    const isUnder50 = offers.total < 50;
+
+    let provincia, distrito, direccion, referencia;
+    if(isUnder50){
+      if(!nombre || !telefono){
+        showToast('Completa tu nombre y teléfono para coordinar el recojo');
+        return;
+      }
+      provincia = 'Lima';
+      distrito = 'San Martín de Porres';
+      direccion = 'Recojo en Tienda SMP (Jr. Callao 482-A · Bazar Shirley)';
+      referencia = 'Recojo en Tienda';
+    } else {
+      provincia = document.getElementById('of-provincia').value;
+      distrito = document.getElementById('of-distrito').value.trim();
+      direccion = document.getElementById('of-direccion').value.trim();
+      referencia = document.getElementById('of-referencia').value.trim();
+      if(!nombre || !telefono || !provincia || !distrito || !direccion){
+        showToast('Completa los campos obligatorios');
+        return;
+      }
     }
     orderForm = { provincia, nombre, telefono, distrito, direccion, referencia };
-    const offers = computeOffers();
     const envio = 0;
     const totalFinal = offers.total;
     const items = cart.map(it=>{

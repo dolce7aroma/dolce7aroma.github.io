@@ -1,1590 +1,284 @@
 {
   "schema": {
-    "version": 1,
-    "description": "Catálogo Dolce Aroma — 65 perfumes",
-    "updated_at": "2026-05-14"
+    "version": 1
   },
   "perfumes": [
     {
-      "id": "p-001",
-      "sku": "DA-CH-212VIP",
-      "name": "212 VIP",
-      "inspiration": "Carolina Herrera",
-      "gender": "mujer",
-      "family": "floral",
-      "notes_top": [
-        "ron",
-        "mandarina",
-        "gardenia"
-      ],
-      "notes_heart": [
-        "champán rosa",
-        "musk"
-      ],
-      "notes_base": [
-        "habano",
-        "vainilla",
-        "leche"
-      ],
-      "description": "Una fiesta nocturna embotellada: champán rosa y vainilla cremosa con un guiño a la gardenia. Glamour metropolitano.",
-      "photo": "assets/perfumes/212 Vip.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "mas-vendido",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-002",
-      "sku": "DA-ARM-ADGW",
-      "name": "Acqua di Gio Woman",
-      "inspiration": "Giorgio Armani",
-      "gender": "mujer",
-      "family": "floral",
-      "notes_top": [
-        "limón",
-        "piña",
-        "mandarina"
-      ],
-      "notes_heart": [
-        "jacinto",
-        "rosa",
-        "jazmín"
-      ],
-      "notes_base": [
-        "cedro",
-        "almizcle",
-        "ámbar"
-      ],
-      "description": "Brisa marina con flores blancas. Frescura mediterránea limpia y atemporal.",
-      "photo": "assets/perfumes/Acqua di Gio Woman.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "oficina"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-003",
-      "sku": "DA-LAT-AMET",
-      "name": "Amethyst",
-      "inspiration": "Lattafa",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "frambuesa",
-        "pera",
-        "casis"
-      ],
-      "notes_heart": [
-        "rosa",
-        "peonía",
-        "violeta"
-      ],
-      "notes_base": [
-        "ámbar",
-        "almizcle",
-        "pachulí"
-      ],
-      "description": "Frutos rojos jugosos sobre fondo ambarino. Dulce, joven y persistente.",
-      "photo": "assets/perfumes/Amethyst.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "nuevo",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-004",
-      "sku": "DA-MFK-BR540",
-      "name": "Baccarat Rouge 540",
-      "inspiration": "Maison Francis Kurkdjian",
-      "gender": "unisex",
+      "id": "p-sfyvxc",
+      "sku": "DA-CH-BL",
+      "name": "Bleu",
+      "inspiration": "CHANEL",
+      "gender": "hombre",
       "family": "amaderado",
       "notes_top": [
-        "azafrán",
-        "jazmín"
+        "Toronja (pomelo)",
+        "limón",
+        "menta",
+        "pimienta rosa y bergamota."
       ],
       "notes_heart": [
-        "ámbar gris",
-        "madera de cedro"
+        "Jengibre",
+        "nuez moscada",
+        "jazmín e Iso E Super."
       ],
       "notes_base": [
-        "abeto",
-        "almizcle"
-      ],
-      "description": "El icónico ámbar luminoso con jazmín y azafrán. Estela inolvidable.",
-      "photo": "assets/perfumes/Baccarat Rouge 540.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "mas-vendido",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-005",
-      "sku": "DA-DKNY-BED",
-      "name": "Be Delicious",
-      "inspiration": "DKNY",
-      "gender": "mujer",
-      "family": "frutal",
-      "notes_top": [
-        "manzana verde",
-        "pepino",
-        "magnolia"
-      ],
-      "notes_heart": [
-        "rosa",
-        "violeta",
-        "lirio"
-      ],
-      "notes_base": [
-        "ámbar",
+        "Incienso",
+        "cedro",
+        "vetiver",
         "sándalo",
-        "almizcle"
-      ],
-      "description": "Manzana verde fresca con flores blancas. Optimista, crujiente, urbana.",
-      "photo": "assets/perfumes/Be Delicious.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "oficina"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-006",
-      "sku": "DA-YSL-BOOR",
-      "name": "Black Opium Over Red",
-      "inspiration": "Yves Saint Laurent",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "cereza",
-        "almendra amarga"
-      ],
-      "notes_heart": [
-        "jazmín sambac",
-        "café"
-      ],
-      "notes_base": [
-        "vainilla",
-        "pachulí"
-      ],
-      "description": "Cereza glaseada y café sobre la firma vainilla-pachulí. Adictivo y atrevido.",
-      "photo": "assets/perfumes/Black Opium Over Red.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "nuevo",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-007",
-      "sku": "DA-PH-CANCAN",
-      "name": "Can Can",
-      "inspiration": "Paris Hilton",
-      "gender": "mujer",
-      "family": "floral",
-      "notes_top": [
-        "mandarina",
-        "durazno",
-        "casis"
-      ],
-      "notes_heart": [
-        "tuberosa",
-        "jazmín",
-        "peonía"
-      ],
-      "notes_base": [
-        "ámbar",
-        "almizcle",
-        "sándalo"
-      ],
-      "description": "Floral coqueto con frutas dulces. Femenino, ligero y vibrante.",
-      "photo": "assets/perfumes/Can Can.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "noche"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-008",
-      "sku": "DA-RAL-CEL",
-      "name": "Celeste",
-      "inspiration": "Ralph",
-      "gender": "mujer",
-      "family": "floral",
-      "notes_top": [
-        "mandarina",
-        "pera",
-        "magnolia"
-      ],
-      "notes_heart": [
-        "peonía",
-        "lirio",
-        "jazmín"
-      ],
-      "notes_base": [
-        "almizcle",
-        "sándalo"
-      ],
-      "description": "Floral sereno y luminoso. Elegancia discreta de uso diario.",
-      "photo": "assets/perfumes/Celeste.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "sutil",
-      "occasion": [
-        "diario",
-        "oficina"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-009",
-      "sku": "DA-AG-CLOUD",
-      "name": "Cloud",
-      "inspiration": "Ariana Grande",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "pera",
-        "bergamota",
-        "lavanda"
-      ],
-      "notes_heart": [
-        "coco",
-        "praliné",
-        "orquídea"
-      ],
-      "notes_base": [
-        "almizcle",
-        "palo de cachemira"
-      ],
-      "description": "Praliné cremoso y coco con un toque lavanda. Suave, esponjoso, abrazante.",
-      "photo": "assets/perfumes/Cloud.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "mas-vendido",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "noche"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-010",
-      "sku": "DA-CK-ESCAPE",
-      "name": "Escape",
-      "inspiration": "Calvin Klein",
-      "gender": "mujer",
-      "family": "chipre",
-      "notes_top": [
-        "manzana",
-        "mandarina",
-        "lichi"
-      ],
-      "notes_heart": [
-        "durazno",
-        "rosa",
-        "jazmín"
-      ],
-      "notes_base": [
-        "sándalo",
-        "vainilla",
-        "almizcle"
-      ],
-      "description": "Frutal-floral fresco con fondo amaderado suave. Clásico noventero, ligero y elegante.",
-      "photo": "assets/perfumes/Escape.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "oficina"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-011",
-      "sku": "DA-VAL-EDD",
-      "name": "Extradose Donna",
-      "inspiration": "Valentino",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "bergamota",
-        "lichi"
-      ],
-      "notes_heart": [
-        "rosa búlgara",
-        "vainilla bourbon"
-      ],
-      "notes_base": [
         "pachulí",
-        "ámbar"
+        "ládano y almizcle blanco."
       ],
-      "description": "La versión más intensa de Born in Roma. Rosa rebelde con vainilla densa.",
-      "photo": "assets/perfumes/Extradose Donna.jpg",
+      "description": "Un aroma que irradia libertad, audaz y atemporal. Una fragancia amaderada y aromática con un carácter fuerte y moderno, para el hombre que no sigue las reglas.",
+      "photo": "assets/perfumes/Bleu.jpg",
       "sizes": [
         {
           "ml": 110,
           "price": 90,
-          "stock": 2
+          "stock": 5
         },
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 5
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 5
         }
       ],
-      "tag": "nuevo",
+      "tag": "",
       "intensity": "intensa",
       "occasion": [
         "noche",
-        "especial"
+        "oficina",
+        "fiesta",
+        "cita",
+        "verano"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-25",
+      "frascoPremium": {
+        "disponible": false,
+        "precio": 0
+      }
     },
     {
-      "id": "p-012",
-      "sku": "DA-PR-FAME",
-      "name": "Fame",
+      "id": "p-o6knri",
+      "sku": "DA-PR-INV-COPY",
+      "name": "Invictus PREMIUM",
       "inspiration": "Paco Rabanne",
-      "gender": "mujer",
-      "family": "floral",
-      "notes_top": [
-        "mango",
-        "pimienta rosa",
-        "bergamota"
-      ],
-      "notes_heart": [
-        "jazmín sambac",
-        "incienso"
-      ],
-      "notes_base": [
-        "sándalo",
-        "almizcle"
-      ],
-      "description": "Mango exótico con jazmín especiado. Moderno, sensual y luminoso.",
-      "photo": "assets/perfumes/Fame.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "noche"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-013",
-      "sku": "DA-BR-FAN",
-      "name": "Fantasy",
-      "inspiration": "Britney Spears",
-      "gender": "mujer",
-      "family": "frutal",
-      "notes_top": [
-        "lichi",
-        "kiwi dorado",
-        "manzana cupcake"
-      ],
-      "notes_heart": [
-        "jazmín",
-        "orquídea blanca"
-      ],
-      "notes_base": [
-        "almizcle",
-        "dulce de chocolate"
-      ],
-      "description": "Lichi con cupcake y orquídea. Gourmand juguetón y dulce.",
-      "photo": "assets/perfumes/Fantasy.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "noche"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-014",
-      "sku": "DA-PH-FORW",
-      "name": "For Women",
-      "inspiration": "Paris Hilton",
-      "gender": "mujer",
-      "family": "floral",
-      "notes_top": [
-        "manzana",
-        "melón",
-        "durazno"
-      ],
-      "notes_heart": [
-        "rosa",
-        "jazmín",
-        "mimosa"
-      ],
-      "notes_base": [
-        "sándalo",
-        "almizcle",
-        "vainilla"
-      ],
-      "description": "Frutal-floral suave con cierre vainilla. Femenino versátil para cualquier día.",
-      "photo": "assets/perfumes/For Women.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "sutil",
-      "occasion": [
-        "diario",
-        "oficina"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-015",
-      "sku": "DA-CH-GGS",
-      "name": "Good Girl Supreme",
-      "inspiration": "Carolina Herrera",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "bergamota",
-        "mandarina",
-        "durazno"
-      ],
-      "notes_heart": [
-        "jazmín sambac",
-        "nardo"
-      ],
-      "notes_base": [
-        "cacao",
-        "vainilla",
-        "haba tonka"
-      ],
-      "description": "Versión más golosa de Good Girl: cacao y haba tonka envolventes. Dulce y elegante.",
-      "photo": "assets/perfumes/Good Girl Supreme.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-016",
-      "sku": "DA-CH-GG",
-      "name": "Good Girl",
-      "inspiration": "Carolina Herrera",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "almendra",
-        "café",
-        "bergamota"
-      ],
-      "notes_heart": [
-        "jazmín",
-        "nardo",
-        "rosa"
-      ],
-      "notes_base": [
-        "haba tonka",
-        "cacao",
-        "vainilla"
-      ],
-      "description": "El icónico stiletto: almendra y café con corazón floral blanco. Magnético.",
-      "photo": "assets/perfumes/Good Girl.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "mas-vendido",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-017",
-      "sku": "DA-PH-HEI",
-      "name": "Heiress",
-      "inspiration": "Paris Hilton",
-      "gender": "mujer",
-      "family": "floral",
-      "notes_top": [
-        "naranja",
-        "champán",
-        "durazno"
-      ],
-      "notes_heart": [
-        "tomate dulce",
-        "magnolia",
-        "jazmín"
-      ],
-      "notes_base": [
-        "sándalo",
-        "almizcle"
-      ],
-      "description": "Cítricos efervescentes con flores blancas. Lujo casual y solar.",
-      "photo": "assets/perfumes/Heiress.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "noche"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-018",
-      "sku": "DA-LAT-HC",
-      "name": "Her Confession",
-      "inspiration": "Lattafa",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "frambuesa",
-        "durazno",
-        "azafrán"
-      ],
-      "notes_heart": [
-        "jazmín",
-        "rosa damascena"
-      ],
-      "notes_base": [
-        "ámbar",
-        "oud",
-        "almizcle"
-      ],
-      "description": "Frutos rojos con oud envolvente. Sensual, intenso y misterioso.",
-      "photo": "assets/perfumes/Her Confession.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "nuevo",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-019",
-      "sku": "DA-DIO-JAD",
-      "name": "J'adore",
-      "inspiration": "Dior",
-      "gender": "mujer",
-      "family": "floral",
-      "notes_top": [
-        "pera",
-        "melón",
-        "mandarina"
-      ],
-      "notes_heart": [
-        "jazmín sambac",
-        "rosa",
-        "ylang ylang"
-      ],
-      "notes_base": [
-        "almizcle",
-        "vainilla",
-        "cedro"
-      ],
-      "description": "Ramo dorado de flores blancas. La feminidad clásica de Dior.",
-      "photo": "assets/perfumes/Jadore.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "mas-vendido",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "especial"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-020",
-      "sku": "DA-LAN-LVEB",
-      "name": "La Vie Est Belle",
-      "inspiration": "Lancôme",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "casis",
-        "pera"
-      ],
-      "notes_heart": [
-        "iris",
-        "jazmín",
-        "azahar"
-      ],
-      "notes_base": [
-        "praliné",
-        "vainilla",
-        "haba tonka"
-      ],
-      "description": "Iris con praliné dulce. La felicidad gourmand hecha perfume.",
-      "photo": "assets/perfumes/La vie est belle.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "mas-vendido",
-      "intensity": "intensa",
-      "occasion": [
-        "diario",
-        "noche"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-021",
-      "sku": "DA-PR-LM",
-      "name": "Lady Million",
-      "inspiration": "Paco Rabanne",
-      "gender": "mujer",
-      "family": "floral",
-      "notes_top": [
-        "neroli",
-        "frambuesa",
-        "limón"
-      ],
-      "notes_heart": [
-        "jazmín",
-        "azahar"
-      ],
-      "notes_base": [
-        "pachulí",
-        "miel"
-      ],
-      "description": "Floral chispeante con un toque dulce de miel. Glam diario.",
-      "photo": "assets/perfumes/Lady_Million.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "noche"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-022",
-      "sku": "DA-DG-LBW",
-      "name": "Light Blue Woman",
-      "inspiration": "Dolce & Gabbana",
-      "gender": "mujer",
+      "gender": "hombre",
       "family": "citrico",
       "notes_top": [
-        "limón siciliano",
-        "manzana",
-        "campanilla"
-      ],
-      "notes_heart": [
-        "bambú",
-        "jazmín",
-        "rosa"
-      ],
-      "notes_base": [
-        "cedro",
-        "ámbar",
-        "almizcle"
-      ],
-      "description": "Mediterráneo en frasco: limón siciliano y manzana sobre cedro. Fresca y solar.",
-      "photo": "assets/perfumes/Light Blue Woman.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "mas-vendido",
-      "intensity": "sutil",
-      "occasion": [
-        "diario",
-        "oficina"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-023",
-      "sku": "DA-DIO-MD",
-      "name": "Miss Dior",
-      "inspiration": "Dior",
-      "gender": "mujer",
-      "family": "floral",
-      "notes_top": [
+        "pomelo",
         "mandarina",
-        "bergamota"
-      ],
-      "notes_heart": [
-        "rosa de mayo",
-        "peonía"
-      ],
-      "notes_base": [
-        "pachulí",
-        "almizcle"
-      ],
-      "description": "Rosa luminosa con pachulí limpio. Romántico, juvenil y refinado.",
-      "photo": "assets/perfumes/Miss_Dior.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "noche"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-024",
-      "sku": "DA-ARM-MYW",
-      "name": "My Way",
-      "inspiration": "Giorgio Armani",
-      "gender": "mujer",
-      "family": "floral",
-      "notes_top": [
-        "bergamota",
-        "azahar"
-      ],
-      "notes_heart": [
-        "tuberosa",
-        "jazmín indio"
-      ],
-      "notes_base": [
-        "vainilla blanca",
-        "cedro",
-        "almizcle"
-      ],
-      "description": "Azahar y tuberosa con vainilla cálida. Moderno y luminoso.",
-      "photo": "assets/perfumes/My_Way.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "especial"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-025",
-      "sku": "DA-DIO-POI",
-      "name": "Poison Girl",
-      "inspiration": "Dior",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "naranja sanguina",
-        "limón siciliano"
-      ],
-      "notes_heart": [
-        "rosa de mayo",
-        "rosa de granse"
-      ],
-      "notes_base": [
-        "haba tonka",
-        "almendra",
-        "vainilla"
-      ],
-      "description": "Rosa traviesa con almendra amarga y haba tonka. Cremoso y travieso.",
-      "photo": "assets/perfumes/Poison Girl.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-026",
-      "sku": "DA-JPG-SCW",
-      "name": "Scandal Woman",
-      "inspiration": "Jean Paul Gaultier",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "mandarina",
-        "naranja sanguina"
-      ],
-      "notes_heart": [
-        "gardenia",
-        "miel"
-      ],
-      "notes_base": [
-        "caramelo",
-        "pachulí",
-        "ámbar"
-      ],
-      "description": "Miel y caramelo con gardenia. Dulce, traviesa, inconfundible.",
-      "photo": "assets/perfumes/Scandal Woman.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-027",
-      "sku": "DA-AG-SLC",
-      "name": "Sweet Like Candy",
-      "inspiration": "Ariana Grande",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "pera",
-        "frutos del bosque"
-      ],
-      "notes_heart": [
-        "crema batida",
-        "rosa",
-        "jazmín"
-      ],
-      "notes_base": [
-        "caramelo",
-        "almizcle",
-        "madera"
-      ],
-      "description": "Crema batida con caramelo y frutos rojos. Postre embotellado.",
-      "photo": "assets/perfumes/Sweet Like Candy.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "moderada",
-      "occasion": [
-        "diario",
-        "noche"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-028",
-      "sku": "DA-LAT-YE",
-      "name": "Yara Elixir",
-      "inspiration": "Lattafa",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "frambuesa",
-        "durazno",
-        "mandarina"
+        "laurel"
       ],
       "notes_heart": [
         "jazmín",
-        "rosa",
-        "haba tonka"
+        "guayaba"
       ],
       "notes_base": [
-        "oud",
-        "vainilla",
-        "almizcle"
-      ],
-      "description": "Versión intensa de Yara con frutas rojas y oud cálido. Densa y duradera.",
-      "photo": "assets/perfumes/Yara Elixir.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "nuevo",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-029",
-      "sku": "DA-LAT-YARA",
-      "name": "Yara",
-      "inspiration": "Lattafa",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "orquídea",
-        "mandarina"
-      ],
-      "notes_heart": [
-        "jazmín",
-        "ámbar"
-      ],
-      "notes_base": [
-        "vainilla",
+        "ámbar",
         "almizcle",
-        "sándalo"
+        "madera de roble"
       ],
-      "description": "Ámbar dulce con jazmín y vainilla. El éxito viral del Medio Oriente.",
-      "photo": "assets/perfumes/Yara.jpg",
+      "description": "El triunfo en estado puro.\nVenta con su frasco original sin marcas.",
+      "photo": "assets/perfumes/Invictus Perfum D7A.jpg",
       "sizes": [
         {
           "ml": 110,
           "price": 90,
-          "stock": 2
+          "stock": 0
         },
         {
           "ml": 50,
-          "price": 55,
-          "stock": 10
+          "price": 65,
+          "stock": 0
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 0
         }
       ],
-      "tag": "mas-vendido",
-      "intensity": "intensa",
+      "tag": "edicion-limitada",
+      "intensity": "moderada",
       "occasion": [
-        "diario",
-        "noche"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-030",
-      "sku": "DA-KAY-YBM",
-      "name": "Yum Boujee Marshmallow",
-      "inspiration": "Kayali",
-      "gender": "mujer",
-      "family": "oriental",
-      "notes_top": [
-        "merengue",
-        "mandarina"
-      ],
-      "notes_heart": [
-        "malvavisco",
-        "vainilla"
-      ],
-      "notes_base": [
-        "ámbar",
-        "almizcle blanco"
-      ],
-      "description": "Malvavisco tostado con vainilla aireada. Cremoso, esponjoso y muy adictivo.",
-      "photo": "assets/perfumes/Yum Boujee Marshmallow.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "nuevo",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
+        "diario"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26",
+      "frascoPremium": {
+        "disponible": false,
+        "precio": 0
+      }
     },
     {
-      "id": "p-031",
-      "sku": "DA-AFN-9PME",
-      "name": "9 PM Elixir",
-      "inspiration": "Afnan",
-      "gender": "hombre",
-      "family": "oriental",
-      "notes_top": [
-        "pimienta rosa",
-        "cardamomo"
-      ],
-      "notes_heart": [
-        "oud",
-        "jazmín"
-      ],
-      "notes_base": [
-        "ámbar",
-        "vainilla",
-        "sándalo"
-      ],
-      "description": "Versión intensa de 9 PM: oud y vainilla densos. Para la noche.",
-      "photo": "assets/perfumes/9 PM Elixir.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": false,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-032",
+      "id": "p-da-afn-9pm-msz",
       "sku": "DA-AFN-9PM",
       "name": "9 PM",
       "inspiration": "Afnan",
       "gender": "hombre",
       "family": "oriental",
       "notes_top": [
-        "manzana",
-        "lavanda",
-        "bergamota"
+        "cardamomo",
+        "pimienta negra"
       ],
       "notes_heart": [
-        "vainilla",
-        "canela"
+        "rosa",
+        "geranio"
       ],
       "notes_base": [
         "ámbar",
-        "sándalo",
-        "almizcle"
+        "almizcle",
+        "madera"
       ],
-      "description": "Vainilla especiada con manzana y canela. Cálido, dulce y elegante.",
+      "description": "Oscura y seductora para la noche.",
       "photo": "assets/perfumes/9 PM.jpg",
       "sizes": [
         {
           "ml": 110,
           "price": 90,
-          "stock": 2
+          "stock": 0
         },
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 1
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 0
         }
       ],
-      "tag": "mas-vendido",
+      "tag": "",
+      "intensity": "intensa",
+      "occasion": [
+        "noche",
+        "cita"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-afn-9pme-wes",
+      "sku": "DA-AFN-9PME",
+      "name": "9 PM Elixir",
+      "inspiration": "Afnan",
+      "gender": "hombre",
+      "family": "oriental",
+      "notes_top": [
+        "cardamomo",
+        "azafrán"
+      ],
+      "notes_heart": [
+        "oud",
+        "rosa"
+      ],
+      "notes_base": [
+        "ámbar",
+        "almizcle",
+        "vainilla"
+      ],
+      "description": "Versión elixir más intensa y envolvente.",
+      "photo": "assets/perfumes/9 PM Elixir.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 0
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 0
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 0
+        }
+      ],
+      "tag": "",
       "intensity": "intensa",
       "occasion": [
         "noche",
         "especial"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-033",
-      "sku": "DA-CH-212VIPB",
+      "id": "p-da-ch-212vip-9aw",
+      "sku": "DA-CH-212VIP",
+      "name": "212 VIP",
+      "inspiration": "Carolina Herrera",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "ron",
+        "maracuyá"
+      ],
+      "notes_heart": [
+        "gardenia",
+        "almizcle"
+      ],
+      "notes_base": [
+        "vainilla",
+        "haba tonka"
+      ],
+      "description": "Glamour y sensualidad en un frasco icónico.",
+      "photo": "assets/perfumes/212 Vip.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 0
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 0
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 0
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "oficina",
+        "diario"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-ch-212vb-jpw",
+      "sku": "DA-CH-212VB",
       "name": "212 VIP Black",
       "inspiration": "Carolina Herrera",
       "gender": "hombre",
       "family": "oriental",
       "notes_top": [
-        "absenta",
-        "bergamota"
+        "ron",
+        "limón"
       ],
       "notes_heart": [
-        "cuero",
-        "vainilla"
+        "almizcle",
+        "cuero"
       ],
       "notes_base": [
-        "habano",
-        "cacao"
+        "sándalo",
+        "ámbar"
       ],
-      "description": "Cuero y cacao con vainilla oscura. Club nocturno embotellado.",
+      "description": "Intensidad masculina con un toque de ron.",
       "photo": "assets/perfumes/212 Vip Black.jpg",
       "sizes": [
         {
@@ -1595,45 +289,46 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
       "tag": "",
       "intensity": "intensa",
       "occasion": [
         "noche",
-        "especial"
+        "fiesta"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-034",
-      "sku": "DA-CRE-ABSA",
+      "id": "p-da-cre-aba-29o",
+      "sku": "DA-CRE-ABA",
       "name": "Absolu Aventus",
       "inspiration": "Creed",
       "gender": "hombre",
-      "family": "frutal",
+      "family": "amaderado",
       "notes_top": [
         "piña",
-        "manzana negra",
-        "durazno"
+        "bergamota",
+        "grosella negra"
       ],
       "notes_heart": [
         "abedul",
-        "pachulí"
+        "jazmín",
+        "patchouli"
       ],
       "notes_base": [
-        "ámbar gris",
-        "sándalo",
+        "musgo de roble",
+        "ámbar",
         "almizcle"
       ],
-      "description": "Versión absoluta del icónico Aventus: más densa, más frutal y más larga.",
+      "description": "La versión más intensa del legendario Aventus.",
       "photo": "assets/perfumes/Absolu Aventus.jpg",
       "sizes": [
         {
@@ -1644,96 +339,45 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "edicion-limitada",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-035",
-      "sku": "DA-ARM-ADGP",
-      "name": "Acqua di Gio Profondo",
-      "inspiration": "Giorgio Armani",
-      "gender": "hombre",
-      "family": "aromatico",
-      "notes_top": [
-        "bergamota",
-        "mandarina verde",
-        "lavanda"
-      ],
-      "notes_heart": [
-        "romero",
-        "ciprés",
-        "salvia"
-      ],
-      "notes_base": [
-        "sal marina",
-        "pachulí",
-        "almizcle mineral"
-      ],
-      "description": "Profundidad oceánica con hierbas mediterráneas. Frescura masculina sofisticada.",
-      "photo": "assets/perfumes/Acqua Di Gio Profondo.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
           "stock": 2
         },
         {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "mas-vendido",
-      "intensity": "moderada",
+      "tag": "",
+      "intensity": "intensa",
       "occasion": [
         "diario",
         "oficina"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-036",
+      "id": "p-da-arm-adg-3is",
       "sku": "DA-ARM-ADG",
-      "name": "Acqua di Gio",
+      "name": "Acqua Di Gio",
       "inspiration": "Giorgio Armani",
       "gender": "hombre",
-      "family": "aromatico",
+      "family": "citrico",
       "notes_top": [
-        "limón",
         "bergamota",
-        "mandarina"
+        "limón",
+        "neroli"
       ],
       "notes_heart": [
-        "romero",
         "jazmín",
-        "durazno"
+        "romero"
       ],
       "notes_base": [
         "cedro",
-        "almizcle",
-        "ámbar gris"
+        "vetiver",
+        "almizcle"
       ],
-      "description": "El clásico acuático aromático. Frescura mediterránea atemporal.",
+      "description": "Frescura mediterránea atemporal.",
       "photo": "assets/perfumes/Acqua Di Gio.jpg",
       "sizes": [
         {
@@ -1744,44 +388,191 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "mas-vendido",
+      "tag": "",
       "intensity": "moderada",
+      "occasion": [
+        "diario",
+        "verano"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-arm-adgp-pm0",
+      "sku": "DA-ARM-ADGP",
+      "name": "Acqua Di Gio Profondo",
+      "inspiration": "Giorgio Armani",
+      "gender": "hombre",
+      "family": "citrico",
+      "notes_top": [
+        "bergamota",
+        "mandarina",
+        "menta acuática"
+      ],
+      "notes_heart": [
+        "ciprés",
+        "notas marinas"
+      ],
+      "notes_base": [
+        "mastic",
+        "patchouli",
+        "almizcle"
+      ],
+      "description": "Profundidad marina con frescura mediterránea.",
+      "photo": "assets/perfumes/Acqua Di Gio Profondo.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "diario",
+        "verano"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-arm-adgw-ic0",
+      "sku": "DA-ARM-ADGW",
+      "name": "Acqua Di Gio Woman",
+      "inspiration": "Giorgio Armani",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
+        "bergamota",
+        "naranja",
+        "jazmín"
+      ],
+      "notes_heart": [
+        "rosa",
+        "jazmín",
+        "lirio"
+      ],
+      "notes_base": [
+        "cedro",
+        "almizcle",
+        "ámbar"
+      ],
+      "description": "Frescura floral inspirada en el Mediterráneo.",
+      "photo": "assets/perfumes/Acqua di Gio Woman.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "suave",
       "occasion": [
         "diario",
         "oficina"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-037",
-      "sku": "DA-LAT-ASAD",
+      "id": "p-da-ini-ame-s3r",
+      "sku": "DA-INI-AME",
+      "name": "Amethyst",
+      "inspiration": "Initio",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "bergamota",
+        "naranja"
+      ],
+      "notes_heart": [
+        "rosa",
+        "jazmín"
+      ],
+      "notes_base": [
+        "ámbar",
+        "vainilla",
+        "almizcle"
+      ],
+      "description": "Sensualidad envuelta en un aura de misterio.",
+      "photo": "assets/perfumes/Amethyst.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "intensa",
+      "occasion": [
+        "noche",
+        "especial"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-lat-asa-btv",
+      "sku": "DA-LAT-ASA",
       "name": "Asad",
       "inspiration": "Lattafa",
       "gender": "hombre",
-      "family": "frutal",
+      "family": "amaderado",
       "notes_top": [
-        "piña",
-        "manzana"
+        "naranja",
+        "limón"
       ],
       "notes_heart": [
-        "pachulí",
-        "jazmín",
-        "abedul"
+        "oud",
+        "cuero"
       ],
       "notes_base": [
-        "ámbar gris",
+        "ámbar",
+        "sándalo",
         "almizcle"
       ],
-      "description": "Tributo al Aventus con frutas ahumadas y abedul. Carácter premium accesible.",
+      "description": "Majestuoso y oriental para ocasiones especiales.",
       "photo": "assets/perfumes/Asad.jpg",
       "sizes": [
         {
@@ -1792,46 +583,45 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "nuevo",
+      "tag": "",
       "intensity": "intensa",
       "occasion": [
         "noche",
-        "especial"
+        "cita"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-038",
+      "id": "p-da-cre-ave-m3c",
       "sku": "DA-CRE-AVE",
       "name": "Aventus",
       "inspiration": "Creed",
       "gender": "hombre",
-      "family": "frutal",
+      "family": "amaderado",
       "notes_top": [
         "piña",
         "bergamota",
-        "manzana negra"
+        "grosella negra"
       ],
       "notes_heart": [
-        "abedul ahumado",
-        "pachulí",
-        "rosa"
+        "abedul",
+        "jazmín"
       ],
       "notes_base": [
         "musgo de roble",
-        "ámbar gris",
-        "vainilla"
+        "ámbar",
+        "almizcle"
       ],
-      "description": "El icónico cuero ahumado con piña. Confianza embotellada.",
+      "description": "El rey de las fragancias masculinas.",
       "photo": "assets/perfumes/Aventus.jpg",
       "sizes": [
         {
@@ -1842,46 +632,45 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "mas-vendido",
-      "intensity": "intensa",
+      "tag": "",
+      "intensity": "moderada",
       "occasion": [
-        "noche",
-        "especial"
+        "oficina",
+        "diario"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-039",
+      "id": "p-da-azz-aph-xz0",
       "sku": "DA-AZZ-APH",
       "name": "Azzaro Pour Homme",
       "inspiration": "Azzaro",
       "gender": "hombre",
-      "family": "aromatico",
+      "family": "amaderado",
       "notes_top": [
-        "lavanda",
         "anís",
-        "albahaca"
+        "lavanda",
+        "bergamota"
       ],
       "notes_heart": [
         "cardamomo",
-        "salvia",
-        "vetiver"
+        "cilantro"
       ],
       "notes_base": [
-        "cuero",
-        "musgo de roble",
-        "almizcle"
+        "vetiver",
+        "musgo",
+        "cedro"
       ],
-      "description": "El clásico aromático fougère. Elegancia masculina vintage.",
+      "description": "Un clásico masculino fresco y elegante.",
       "photo": "assets/perfumes/Azzaro Pour Homme.jpg",
       "sizes": [
         {
@@ -1892,12 +681,12 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
       "tag": "",
@@ -1907,28 +696,78 @@
         "oficina"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-040",
+      "id": "p-da-mfk-br540-pvt",
+      "sku": "DA-MFK-BR540",
+      "name": "Baccarat Rouge 540",
+      "inspiration": "Maison Francis Kurkdjian",
+      "gender": "unisex",
+      "family": "amaderado",
+      "notes_top": [
+        "azafrán",
+        "jazmín"
+      ],
+      "notes_heart": [
+        "amberwood",
+        "ámbar gris"
+      ],
+      "notes_base": [
+        "resina de abeto",
+        "cedro",
+        "azúcar"
+      ],
+      "description": "La fragancia más codiciada del mundo.",
+      "photo": "assets/perfumes/Baccarat Rouge 540.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "noche",
+        "especial"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-ch-bb-mvi",
       "sku": "DA-CH-BB",
       "name": "Bad Boy",
       "inspiration": "Carolina Herrera",
       "gender": "hombre",
       "family": "oriental",
       "notes_top": [
-        "pimienta blanca",
-        "bergamota"
+        "bergamota",
+        "salvia",
+        "pimienta"
       ],
       "notes_heart": [
-        "salvia",
-        "cedro"
+        "trébol",
+        "cacao"
       ],
       "notes_base": [
-        "cacao",
-        "haba tonka"
+        "cedro",
+        "almizcle",
+        "vetiver"
       ],
-      "description": "Cacao y haba tonka con pimienta blanca. Lado oscuro elegante.",
+      "description": "Contraste entre rebeldía y elegancia masculina.",
       "photo": "assets/perfumes/Bad Boy.jpg",
       "sizes": [
         {
@@ -1939,46 +778,143 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "noche",
+        "fiesta"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-dkn-bed-xku",
+      "sku": "DA-DKN-BED",
+      "name": "Be Delicious",
+      "inspiration": "DKNY",
+      "gender": "mujer",
+      "family": "citrico",
+      "notes_top": [
+        "pepino",
+        "pomelo",
+        "magnolia"
+      ],
+      "notes_heart": [
+        "rosa",
+        "violeta",
+        "manzana"
+      ],
+      "notes_base": [
+        "sándalo",
+        "almizcle",
+        "madera"
+      ],
+      "description": "Fresca como una manzana en la gran ciudad.",
+      "photo": "assets/perfumes/Be Delicious.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "suave",
+      "occasion": [
+        "diario",
+        "verano"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-ysl-boor-xt2",
+      "sku": "DA-YSL-BOOR",
+      "name": "Black Opium Over Red",
+      "inspiration": "Yves Saint Laurent",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "pera",
+        "flor de azahar"
+      ],
+      "notes_heart": [
+        "café",
+        "jazmín"
+      ],
+      "notes_base": [
+        "vainilla",
+        "patchouli",
+        "cedro"
+      ],
+      "description": "Adictiva y moderna con un corazón de café.",
+      "photo": "assets/perfumes/Black Opium Over Red.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
         }
       ],
       "tag": "mas-vendido",
       "intensity": "intensa",
       "occasion": [
         "noche",
-        "especial"
+        "fiesta"
       ],
       "featured": true,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-041",
+      "id": "p-da-pr-bxs-ls9",
       "sku": "DA-PR-BXS",
       "name": "Black XS",
       "inspiration": "Paco Rabanne",
       "gender": "hombre",
-      "family": "aromatico",
+      "family": "oriental",
       "notes_top": [
-        "limón",
-        "kalamansi",
-        "ruibarbo"
+        "pimienta rosa",
+        "menta"
       ],
       "notes_heart": [
-        "cardamomo",
-        "praliné",
-        "tagete"
+        "ámbar",
+        "cuero",
+        "incienso"
       ],
       "notes_base": [
-        "palo de amaranto",
-        "ámbar",
-        "tabaco"
+        "almizcle",
+        "cedro",
+        "ámbar"
       ],
-      "description": "Cítricos con praliné y maderas oscuras. Rock chic embotellado.",
+      "description": "Rebelde y seductor para la noche.",
       "photo": "assets/perfumes/Black XS.jpg",
       "sizes": [
         {
@@ -1989,45 +925,43 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
       "tag": "",
-      "intensity": "moderada",
+      "intensity": "intensa",
       "occasion": [
-        "diario",
-        "noche"
+        "noche",
+        "fiesta"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-042",
-      "sku": "DA-VAL-BIRI",
+      "id": "p-da-val-bri-vy4",
+      "sku": "DA-VAL-BRI",
       "name": "Born In Roma Intense",
       "inspiration": "Valentino",
       "gender": "hombre",
-      "family": "amaderado",
+      "family": "floral",
       "notes_top": [
-        "sal",
-        "bergamota"
+        "bergamota",
+        "té de jazmín"
       ],
       "notes_heart": [
-        "lavanda",
-        "manzana",
-        "jengibre"
+        "rosa búlgara",
+        "pachulí"
       ],
       "notes_base": [
-        "vetiver",
         "ámbar",
-        "almizcle"
+        "vainilla bourbon"
       ],
-      "description": "Versión intensa de Born in Roma Uomo: lavanda densa con vetiver. Moderno y elegante.",
+      "description": "Una fragancia vibrante que combina modernidad con intensidad.",
       "photo": "assets/perfumes/Born In Roma Intense.jpg",
       "sizes": [
         {
@@ -2038,45 +972,44 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "",
-      "intensity": "intensa",
+      "tag": "mas-vendido",
+      "intensity": "moderada",
       "occasion": [
-        "noche",
+        "cita",
         "especial"
       ],
-      "featured": false,
-      "created_at": "2026-05-14"
+      "featured": true,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-043",
-      "sku": "DA-BOSS-BBE",
+      "id": "p-da-hb-bbe-bcl",
+      "sku": "DA-HB-BBE",
       "name": "Boss Bottled Elixir",
       "inspiration": "Hugo Boss",
       "gender": "hombre",
       "family": "amaderado",
       "notes_top": [
-        "pera",
-        "ciruela",
-        "lavanda"
+        "manzana",
+        "canela"
       ],
       "notes_heart": [
-        "tomillo",
-        "geranio"
+        "geranio",
+        "cuero"
       ],
       "notes_base": [
         "cedro",
-        "almizcle",
-        "vetiver"
+        "vetiver",
+        "ámbar"
       ],
-      "description": "La esencia del clásico Boss en versión Parfum Intense. Frutado-amaderado refinado.",
+      "description": "Elegancia ejecutiva con un toque especiado.",
       "photo": "assets/perfumes/Boss Botled Elixir.jpg",
       "sizes": [
         {
@@ -2087,44 +1020,43 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "nuevo",
-      "intensity": "intensa",
+      "tag": "",
+      "intensity": "moderada",
       "occasion": [
-        "noche",
-        "especial"
+        "diario",
+        "oficina"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-044",
-      "sku": "DA-BOSS-BSEH",
+      "id": "p-da-hb-btse-o0z",
+      "sku": "DA-HB-BTSE",
       "name": "Boss The Scent Elixir",
       "inspiration": "Hugo Boss",
       "gender": "hombre",
       "family": "oriental",
       "notes_top": [
         "jengibre",
-        "lavanda"
+        "pimienta"
       ],
       "notes_heart": [
-        "maninka",
-        "salvia"
+        "notas de cuero",
+        "madera"
       ],
       "notes_base": [
-        "cuero",
-        "oud",
-        "palo de fierro"
+        "ámbar",
+        "almizcle"
       ],
-      "description": "Cuero y oud con jengibre especiado. Sofisticación nocturna.",
+      "description": "Seducción intensa masculina en versión elixir.",
       "photo": "assets/perfumes/Boss The Scent Elixir.jpg",
       "sizes": [
         {
@@ -2135,45 +1067,191 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "",
+      "tag": "mas-vendido",
       "intensity": "intensa",
       "occasion": [
         "noche",
-        "especial"
+        "cita"
       ],
-      "featured": false,
-      "created_at": "2026-05-14"
+      "featured": true,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-045",
-      "sku": "DA-XER-EP",
-      "name": "Erba Pura",
-      "inspiration": "Xerjoff",
-      "gender": "unisex",
-      "family": "frutal",
+      "id": "p-da-ph-cancan-tri",
+      "sku": "DA-PH-CANCAN",
+      "name": "Can Can",
+      "inspiration": "Paris Hilton",
+      "gender": "mujer",
+      "family": "floral",
       "notes_top": [
-        "frutas tropicales",
+        "durazno",
+        "pera",
+        "mandarina"
+      ],
+      "notes_heart": [
+        "jazmín",
+        "lirio",
+        "rosa"
+      ],
+      "notes_base": [
+        "sándalo",
+        "almizcle",
+        "vainilla"
+      ],
+      "description": "Dulce y femenina con un toque frutal irresistible.",
+      "photo": "assets/perfumes/Can Can.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "mas-vendido",
+      "intensity": "suave",
+      "occasion": [
+        "diario",
+        "fiesta"
+      ],
+      "featured": true,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-ral-cel-o23",
+      "sku": "DA-RAL-CEL",
+      "name": "Celeste",
+      "inspiration": "Ralph Lauren",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
         "bergamota",
         "limón"
       ],
       "notes_heart": [
-        "cedro",
-        "jazmín"
+        "jazmín",
+        "rosa",
+        "peonía"
       ],
       "notes_base": [
-        "vainilla",
+        "cedro",
         "almizcle",
         "ámbar"
       ],
-      "description": "Sicilia en frasco: frutas tropicales con vainilla cálida. Lujo solar accesible.",
+      "description": "Delicada y luminosa, perfecta para el día.",
+      "photo": "assets/perfumes/Celeste.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "suave",
+      "occasion": [
+        "diario",
+        "oficina"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-ag-cloud-utm",
+      "sku": "DA-AG-CLOUD",
+      "name": "Cloud",
+      "inspiration": "Ariana Grande",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "lavanda",
+        "pera",
+        "bergamota"
+      ],
+      "notes_heart": [
+        "vainilla de coco",
+        "cachemira"
+      ],
+      "notes_base": [
+        "pralinée",
+        "almizcle"
+      ],
+      "description": "Suave, dulce y adictiva.",
+      "photo": "assets/perfumes/Cloud.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "noche",
+        "diario"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-xer-ep-5mc",
+      "sku": "DA-XER-EP",
+      "name": "Erba Pura",
+      "inspiration": "Xerjoff",
+      "gender": "unisex",
+      "family": "citrico",
+      "notes_top": [
+        "naranja de Sicilia",
+        "mandarina"
+      ],
+      "notes_heart": [
+        "flor de azahar",
+        "romero"
+      ],
+      "notes_base": [
+        "ámbar",
+        "almizcle",
+        "cedro"
+      ],
+      "description": "Frescura italiana con alma mediterránea.",
       "photo": "assets/perfumes/Erba Pura.jpg",
       "sizes": [
         {
@@ -2184,96 +1262,46 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "edicion-limitada",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-046",
-      "sku": "DA-VER-EROF",
-      "name": "Eros Flame",
-      "inspiration": "Versace",
-      "gender": "hombre",
-      "family": "oriental",
-      "notes_top": [
-        "naranja sanguina",
-        "mandarina",
-        "pimienta"
-      ],
-      "notes_heart": [
-        "romero",
-        "pimienta negra",
-        "geranio"
-      ],
-      "notes_base": [
-        "tabaco",
-        "vainilla",
-        "sándalo"
-      ],
-      "description": "Cítricos especiados con tabaco dulce. Pasión nocturna controlada.",
-      "photo": "assets/perfumes/Eros Flame.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
           "stock": 2
         },
         {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
       "tag": "",
-      "intensity": "intensa",
+      "intensity": "moderada",
       "occasion": [
-        "noche",
-        "especial"
+        "diario",
+        "verano"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-047",
+      "id": "p-da-ver-eros-620",
       "sku": "DA-VER-EROS",
       "name": "Eros",
       "inspiration": "Versace",
       "gender": "hombre",
-      "family": "aromatico",
+      "family": "amaderado",
       "notes_top": [
-        "menta",
+        "menta fresca",
         "manzana verde",
         "limón"
       ],
       "notes_heart": [
         "haba tonka",
         "geranio",
-        "ámbar"
+        "ambroxan"
       ],
       "notes_base": [
-        "vainilla",
         "cedro",
-        "vetiver"
+        "vetiver",
+        "almizcle"
       ],
-      "description": "Menta y vainilla con haba tonka. Frescura masculina mediterránea.",
+      "description": "Fresco, sensual e intenso a la vez.",
       "photo": "assets/perfumes/Eros.jpg",
       "sizes": [
         {
@@ -2284,44 +1312,192 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "mas-vendido",
-      "intensity": "intensa",
+      "tag": "",
+      "intensity": "moderada",
       "occasion": [
-        "diario",
-        "noche"
+        "noche",
+        "cita"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-048",
+      "id": "p-da-ver-ef-mpj",
+      "sku": "DA-VER-EF",
+      "name": "Eros Flame",
+      "inspiration": "Versace",
+      "gender": "hombre",
+      "family": "oriental",
+      "notes_top": [
+        "naranja",
+        "pomelo",
+        "pimienta rosa"
+      ],
+      "notes_heart": [
+        "café",
+        "geranio",
+        "rosa"
+      ],
+      "notes_base": [
+        "sándalo",
+        "cedro",
+        "almizcle"
+      ],
+      "description": "Pasión ardiente en estado puro.",
+      "photo": "assets/perfumes/Eros Flame.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "intensa",
+      "occasion": [
+        "noche",
+        "fiesta"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-ck-escape-zi5",
+      "sku": "DA-CK-ESCAPE",
+      "name": "Escape",
+      "inspiration": "Calvin Klein",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
+        "mandarina",
+        "durazno",
+        "melón"
+      ],
+      "notes_heart": [
+        "rosa",
+        "jazmín",
+        "flor de azahar"
+      ],
+      "notes_base": [
+        "sándalo",
+        "almizcle",
+        "cedro"
+      ],
+      "description": "Libertad y frescura femenina.",
+      "photo": "assets/perfumes/Escape.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "suave",
+      "occasion": [
+        "diario",
+        "oficina"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-val-edd-gz7",
+      "sku": "DA-VAL-EDD",
+      "name": "Extradose Donna",
+      "inspiration": "Valentino",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "bergamota",
+        "mandarina"
+      ],
+      "notes_heart": [
+        "rosa",
+        "tuberosa"
+      ],
+      "notes_base": [
+        "ámbar",
+        "vainilla",
+        "almizcle"
+      ],
+      "description": "Intensidad femenina con elegancia italiana.",
+      "photo": "assets/perfumes/Extradose Donna.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "intensa",
+      "occasion": [
+        "noche",
+        "especial"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-val-edu-00e",
       "sku": "DA-VAL-EDU",
       "name": "Extradose Uomo",
       "inspiration": "Valentino",
       "gender": "hombre",
-      "family": "amaderado",
+      "family": "oriental",
       "notes_top": [
-        "vetiver",
-        "cuero"
+        "bergamota",
+        "pimienta negra"
       ],
       "notes_heart": [
-        "lavanda",
-        "jengibre"
+        "salvia",
+        "geranio"
       ],
       "notes_base": [
         "ámbar",
-        "almizcle",
-        "vainilla"
+        "vetiver",
+        "almizcle"
       ],
-      "description": "La intensidad amaderada de Valentino Uomo. Carácter y elegancia romana.",
+      "description": "Masculinidad sofisticada en versión elixir.",
       "photo": "assets/perfumes/Extradose Uomo.jpg",
       "sizes": [
         {
@@ -2332,46 +1508,45 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "nuevo",
+      "tag": "",
       "intensity": "intensa",
       "occasion": [
         "noche",
         "especial"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-049",
+      "id": "p-da-dio-fah-7ec",
       "sku": "DA-DIO-FAH",
       "name": "Fahrenheit",
       "inspiration": "Dior",
       "gender": "hombre",
       "family": "amaderado",
       "notes_top": [
-        "mandarina",
-        "espino blanco",
-        "bergamota"
+        "bergamota",
+        "limón",
+        "lavanda"
       ],
       "notes_heart": [
-        "madreselva",
-        "nuez moscada",
-        "cedro"
+        "violeta",
+        "nuez moscada"
       ],
       "notes_base": [
         "cuero",
-        "almizcle",
-        "tabaco"
+        "sándalo",
+        "cedro"
       ],
-      "description": "El clásico cuero-violeta. Pieza de culto masculina, atemporal.",
+      "description": "Un clásico masculino único e inconfundible.",
       "photo": "assets/perfumes/Fahrenheit.jpg",
       "sizes": [
         {
@@ -2382,44 +1557,383 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "diario",
+        "oficina"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-pr-fame-ihf",
+      "sku": "DA-PR-FAME",
+      "name": "Fame",
+      "inspiration": "Paco Rabanne",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
+        "mango",
+        "ylang ylang"
+      ],
+      "notes_heart": [
+        "jazmín",
+        "rosa"
+      ],
+      "notes_base": [
+        "vainilla",
+        "cedro",
+        "almizcle"
+      ],
+      "description": "Ambición y glamour en forma de perfume.",
+      "photo": "assets/perfumes/Fame.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "noche",
+        "especial"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-bs-fan-o2b",
+      "sku": "DA-BS-FAN",
+      "name": "Fantasy",
+      "inspiration": "Britney Spears",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
+        "kiwi",
+        "litchi",
+        "manzana"
+      ],
+      "notes_heart": [
+        "jazmín",
+        "orquídea"
+      ],
+      "notes_base": [
+        "almizcle",
+        "vainilla",
+        "madera"
+      ],
+      "description": "Juguetona y femenina con alma golosa.",
+      "photo": "assets/perfumes/Fantasy.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "mas-vendido",
+      "intensity": "suave",
+      "occasion": [
+        "diario",
+        "noche"
+      ],
+      "featured": true,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-im-fw-n69",
+      "sku": "DA-IM-FW",
+      "name": "For Women",
+      "inspiration": "Issey Miyake",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
+        "bergamota",
+        "nenúfar"
+      ],
+      "notes_heart": [
+        "magnolia",
+        "lirio del valle"
+      ],
+      "notes_base": [
+        "cedro",
+        "almizcle",
+        "ámbar"
+      ],
+      "description": "Limpieza y frescura floral inigualable.",
+      "photo": "assets/perfumes/For Women.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "suave",
+      "occasion": [
+        "diario",
+        "verano"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-ch-gg-gzw",
+      "sku": "DA-CH-GG",
+      "name": "Good Girl",
+      "inspiration": "Carolina Herrera",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "almendra",
+        "café"
+      ],
+      "notes_heart": [
+        "tuberosa",
+        "jazmín"
+      ],
+      "notes_base": [
+        "cacao",
+        "haba tonka",
+        "vainilla"
+      ],
+      "description": "Dualidad entre el bien y el mal en un frasco icónico.",
+      "photo": "assets/perfumes/Good Girl.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
         }
       ],
       "tag": "",
       "intensity": "intensa",
       "occasion": [
         "noche",
-        "especial"
+        "cita"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-050",
-      "sku": "DA-LAT-HG",
-      "name": "Honor & Glory",
-      "inspiration": "Lattafa",
-      "gender": "hombre",
-      "family": "amaderado",
+      "id": "p-da-ch-ggs-ux2",
+      "sku": "DA-CH-GGS",
+      "name": "Good Girl Supreme",
+      "inspiration": "Carolina Herrera",
+      "gender": "mujer",
+      "family": "floral",
       "notes_top": [
-        "azafrán",
-        "frutas rojas"
+        "litchi",
+        "frambuesa"
       ],
       "notes_heart": [
         "rosa",
-        "oud"
+        "magnolia"
       ],
       "notes_base": [
-        "ámbar",
+        "haba tonka",
+        "almizcle"
+      ],
+      "description": "La versión más romántica de Good Girl.",
+      "photo": "assets/perfumes/Good Girl Supreme.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "diario",
+        "especial"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-ph-hei-k3g",
+      "sku": "DA-PH-HEI",
+      "name": "Heiress",
+      "inspiration": "Paris Hilton",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
+        "naranja",
+        "mandarina",
+        "bergamota"
+      ],
+      "notes_heart": [
+        "jazmín",
+        "rosa",
+        "gardenia"
+      ],
+      "notes_base": [
+        "sándalo",
+        "almizcle",
+        "vainilla"
+      ],
+      "description": "Dulce herencia de glamour y feminidad.",
+      "photo": "assets/perfumes/Heiress.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "mas-vendido",
+      "intensity": "suave",
+      "occasion": [
+        "diario",
+        "oficina"
+      ],
+      "featured": true,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-ini-hc-vr9",
+      "sku": "DA-INI-HC",
+      "name": "Her Confession",
+      "inspiration": "Initio",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
+        "bergamota",
+        "durazno"
+      ],
+      "notes_heart": [
+        "rosa",
+        "jazmín",
+        "iris"
+      ],
+      "notes_base": [
+        "vainilla",
         "sándalo",
         "almizcle"
       ],
-      "description": "Oud con rosa y azafrán. Realeza árabe en versión accesible.",
+      "description": "Una confesión de elegancia y sensualidad.",
+      "photo": "assets/perfumes/Her Confession.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "noche",
+        "cita"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-afn-hg-cfg",
+      "sku": "DA-AFN-HG",
+      "name": "Honor & Glory",
+      "inspiration": "Afnan",
+      "gender": "hombre",
+      "family": "amaderado",
+      "notes_top": [
+        "bergamota",
+        "lavanda"
+      ],
+      "notes_heart": [
+        "cedro",
+        "patchouli"
+      ],
+      "notes_base": [
+        "ámbar",
+        "almizcle",
+        "madera"
+      ],
+      "description": "Honor y distinción en cada spray.",
       "photo": "assets/perfumes/Honor & Glory.jpg",
       "sizes": [
         {
@@ -2430,140 +1944,45 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "nuevo",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-051",
-      "sku": "DA-PR-INVI",
-      "name": "Invictus Intense",
-      "inspiration": "Paco Rabanne",
-      "gender": "hombre",
-      "family": "aromatico",
-      "notes_top": [
-        "pomelo",
-        "mandarina",
-        "hoja de laurel"
-      ],
-      "notes_heart": [
-        "jazmín",
-        "sal marina"
-      ],
-      "notes_base": [
-        "ambroxan",
-        "musgo de roble"
-      ],
-      "description": "Versión más densa del Invictus clásico. Frescura acuática prolongada.",
-      "photo": "assets/perfumes/Invictus Intense.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
           "stock": 2
         },
         {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
       "tag": "",
-      "intensity": "intensa",
+      "intensity": "moderada",
       "occasion": [
         "diario",
         "oficina"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-052",
-      "sku": "DA-PR-IVE",
-      "name": "Invictus Victory Elixir",
-      "inspiration": "Paco Rabanne",
-      "gender": "hombre",
-      "family": "oriental",
-      "notes_top": [
-        "naranja",
-        "ciprés"
-      ],
-      "notes_heart": [
-        "laurel",
-        "mirra",
-        "salvia"
-      ],
-      "notes_base": [
-        "ámbar gris",
-        "oud",
-        "cedro"
-      ],
-      "description": "Versión Parfum Intense del Victory. Ámbar y oud refinados.",
-      "photo": "assets/perfumes/Invictus Victory Elixir.jpg",
-      "sizes": [
-        {
-          "ml": 110,
-          "price": 90,
-          "stock": 2
-        },
-        {
-          "ml": 50,
-          "price": 55,
-          "stock": 10
-        },
-        {
-          "ml": 10,
-          "price": 20,
-          "stock": 10
-        }
-      ],
-      "tag": "nuevo",
-      "intensity": "intensa",
-      "occasion": [
-        "noche",
-        "especial"
-      ],
-      "featured": true,
-      "created_at": "2026-05-14"
-    },
-    {
-      "id": "p-053",
+      "id": "p-da-pr-inv-obf",
       "sku": "DA-PR-INV",
       "name": "Invictus",
       "inspiration": "Paco Rabanne",
       "gender": "hombre",
-      "family": "aromatico",
+      "family": "citrico",
       "notes_top": [
         "pomelo",
-        "mandarina"
+        "mandarina",
+        "laurel"
       ],
       "notes_heart": [
-        "hoja de laurel",
-        "jazmín"
+        "jazmín",
+        "guayaba"
       ],
       "notes_base": [
-        "ambroxan",
-        "musgo de roble"
+        "ámbar",
+        "almizcle",
+        "madera de roble"
       ],
-      "description": "Frescura acuática con ambroxan magnético. Energía deportiva elegante.",
+      "description": "El triunfo en estado puro.",
       "photo": "assets/perfumes/Invictus.jpg",
       "sizes": [
         {
@@ -2574,46 +1993,190 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "mas-vendido",
+      "tag": "",
       "intensity": "moderada",
       "occasion": [
-        "diario",
-        "oficina"
+        "diario"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-054",
+      "id": "p-da-pr-invi-s6h",
+      "sku": "DA-PR-INVI",
+      "name": "Invictus Intense",
+      "inspiration": "Paco Rabanne",
+      "gender": "hombre",
+      "family": "oriental",
+      "notes_top": [
+        "pomelo",
+        "pimienta negra"
+      ],
+      "notes_heart": [
+        "guayaba",
+        "vainilla"
+      ],
+      "notes_base": [
+        "ámbar",
+        "almizcle",
+        "madera"
+      ],
+      "description": "Más oscuro e intenso que el original.",
+      "photo": "assets/perfumes/Invictus Intense.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "intensa",
+      "occasion": [
+        "noche",
+        "fiesta"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-pr-inve-htg",
+      "sku": "DA-PR-INVE",
+      "name": "Invictus Victory Elixir",
+      "inspiration": "Paco Rabanne",
+      "gender": "hombre",
+      "family": "oriental",
+      "notes_top": [
+        "pomelo",
+        "cardamomo"
+      ],
+      "notes_heart": [
+        "guayaba",
+        "madera de roble"
+      ],
+      "notes_base": [
+        "ámbar",
+        "vainilla",
+        "almizcle"
+      ],
+      "description": "La versión más poderosa del Invictus.",
+      "photo": "assets/perfumes/Invictus Victory Elixir.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "intensa",
+      "occasion": [
+        "noche",
+        "especial"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-dio-jad-qss",
+      "sku": "DA-DIO-JAD",
+      "name": "J'adore",
+      "inspiration": "Dior",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
+        "pera",
+        "melón",
+        "magnolia"
+      ],
+      "notes_heart": [
+        "rosa damascena",
+        "ylang ylang",
+        "orquídea"
+      ],
+      "notes_base": [
+        "almizcle",
+        "cedro",
+        "vainilla"
+      ],
+      "description": "Feminidad en su máxima expresión.",
+      "photo": "assets/perfumes/Jadore.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "cita",
+        "especial"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-lat-kha-1of",
       "sku": "DA-LAT-KHA",
       "name": "Khamrah",
       "inspiration": "Lattafa",
       "gender": "unisex",
       "family": "oriental",
       "notes_top": [
-        "canela",
-        "manzana",
-        "nuez moscada"
+        "bergamota",
+        "limón"
       ],
       "notes_heart": [
-        "praliné",
-        "dátiles",
-        "haba tonka"
+        "oud",
+        "rosa",
+        "vainilla"
       ],
       "notes_base": [
-        "vainilla",
-        "mirra",
-        "ámbar"
+        "ámbar",
+        "almizcle",
+        "madera"
       ],
-      "description": "Postre árabe: dátiles caramelizados con canela y vainilla. Cálido y adictivo.",
+      "description": "Profundidad oriental con calidez envolvente.",
       "photo": "assets/perfumes/Khamrah.jpg",
       "sizes": [
         {
@@ -2624,45 +2187,45 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "mas-vendido",
+      "tag": "",
       "intensity": "intensa",
       "occasion": [
         "noche",
-        "especial"
+        "invierno"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-055",
-      "sku": "DA-BHA-KING",
-      "name": "King",
+      "id": "p-da-bha-kb-eyv",
+      "sku": "DA-BHA-KB",
+      "name": "King Bharara",
       "inspiration": "Bharara",
       "gender": "hombre",
       "family": "oriental",
       "notes_top": [
         "bergamota",
-        "mandarina",
-        "lima"
+        "pimienta"
       ],
       "notes_heart": [
-        "cardamomo",
-        "té negro"
+        "oud",
+        "cuero",
+        "rosa"
       ],
       "notes_base": [
-        "ámbar gris",
-        "cuero",
-        "oud"
+        "ámbar",
+        "sándalo",
+        "almizcle"
       ],
-      "description": "Cuero y oud con cardamomo. Lujo árabe masculino.",
+      "description": "Realeza oriental en estado puro.",
       "photo": "assets/perfumes/King Bharara.jpg",
       "sizes": [
         {
@@ -2673,12 +2236,12 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
       "tag": "",
@@ -2688,29 +2251,79 @@
         "especial"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-056",
+      "id": "p-da-lan-lveb-z3c",
+      "sku": "DA-LAN-LVEB",
+      "name": "La Vie Est Belle",
+      "inspiration": "Lancôme",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
+        "grosella negra",
+        "pera"
+      ],
+      "notes_heart": [
+        "iris",
+        "jazmín",
+        "naranja"
+      ],
+      "notes_base": [
+        "pralinée",
+        "vainilla",
+        "patchouli"
+      ],
+      "description": "La vida es bella cuando hueles así.",
+      "photo": "assets/perfumes/La vie est belle.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "diario",
+        "especial"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-lac-li-wqd",
       "sku": "DA-LAC-LI",
       "name": "Lacoste Intense",
       "inspiration": "Lacoste",
       "gender": "hombre",
-      "family": "aromatico",
+      "family": "citrico",
       "notes_top": [
-        "manzana",
-        "jengibre"
+        "limón",
+        "mandarina",
+        "pomelo"
       ],
       "notes_heart": [
-        "menta",
-        "pimienta negra"
+        "jengibre",
+        "anís estrellado"
       ],
       "notes_base": [
-        "ámbar",
-        "cacao",
-        "palo de Brasil"
+        "cedro",
+        "almizcle",
+        "vetiver"
       ],
-      "description": "Frescura jugosa con un fondo amaderado dulce. Versátil masculino.",
+      "description": "Frescura intensa con actitud deportiva.",
       "photo": "assets/perfumes/Lacoste Intense.jpg",
       "sizes": [
         {
@@ -2721,45 +2334,47 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
       "tag": "",
       "intensity": "moderada",
       "occasion": [
         "diario",
-        "oficina"
+        "verano"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-057",
-      "sku": "DA-JPG-LME",
-      "name": "Le Male Elixir",
-      "inspiration": "Jean Paul Gaultier",
-      "gender": "hombre",
-      "family": "oriental",
+      "id": "p-da-pr-lm-hob",
+      "sku": "DA-PR-LM",
+      "name": "Lady Million",
+      "inspiration": "Paco Rabanne",
+      "gender": "mujer",
+      "family": "floral",
       "notes_top": [
-        "lavanda",
-        "miel"
+        "frambuesa",
+        "toronja",
+        "neroli"
       ],
       "notes_heart": [
-        "canela",
-        "haba tonka"
+        "gardenia",
+        "rosa árabe",
+        "miel de naranja"
       ],
       "notes_base": [
-        "vainilla",
-        "benjuí",
-        "tabaco"
+        "pachulí",
+        "cedro",
+        "almizcle"
       ],
-      "description": "Lavanda densa con miel y vainilla. El icónico marinero en versión intensa.",
-      "photo": "assets/perfumes/Le Male Elixir.jpg",
+      "description": "Lujo y poder femenino en un diamante.",
+      "photo": "assets/perfumes/Lady_Million.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -2769,46 +2384,50 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "mas-vendido",
-      "intensity": "intensa",
+      "tag": "",
+      "intensity": "moderada",
       "occasion": [
-        "noche",
-        "especial"
+        "oficina",
+        "diario"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26",
+      "frascoPremium": {
+        "disponible": false,
+        "precio": 0
+      }
     },
     {
-      "id": "p-058",
+      "id": "p-da-jpg-lm-46y",
       "sku": "DA-JPG-LM",
       "name": "Le Male",
       "inspiration": "Jean Paul Gaultier",
       "gender": "hombre",
-      "family": "aromatico",
+      "family": "oriental",
       "notes_top": [
-        "menta",
         "lavanda",
-        "bergamota"
+        "bergamota",
+        "menta"
       ],
       "notes_heart": [
         "canela",
-        "comino",
+        "anís",
         "alcaravea"
       ],
       "notes_base": [
-        "haba tonka",
         "vainilla",
-        "sándalo"
+        "almizcle",
+        "ámbar"
       ],
-      "description": "El clásico marinero: lavanda fresca con vainilla golosa. Atemporal.",
+      "description": "Icónico y seductor, un clásico eterno.",
       "photo": "assets/perfumes/Le Male.jpg",
       "sizes": [
         {
@@ -2819,46 +2438,47 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "mas-vendido",
+      "tag": "",
       "intensity": "moderada",
       "occasion": [
-        "diario",
-        "noche"
+        "noche",
+        "cita"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-059",
-      "sku": "DA-PR-OME",
-      "name": "One Million Elixir",
-      "inspiration": "Paco Rabanne",
+      "id": "p-da-jpg-lme-i9p",
+      "sku": "DA-JPG-LME",
+      "name": "Le Male Elixir",
+      "inspiration": "Jean Paul Gaultier",
       "gender": "hombre",
       "family": "oriental",
       "notes_top": [
-        "toronja",
-        "semillas de cilantro"
+        "lavanda",
+        "anís",
+        "menta"
       ],
       "notes_heart": [
-        "jengibre",
+        "vainilla",
         "canela",
-        "cardamomo"
+        "haba tonka"
       ],
       "notes_base": [
         "ámbar",
-        "cuero",
-        "vetiver"
+        "almizcle",
+        "cuero"
       ],
-      "description": "Especias densas con cuero ambarino. Versión Parfum Intense del oro líquido.",
-      "photo": "assets/perfumes/One Million Elixir.jpg",
+      "description": "La versión más intensa y adictiva de Le Male.",
+      "photo": "assets/perfumes/Le Male Elixir.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -2868,12 +2488,12 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
       "tag": "",
@@ -2883,11 +2503,163 @@
         "especial"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-060",
-      "sku": "DA-PR-OM",
+      "id": "p-da-dg-lbw-d35",
+      "sku": "DA-DG-LBW",
+      "name": "Light Blue Woman",
+      "inspiration": "Dolce & Gabbana",
+      "gender": "mujer",
+      "family": "citrico",
+      "notes_top": [
+        "manzana siciliana",
+        "azulejo",
+        "bambú"
+      ],
+      "notes_heart": [
+        "rosa blanca",
+        "jazmín",
+        "gardenia"
+      ],
+      "notes_base": [
+        "cedro",
+        "ámbar",
+        "almizcle"
+      ],
+      "description": "Frescura mediterránea para la mujer moderna.",
+      "photo": "assets/perfumes/Light Blue Woman.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "mas-vendido",
+      "intensity": "",
+      "occasion": [
+        "diario",
+        "verano"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-dio-md-03t",
+      "sku": "DA-DIO-MD",
+      "name": "Miss Dior",
+      "inspiration": "Dior",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
+        "bergamota",
+        "sandía"
+      ],
+      "notes_heart": [
+        "peonía",
+        "rosa de grasse"
+      ],
+      "notes_base": [
+        "patchouli",
+        "almizcle blanco"
+      ],
+      "description": "Romanticismo y frescura en su máxima expresión.",
+      "photo": "assets/perfumes/Miss_Dior.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "noche",
+        "diario"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26",
+      "frascoPremium": {
+        "disponible": false,
+        "precio": 0
+      }
+    },
+    {
+      "id": "p-da-arm-myw-gba",
+      "sku": "DA-ARM-MYW",
+      "name": "My Way",
+      "inspiration": "Giorgio Armani",
+      "gender": "mujer",
+      "family": "floral",
+      "notes_top": [
+        "bergamota",
+        "neroli"
+      ],
+      "notes_heart": [
+        "tuberosa",
+        "magnolia"
+      ],
+      "notes_base": [
+        "almizcle blanco",
+        "cedro de virginia"
+      ],
+      "description": "Libertad y feminidad en un viaje olfativo.",
+      "photo": "assets/perfumes/My_Way.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "diario",
+        "especial"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26",
+      "frascoPremium": {
+        "disponible": false,
+        "precio": 0
+      }
+    },
+    {
+      "id": "p-da-pr-1m-led",
+      "sku": "DA-PR-1M",
       "name": "One Million",
       "inspiration": "Paco Rabanne",
       "gender": "hombre",
@@ -2895,19 +2667,19 @@
       "notes_top": [
         "pomelo",
         "menta",
-        "mandarina sanguina"
+        "canela"
       ],
       "notes_heart": [
         "rosa",
         "canela",
-        "cuero"
+        "especias"
       ],
       "notes_base": [
-        "ámbar",
-        "cuero indio",
-        "haba tonka"
+        "cuero",
+        "madera",
+        "ámbar"
       ],
-      "description": "El icónico lingote dorado. Especias cálidas con cuero ambarino.",
+      "description": "El dorado del éxito masculino.",
       "photo": "assets/perfumes/One Million.jpg",
       "sizes": [
         {
@@ -2918,46 +2690,94 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
       "tag": "mas-vendido",
+      "intensity": "moderada",
+      "occasion": [
+        "noche",
+        "fiesta"
+      ],
+      "featured": true,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-pr-1me-ls2",
+      "sku": "DA-PR-1ME",
+      "name": "One Million Elixir",
+      "inspiration": "Paco Rabanne",
+      "gender": "hombre",
+      "family": "oriental",
+      "notes_top": [
+        "canela",
+        "naranja"
+      ],
+      "notes_heart": [
+        "cuero",
+        "rosa",
+        "especias"
+      ],
+      "notes_base": [
+        "ámbar",
+        "almizcle",
+        "madera"
+      ],
+      "description": "Versión elixir más oscura e intensa.",
+      "photo": "assets/perfumes/One Million Elixir.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
       "intensity": "intensa",
       "occasion": [
         "noche",
         "especial"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-061",
+      "id": "p-da-pr-pmph-af1",
       "sku": "DA-PR-PMPH",
       "name": "Paco Men Pour Homme",
       "inspiration": "Paco Rabanne",
       "gender": "hombre",
-      "family": "aromatico",
+      "family": "amaderado",
       "notes_top": [
         "lavanda",
-        "romero",
-        "hoja de violeta"
+        "bergamota"
       ],
       "notes_heart": [
-        "clavo",
-        "salvia",
-        "geranio"
+        "cedro",
+        "cuero",
+        "especias"
       ],
       "notes_base": [
-        "musgo de roble",
-        "almizcle",
-        "sándalo"
+        "vetiver",
+        "musgo",
+        "almizcle"
       ],
-      "description": "El clásico fougère de 1973. Elegancia masculina vintage e impecable.",
+      "description": "Clásico masculino atemporal.",
       "photo": "assets/perfumes/Paco Men Pour Homme.jpg",
       "sizes": [
         {
@@ -2968,12 +2788,12 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
       "tag": "",
@@ -2983,29 +2803,30 @@
         "oficina"
       ],
       "featured": false,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-062",
-      "sku": "DA-JPG-PG",
+      "id": "p-da-kil-pg-fru",
+      "sku": "DA-KIL-PG",
       "name": "Paradise Garden",
-      "inspiration": "Jean Paul Gaultier",
+      "inspiration": "Kilian",
       "gender": "hombre",
-      "family": "frutal",
+      "family": "floral",
       "notes_top": [
-        "manzana caramelizada",
-        "pera"
+        "melocotón",
+        "frambuesa"
       ],
       "notes_heart": [
-        "haba tonka",
-        "vainilla"
+        "rosa",
+        "magnolia",
+        "ylang ylang"
       ],
       "notes_base": [
         "ámbar",
-        "cedro",
-        "almizcle"
+        "almizcle",
+        "sándalo"
       ],
-      "description": "Frutas caramelizadas con vainilla esponjosa. Gourmand jardín del edén.",
+      "description": "Un jardín de lujo en plena floración.",
       "photo": "assets/perfumes/Paradise Garden.jpg",
       "sizes": [
         {
@@ -3016,46 +2837,93 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "nuevo",
-      "intensity": "intensa",
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "cita",
+        "especial"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-dio-poi-3cn",
+      "sku": "DA-DIO-POI",
+      "name": "Poison Girl",
+      "inspiration": "Dior",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "naranja amarga",
+        "mandarina"
+      ],
+      "notes_heart": [
+        "rosa de grasse"
+      ],
+      "notes_base": [
+        "vainilla",
+        "almizcle",
+        "sándalo"
+      ],
+      "description": "Dulce veneno para la mujer seductora.",
+      "photo": "assets/perfumes/Poison Girl.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
       "occasion": [
         "noche",
         "especial"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-063",
-      "sku": "DA-RL-PB",
+      "id": "p-da-ral-pb-j40",
+      "sku": "DA-RAL-PB",
       "name": "Polo Blue",
       "inspiration": "Ralph Lauren",
       "gender": "hombre",
-      "family": "aromatico",
+      "family": "citrico",
       "notes_top": [
         "melón",
         "pepino",
-        "mandarina"
+        "salvia"
       ],
       "notes_heart": [
         "albahaca",
-        "salvia",
-        "geranio"
+        "geranio",
+        "suede"
       ],
       "notes_base": [
-        "gamuza",
-        "musgo",
-        "almizcle"
+        "cedro",
+        "almizcle",
+        "ámbar"
       ],
-      "description": "Frescura acuática con melón y hierbas. Casual elegante diario.",
+      "description": "Frescura acuática con espíritu deportivo.",
       "photo": "assets/perfumes/Polo Blue.jpg",
       "sizes": [
         {
@@ -3066,30 +2934,30 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "mas-vendido",
-      "intensity": "moderada",
+      "tag": "",
+      "intensity": "suave",
       "occasion": [
         "diario",
-        "oficina"
+        "verano"
       ],
-      "featured": true,
-      "created_at": "2026-05-14"
+      "featured": false,
+      "created_at": "2026-05-26"
     },
     {
-      "id": "p-064",
+      "id": "p-da-dio-sau-2i6",
       "sku": "DA-DIO-SAU",
       "name": "Sauvage",
       "inspiration": "Dior",
       "gender": "hombre",
-      "family": "aromatico",
+      "family": "amaderado",
       "notes_top": [
         "bergamota de Calabria",
         "pimienta"
@@ -3102,8 +2970,56 @@
         "ambroxan",
         "cedro"
       ],
-      "description": "Frescura mineral con un fondo amaderado. La definición moderna de la elegancia masculina.",
+      "description": "Frescura mineral con fondo amaderado salvaje.",
       "photo": "assets/perfumes/Sauvage.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 1
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 0
+        }
+      ],
+      "tag": "mas-vendido",
+      "intensity": "moderada",
+      "occasion": [
+        "oficina",
+        "diario"
+      ],
+      "featured": true,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-jpg-scw-pvg",
+      "sku": "DA-JPG-SCW",
+      "name": "Scandal Woman",
+      "inspiration": "Jean Paul Gaultier",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "mandarina",
+        "miel"
+      ],
+      "notes_heart": [
+        "gardenia",
+        "jazmín"
+      ],
+      "notes_base": [
+        "vetiver",
+        "caramelo",
+        "almizcle"
+      ],
+      "description": "Escandalosamente seductora y adictiva.",
+      "photo": "assets/perfumes/Scandal Woman.jpg",
       "sizes": [
         {
           "ml": 110,
@@ -3113,22 +3029,217 @@
         {
           "ml": 50,
           "price": 55,
-          "stock": 10
+          "stock": 2
         },
         {
           "ml": 10,
           "price": 20,
-          "stock": 10
+          "stock": 2
         }
       ],
-      "tag": "mas-vendido",
-      "intensity": "moderada",
+      "tag": "",
+      "intensity": "intensa",
+      "occasion": [
+        "noche",
+        "especial"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-ag-slc-ehb",
+      "sku": "DA-AG-SLC",
+      "name": "Sweet Like Candy",
+      "inspiration": "Ariana Grande",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "mora",
+        "frambuesa",
+        "pera"
+      ],
+      "notes_heart": [
+        "haba tonka",
+        "jazmín"
+      ],
+      "notes_base": [
+        "almizcle",
+        "vainilla",
+        "pralinée"
+      ],
+      "description": "Dulce como el algodón de azúcar.",
+      "photo": "assets/perfumes/Sweet Like Candy.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "suave",
       "occasion": [
         "diario",
-        "oficina"
+        "noche"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-lat-yara-1or",
+      "sku": "DA-LAT-YARA",
+      "name": "Yara",
+      "inspiration": "Lattafa",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "bergamota",
+        "litchi"
+      ],
+      "notes_heart": [
+        "rosa",
+        "jazmín",
+        "oud"
+      ],
+      "notes_base": [
+        "vainilla",
+        "almizcle",
+        "sándalo"
+      ],
+      "description": "Calidez oriental con corazón floral.",
+      "photo": "assets/perfumes/Yara.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "",
+      "intensity": "moderada",
+      "occasion": [
+        "noche",
+        "diario"
+      ],
+      "featured": false,
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-lat-ye-g05",
+      "sku": "DA-LAT-YE",
+      "name": "Yara Elixir",
+      "inspiration": "Lattafa",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "azafrán",
+        "bergamota"
+      ],
+      "notes_heart": [
+        "oud",
+        "rosa",
+        "jazmín"
+      ],
+      "notes_base": [
+        "ámbar",
+        "almizcle",
+        "vainilla"
+      ],
+      "description": "Versión más intensa y misteriosa de Yara.",
+      "photo": "assets/perfumes/Yara Elixir.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "edicion-limitada",
+      "intensity": "intensa",
+      "occasion": [
+        "noche",
+        "especial"
       ],
       "featured": true,
-      "created_at": "2026-05-14"
+      "created_at": "2026-05-26"
+    },
+    {
+      "id": "p-da-kay-ybm-mb8",
+      "sku": "DA-KAY-YBM",
+      "name": "Yum Boujee Marshmallow",
+      "inspiration": "Kayali",
+      "gender": "mujer",
+      "family": "oriental",
+      "notes_top": [
+        "naranja sanguina",
+        "frambuesa"
+      ],
+      "notes_heart": [
+        "rosa turca",
+        "jazmín"
+      ],
+      "notes_base": [
+        "vainilla",
+        "almizcle",
+        "ámbar"
+      ],
+      "description": "Golosa y adictiva como un marshmallow de lujo.",
+      "photo": "assets/perfumes/Yum Boujee Marshmallow.jpg",
+      "sizes": [
+        {
+          "ml": 110,
+          "price": 90,
+          "stock": 2
+        },
+        {
+          "ml": 50,
+          "price": 55,
+          "stock": 2
+        },
+        {
+          "ml": 10,
+          "price": 20,
+          "stock": 2
+        }
+      ],
+      "tag": "edicion-limitada",
+      "intensity": "moderada",
+      "occasion": [
+        "noche",
+        "especial"
+      ],
+      "featured": true,
+      "created_at": "2026-05-26"
     }
   ]
 }
