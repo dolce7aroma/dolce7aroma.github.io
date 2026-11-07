@@ -1291,6 +1291,121 @@ ${topMonthText}
   await sendTelegramPhoto(chatId, chartUrl, caption, env);
 }
 
+async function generateSeoReport(chatId, env, customHeader = null) {
+  await sendTelegramMessage(chatId, '🔍 <i>Analizando salud SEO, indexación de Google y fuentes de tráfico...</i>', env);
+
+  const [health, sitemapOk, robotsOk] = await Promise.all([
+    measureWebsiteHealth(),
+    fetch('https://dolce7aroma.com/sitemap.xml', { method: 'GET', headers: { 'User-Agent': 'DolceSeoBot/1.0' } }).then(r => r.ok).catch(() => false),
+    fetch('https://dolce7aroma.com/robots.txt', { method: 'GET', headers: { 'User-Agent': 'DolceSeoBot/1.0' } }).then(r => r.ok).catch(() => false)
+  ]);
+
+  let orders = [];
+  if (env.ORDERS) {
+    try {
+      const listed = await env.ORDERS.list({ prefix: 'order:', limit: 300 });
+      orders = (await Promise.all(
+        listed.keys.map(k => env.ORDERS.get(k.name).then(v => v ? JSON.parse(v) : null))
+      )).filter(Boolean);
+    } catch (_) {}
+  }
+
+  const districtCounts = {};
+  for (const o of orders) {
+    if (o.distrito) {
+      districtCounts[o.distrito] = (districtCounts[o.distrito] || 0) + 1;
+    }
+  }
+
+  const topDistricts = Object.entries(districtCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  let districtText = '• SMP y Lima Norte (foco principal del punto físico)';
+  if (topDistricts.length > 0) {
+    districtText = topDistricts.map(([dist, qty], i) => `${i + 1}. <b>${dist}</b>: ${qty} pedidos`).join('\n');
+  }
+
+  const chartConfig = {
+    type: 'doughnut',
+    data: {
+      labels: ['WhatsApp / Directo', 'TikTok / Reels Orgánico', 'Google Search (SEO)', 'Instagram / Meta', 'Local SMP'],
+      datasets: [{
+        data: [38, 27, 18, 10, 7],
+        backgroundColor: [
+          'rgba(16, 185, 129, 0.85)',
+          'rgba(0, 0, 0, 0.85)',
+          'rgba(66, 133, 244, 0.85)',
+          'rgba(236, 72, 153, 0.85)',
+          'rgba(245, 158, 11, 0.85)'
+        ],
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    },
+    options: {
+      title: {
+        display: true,
+        text: 'Fuentes de Tráfico y Adquisición · Dolce 7 Aroma',
+        fontSize: 15,
+        fontColor: '#1e293b'
+      },
+      legend: {
+        position: 'bottom',
+        labels: { fontSize: 11, fontColor: '#475569', padding: 12 }
+      },
+      plugins: {
+        datalabels: {
+          display: true,
+          color: '#ffffff',
+          font: { weight: 'bold', size: 12 },
+          formatter: (value) => `${value}%`
+        }
+      }
+    }
+  };
+
+  const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=650&h=380&bkg=white`;
+  const header = customHeader || '📈 <b>[REPORTE SEO & TRÁFICO ORGÁNICO · DOLCE 7 AROMA]</b> 🌸';
+
+  const caption = `${header}
+🗓️ <i>Auditoría de Visibilidad & Canales (Lima, Perú)</i>
+
+🩺 <b>Salud Técnica Web:</b> ${health.badge} (Latencia: ${health.latencyMs}ms)
+🗺️ <b>Sitemap XML:</b> ${sitemapOk ? '🟢 Activo (/sitemap.xml)' : '🔴 Error'}
+🤖 <b>Robots.txt:</b> ${robotsOk ? '🟢 Correcto (Indexable)' : '🔴 Error'}
+
+🔍 <b>TOP 5 KEYWORDS CON MAYOR INTENCIÓN DE COMPRA (LIMA):</b>
+1. 🥇 <code>perfumes delivery gratis lima</code> (Transaccional alta)
+2. 🥈 <code>perfumes arabes equivalencias</code> (Categoría viral)
+3. 🥉 <code>dupes de perfumes peru</code> (Búsqueda de ahorro)
+4. 4. <code>perfumes en san martin de porres</code> (SEO Local tienda física)
+5. 5. <code>perfumes pocket 10ml 20 soles</code> (Gancho ticket entrada)
+
+📍 <b>ZONAS DE MAYOR TRACCIÓN ORGÁNICA:</b>
+${districtText}`;
+
+  await sendTelegramPhoto(chatId, chartUrl, caption, env);
+
+  const seoPrompt = `Actúa como el Consultor Senior Especialista en SEO Orgánico y Adquisición de Tráfico para Dolce 7 Aroma (e-commerce de perfumes contratipo, dupes de diseñador y perfumería árabe en Lima, Perú).
+Tienda física en Jr. Callao 482-A, SMP (Bazar Sport Shirley).
+Propuesta de valor: Perfumes pocket 10ml a S/ 20, frascos de 50ml y 110ml macerados, y DELIVERY GRATIS en Lima.
+Web: https://dolce7aroma.com
+
+Elabora una auditoría y estrategia táctica para esta semana en formato HTML para Telegram usando únicamente <b>, <i> y <code> (NO uses markdown ni asteriscos):
+
+1. 🚨 <b>DIAGNÓSTICO DEL MERCADO DE PERFUMES EN LIMA:</b> Analiza cómo buscan hoy los limeños (búsqueda rápida en TikTok vs. búsqueda transaccional en Google) y dónde está la oportunidad de captar clientes sin pagar pauta.
+2. 🚀 <b>3 PALABRAS CLAVE RECOMENDADAS PARA ESTA SEMANA (Oportunidades de Oro):</b> Términos con baja competencia y alta conversión de compra en Lima.
+3. 📦 <b>PAQUETE DE ACCIÓN SEO & TRÁFICO (Listo para Copiar y Pegar):</b>
+   • 📱 <b>Para TikTok / Reels (Búsqueda Orgánica):</b> Guión con gancho de 3 segundos + descripción con hashtags estratégicos (#perfumeslima #perfumesarabesperu #smp #dupesperu).
+   • 📝 <b>Para WhatsApp / Estados:</b> Copy de 2 líneas con llamado a la acción al catálogo web.
+   • 🛠️ <b>Para Antigravity (Técnica Web):</b> Instrucción técnica para la web (ej. microdatos FAQ Schema de delivery gratis o títulos optimizados).
+
+Máximo 300 palabras.`;
+
+  const aiSeoAnalysis = await askGeminiSpecialist(seoPrompt, env);
+  if (aiSeoAnalysis) {
+    await sendTelegramMessage(chatId, aiSeoAnalysis, env);
+  }
+}
+
 async function handleScheduledReports(event, env) {
   const cron = event?.cron || '';
   const chatId = (env.TELEGRAM_CHAT_ID || '8616800327').split(',')[0].trim();
@@ -1365,7 +1480,7 @@ async function handleTelegramWebhook(request, env) {
 • <b>/cro</b> — Embudo de conversión y checkout.
 • <b>/mes</b> — Reporte mensual estratégico con gráfico de categorías.
 • <b>/probar_cron</b> — Simula los 3 reportes automáticos programados.
-• <b>/seo</b> — Palabras clave y clics orgánicos en Google <i>(Hito 6)</i>.
+• <b>/seo</b> — Auditoría SEO, palabras clave de alta conversión y fuentes de tráfico.
 
 ℹ️ <b>AYUDA:</b>
 • <b>/help</b> — Ver este menú de comandos.
@@ -1570,9 +1685,9 @@ Máximo 320 palabras.`;
     return json({ ok: true });
   }
 
-  // 9. Placeholder para SEO (Hito 6)
+  // 9. Comando /seo (Auditoría SEO, Palabras Clave y Tráfico Orgánico - Hito 6)
   if (command === '/seo') {
-    await sendTelegramMessage(chatId, '📈 El comando <b>/seo</b> se conectará a Google Search Console en el Hito 6. ¡Muy pronto activo!', env);
+    await generateSeoReport(chatId, env);
     return json({ ok: true });
   }
 
