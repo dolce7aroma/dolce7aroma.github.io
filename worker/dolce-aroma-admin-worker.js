@@ -415,6 +415,53 @@ Total: S/ ${record.total}`;
 // Pedido enviado por un CLIENTE (no requiere ADMIN_KEY — es público, pero no toca el repo,
 // solo dispara avisos por correo/Telegram si esos secretos están configurados y lo guarda
 // en KV si el binding ORDERS está enlazado).
+// ─── Automatización Google Sheets (Fase 4) ───
+
+async function syncOrderToGoogleSheets(record, env, action = 'insert') {
+  const webhookUrl = env.GOOGLE_SHEETS_WEBHOOK_URL;
+  if (!webhookUrl) return false;
+
+  const itemsSummary = (record.items || []).map(it => {
+    const name = it.name || it.titulo || 'Perfume';
+    const ml = it.ml ? ` (${it.ml}ml)` : '';
+    const qty = it.qty || 1;
+    return `${qty}x ${name}${ml}`;
+  }).join(', ');
+
+  const dateObj = record.creadoEn ? new Date(record.creadoEn) : new Date();
+  const peruDate = new Date(dateObj.getTime() - 5 * 3600 * 1000).toISOString().replace('T', ' ').slice(0, 19);
+
+  const payload = {
+    action,
+    id: record.id,
+    fecha: peruDate,
+    nombre: record.nombre,
+    telefono: record.telefono,
+    provincia: record.provincia || 'Lima',
+    distrito: record.distrito,
+    direccion: record.direccion,
+    referencia: record.referencia || '',
+    productos: itemsSummary,
+    total: Number(record.total || 0).toFixed(2),
+    metodoPago: record.metodoPago || 'No especificado',
+    estado: record.estado || 'nuevo',
+    esRegalo: record.esRegalo ? 'Sí' : 'No',
+    origen: record.origen || 'directo'
+  };
+
+  try {
+    const res = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.ok;
+  } catch (e) {
+    console.error('Error syncing to Google Sheets:', e);
+    return false;
+  }
+}
+
 async function handleSubmitOrder(request, env) {
   const ip = request.headers.get('cf-connecting-ip');
   if (!(await checkRateLimit(ip, env))) {
@@ -457,6 +504,9 @@ async function handleSubmitOrder(request, env) {
     catch (e) { /* si falla el guardado, igual seguimos con los avisos */ }
   }
 
+    // Sincronización automática con Google Sheets (Fase 4)
+  await syncOrderToGoogleSheets(record, env, 'insert').catch(() => {});
+
   const notified = await notifyOwner(`Nuevo pedido de ${nombre}`, orderSummaryText(record), env);
   return json({ ok: true, orderId, notified });
 }
@@ -498,6 +548,7 @@ async function handleUpdateOrderStatus(request, env) {
     record.estado = estado;
     record.actualizadoEn = new Date().toISOString();
     await env.ORDERS.put(`order:${orderId}`, JSON.stringify(record));
+    await syncOrderToGoogleSheets(record, env, 'update').catch(() => {});
     return json({ ok: true, order: record });
   } catch (e) {
     return json({ ok: false, error: String(e.message || e) }, 502);
@@ -1597,6 +1648,7 @@ async function handleTelegramWebhook(request, env) {
 • <b>/probar_cron</b> — Simula los 3 reportes automáticos programados.
 • <b>/seo</b> — Auditoría SEO, palabras clave de alta conversión y fuentes de tráfico.
 • <b>/precios</b> — Consulta de precios, presentaciones y stock en vivo (ej. <code>/precios asad</code>).
+• <b>/sheets</b> — Estado y sincronización con Google Sheets (Usa <code>/sheets sync</code> para sincronizar todo).
 
 ℹ️ <b>AYUDA:</b>
 • <b>/help</b> — Ver este menú de comandos.
@@ -1807,6 +1859,68 @@ Máximo 320 palabras.`;
     return json({ ok: true });
   }
 
+  // 11. Comando /sheets (Automatización y Sincronización con Google Sheets - Fase 4)
+  if (command === '/sheets' || command === '/sheet') {
+    const isSync = args.includes('sync') || args.includes('sincronizar') || args.includes('todos');
+    const webhookUrl = env.GOOGLE_SHEETS_WEBHOOK_URL;
+    const sheetPublicUrl = env.GOOGLE_SHEETS_URL || 'https://docs.google.com/spreadsheets/';
+
+    if (!webhookUrl) {
+      const noUrlMsg = `📊 <b>[AUTOMATIZACIÓN GOOGLE SHEETS · FASE 4]</b> 🌸
+
+⚠️ <b>Estado:</b> Pendiente de enlazar URL de Webhook.
+
+Para que cada pedido se anote automáticamente en tu Google Sheets:
+1. Crea tu hoja en Google Drive y abre <i>Extensiones → Apps Script</i>.
+2. Pega el script oficial de Dolce 7 Aroma (disponible en <code>docs/7_AUTOMATIZACION_GOOGLE_SHEETS.md</code>).
+3. Publica como Web App y añade la URL en Cloudflare como variable secreta <code>GOOGLE_SHEETS_WEBHOOK_URL</code>.
+
+<i>💡 Revisa la guía paso a paso en tu repositorio.</i>`;
+      await sendTelegramMessage(chatId, noUrlMsg, env);
+      return json({ ok: true });
+    }
+
+    if (isSync) {
+      await sendTelegramMessage(chatId, '⏳ <i>Iniciando sincronización de todos los pedidos históricos con Google Sheets...</i>', env);
+      if (!env.ORDERS) {
+        await sendTelegramMessage(chatId, '⚠️ No hay almacenamiento KV ORDERS configurado.', env);
+        return json({ ok: true });
+      }
+
+      const listed = await env.ORDERS.list({ prefix: 'order:', limit: 500 });
+      const orders = (await Promise.all(
+        listed.keys.map(k => env.ORDERS.get(k.name).then(v => v ? JSON.parse(v) : null))
+      )).filter(Boolean);
+
+      orders.sort((a, b) => (a.creadoEn || '').localeCompare(b.creadoEn || ''));
+
+      let syncedCount = 0;
+      for (const o of orders) {
+        const ok = await syncOrderToGoogleSheets(o, env, 'insert');
+        if (ok) syncedCount++;
+      }
+
+      const syncedMsg = `✅ <b>¡Sincronización Completada!</b> 🌸
+Se enviaron <b>${syncedCount} de ${orders.length} pedidos</b> a tu Google Sheets en tiempo real.
+
+📊 <a href="${sheetPublicUrl}">Abrir Hoja de Cálculo en Google Drive 🔗</a>`;
+      await sendTelegramMessage(chatId, syncedMsg, env);
+      return json({ ok: true });
+    }
+
+    // Estado general de Google Sheets
+    const statusMsg = `📊 <b>[GOOGLE SHEETS · CONECTADO]</b> 🟢 🌸
+El Worker está enlazado a tu hoja de cálculo. Cada pedido nuevo se registra automáticamente en tiempo real.
+
+🔗 <b>Acceso Rápido:</b>
+<a href="${sheetPublicUrl}">Ver Hoja de Pedidos en Google Drive</a>
+
+🔄 <b>Sincronización Histórica:</b>
+Escribe <code>/sheets sync</code> si deseas re-exportar todos los pedidos de la base de datos a la hoja.`;
+    await sendTelegramMessage(chatId, statusMsg, env);
+    return json({ ok: true });
+  }
+
   // 10. Comando /precios o /precio (Catálogo de Precios y Stock en Tiempo Real - Hito 7)
   if (command === '/precios' || command === '/precio') {
     await handlePreciosCommand(chatId, args, env);
@@ -1878,6 +1992,25 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/api/mark-gift-paid') {
       return handleMarkGiftPaid(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/sync-sheets') {
+      const body = await request.json().catch(() => ({}));
+      if (body.key !== env.ADMIN_KEY) return json({ ok: false, error: 'No autorizado' }, 401);
+      if (!env.GOOGLE_SHEETS_WEBHOOK_URL) return json({ ok: false, error: 'GOOGLE_SHEETS_WEBHOOK_URL no configurado' }, 400);
+      if (!env.ORDERS) return json({ ok: false, error: 'ORDERS KV no enlazado' }, 400);
+
+      const listed = await env.ORDERS.list({ prefix: 'order:', limit: 500 });
+      const orders = (await Promise.all(
+        listed.keys.map(k => env.ORDERS.get(k.name).then(v => v ? JSON.parse(v) : null))
+      )).filter(Boolean);
+
+      orders.sort((a, b) => (a.creadoEn || '').localeCompare(b.creadoEn || ''));
+      let synced = 0;
+      for (const o of orders) {
+        const ok = await syncOrderToGoogleSheets(o, env, 'insert');
+        if (ok) synced++;
+      }
+      return json({ ok: true, total: orders.length, synced });
     }
     if (url.pathname === '/api/debug-telegram') {
       const token = env.TELEGRAM_BOT_TOKEN;

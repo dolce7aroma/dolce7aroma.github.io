@@ -21,6 +21,8 @@ Para mantener este proyecto escalable y fácil de auditar, la documentación se 
    *Tablero vivo de auditoría, matriz de pendientes con semáforo y plan estratégico de visibilidad local (Punto SMP).*
 7. [📊 Plan de Inteligencia Comercial y Reportería Automatizada](docs/6_SISTEMA_REPORTERIA_E_INTELIGENCIA.md)
    *Sistema de monitoreo, bot interactivo de Telegram, analítica CRO/SEO y alertas de campañas masivas con IA.*
+8. [📈 Automatización de Pedidos en Google Sheets](docs/7_AUTOMATIZACION_GOOGLE_SHEETS.md)
+   *Conexión directa en tiempo real del Worker a Google Drive para control contable y logístico.*
 
 ---
 > ⚠️ **Recordatorio de Seguridad:** Nunca guardes contraseñas reales (como el `ADMIN_KEY` o tokens de tarjetas) en este repositorio. Mantén tus credenciales seguras en un administrador de contraseñas local o un archivo `.txt` fuera de este proyecto.

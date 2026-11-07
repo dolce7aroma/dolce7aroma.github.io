@@ -25,8 +25,8 @@ flowchart TD
     Fase2 --> SEO["Optimización SEO On-Page & Keywords<br/>(🟢 100% EN PRODUCCIÓN)"]
     SEO --> Reporteria["Sistema de Reportería e Inteligencia Comercial IA<br/>(🟢 100% EN PRODUCCIÓN v2.4.0)"]
     Reporteria --> Fase3["Fase 3: Visibilidad Exterior & Google Maps<br/>(🟢 GUÍA ESTRATÉGICA ACTIVA)"]
-    Fase3 --> Fase4["Fase 4: Conexión Google Sheets & Worker<br/>(⏳ Siguiente Automatización de Pedidos)"]
-    Fase4 --> Fase5["Fase 5: Material POP Mostrador A4 & Manuales<br/>(Diseño Lámina 2 Caras + Manual Operativo)"]
+    Fase3 --> Fase4["Fase 4: Conexión Google Sheets & Worker<br/>(🟢 100% IMPLEMENTADO EN WORKER)"]
+    Fase4 --> Fase5["Fase 5: Material POP Mostrador A4 & Manuales<br/>(⏳ SIGUIENTE HITO ACTIVO)"]
 ```
 
 ---
