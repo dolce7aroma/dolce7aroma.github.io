@@ -821,6 +821,54 @@ function isArabeBrand(perfumeName) {
   return false;
 }
 
+
+// ─── Cerebro IA (Especialista Gemini) & Salud Web ───
+
+async function measureWebsiteHealth() {
+  const t0 = Date.now();
+  try {
+    const res = await fetch('https://dolce7aroma.com', { method: 'GET', headers: { 'User-Agent': 'DolceHealthBot/1.0' } });
+    const latency = Date.now() - t0;
+    const isOk = res.ok;
+    return {
+      status: res.status,
+      latencyMs: latency,
+      badge: isOk && latency < 1000 ? '🟢 <b>VERDE</b> (Óptimo)' : isOk ? '🟡 <b>ÁMBAR</b> (Lento)' : '🔴 <b>ROJO</b> (Caída)'
+    };
+  } catch (e) {
+    return { status: 500, latencyMs: 0, badge: '🔴 <b>ROJO</b> (Sin conexión)' };
+  }
+}
+
+async function askGeminiSpecialist(prompt, env) {
+  const apiKey = env.GEMINI_API_KEY || '';
+  if (!apiKey) return null;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 1000
+        }
+      })
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    if (text) {
+      // Limpiar asteriscos de markdown para evitar errores con parse_mode HTML
+      text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\*(.*?)\*/g, '<i>$1</i>');
+    }
+    return text;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function generateWeeklyReport(chatId, env, customHeader = null) {
   if (!env.ORDERS) {
     await sendTelegramMessage(chatId, '⚠️ <b>Alerta:</b> El almacenamiento KV (<code>ORDERS</code>) no está enlazado.', env);
@@ -850,6 +898,7 @@ async function generateWeeklyReport(chatId, env, customHeader = null) {
   const thisWeekOrders = [];
   const prevWeekOrders = [];
   const perfumeCounts = {};
+  const districtCounts = {};
 
   for (const o of orders) {
     if (!o.creadoEn || o.estado === 'cancelado') continue;
@@ -861,6 +910,10 @@ async function generateWeeklyReport(chatId, env, customHeader = null) {
       const dayIdx = (oPeru.getUTCDay() + 6) % 7;
       thisWeekDaily[dayIdx] += total;
       thisWeekOrders.push(o);
+
+      if (o.distrito) {
+        districtCounts[o.distrito] = (districtCounts[o.distrito] || 0) + 1;
+      }
 
       for (const it of (o.items || [])) {
         const name = it.name || it.titulo || 'Perfume';
@@ -881,11 +934,10 @@ async function generateWeeklyReport(chatId, env, customHeader = null) {
     const pct = ((thisWeekTotal - prevWeekTotal) / prevWeekTotal) * 100;
     wowBadge = pct >= 0 ? `📈 +${pct.toFixed(1)}%` : `📉 ${pct.toFixed(1)}%`;
   } else if (thisWeekTotal > 0) {
-    wowBadge = '📈 +100% (nueva semana)';
+    wowBadge = '📈 +100%';
   }
 
   const ticketProm = thisWeekOrders.length > 0 ? (thisWeekTotal / thisWeekOrders.length).toFixed(2) : '0.00';
-
   const topSorted = Object.entries(perfumeCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
   let topText = '• Sin ventas aún esta semana';
   if (topSorted.length > 0) {
@@ -895,6 +947,10 @@ async function generateWeeklyReport(chatId, env, customHeader = null) {
     }).join('\n');
   }
 
+  // 1. Salud Web en vivo
+  const health = await measureWebsiteHealth();
+
+  // 2. Gráfico QuickChart
   const chartConfig = {
     type: 'bar',
     data: {
@@ -928,21 +984,53 @@ async function generateWeeklyReport(chatId, env, customHeader = null) {
   };
 
   const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=650&h=380&bkg=white`;
-  const header = customHeader || '📊 <b>[REPORTE SEMANAL · VENTAS]</b> 🌸';
+  const header = customHeader || '⚡ <b>[REPORTE SEMANAL · DOLCE 7 AROMA]</b> 🌸';
 
+  // Mensaje 1: Gráfico y Resumen Numérico
   const caption = `${header}
-🗓 <i>Lun - Dom (Hora Perú)</i>
+🗓 <i>Lunes a Domingo (Hora Perú)</i>
 
-💰 <b>Facturación:</b> S/ ${thisWeekTotal.toFixed(2)} (${wowBadge})
+🩺 <b>Salud Web:</b> ${health.badge} (Latencia: ${health.latencyMs}ms)
+💰 <b>Facturación:</b> S/ ${thisWeekTotal.toFixed(2)} (${wowBadge} WoW)
 📦 <b>Pedidos:</b> ${thisWeekOrders.length} (Ticket prom: S/ ${ticketProm})
-⏮️ <b>Semana anterior:</b> S/ ${prevWeekTotal.toFixed(2)} (${prevWeekOrders.length} pedidos)
 
 🏆 <b>Top Perfumes de la Semana:</b>
-${topText}
-
-<i>💡 Tip: Escribe /cro para ver el embudo de conversión.</i>`;
+${topText}`;
 
   await sendTelegramPhoto(chatId, chartUrl, caption, env);
+
+  // Mensaje 2: Análisis del Especialista IA (Gemini) con Diagnóstico y Paquetes de Acción
+  const topDistricts = Object.entries(districtCounts).sort((a,b) => b[1] - a[1]).slice(0, 3).map(([d, q]) => `${d} (${q})`).join(', ') || 'Lima Centro / Norte';
+  const topPerfumeList = topSorted.map(([n, q]) => `${n} (${q} uds)`).join(', ') || 'Sin ventas registradas aún';
+
+  const aiPrompt = `Actúa como el Especialista IA de E-commerce, CRO y SEO de Dolce 7 Aroma (perfumería en Lima, Perú).
+Datos de la semana:
+- Facturación: S/ ${thisWeekTotal.toFixed(2)} (${wowBadge} WoW)
+- Pedidos: ${thisWeekOrders.length} (Ticket promedio: S/ ${ticketProm})
+- Top perfumes vendidos: ${topPerfumeList}
+- Distritos con pedidos: ${topDistricts}
+- Salud Web: Estado HTTP ${health.status}, Latencia ${health.latencyMs}ms
+
+Redacta un análisis profesional directo y accionable para Telegram en formato HTML usando <b> y <i> (NO uses markdown ni asteriscos).
+Estructura obligatoria:
+
+🔍 <b>CONTROL DE SEO Y TENDENCIAS:</b>
+• 2 o 3 palabras clave específicas que los clientes buscan en Lima (ej. perfumes árabes, equivalencias Grasse, etc.) y cómo aprovecharlas en la web.
+
+🧠 <b>DIAGNÓSTICO DEL ESPECIALISTA IA:</b>
+• Análisis crítico de los números: qué funcionó, riesgos detectados y qué ajustar con urgencia para llegar a una web estable de alto rendimiento.
+
+📦 <b>PAQUETES DE ACCIÓN LISTOS (Copia y Pega):</b>
+• 🎨 <b>Para Canva/Diseño:</b> Prompt exacto para crear el banner visual de la semana.
+• ✍️ <b>Para TikTok/WhatsApp:</b> Guion o copy corto para historias/estados.
+• 🛠️ <b>Para Antigravity (Web):</b> Instrucción técnica o de catálogo para aplicar en la web.
+
+Máximo 280 palabras.`;
+
+  const aiAnalysis = await askGeminiSpecialist(aiPrompt, env);
+  if (aiAnalysis) {
+    await sendTelegramMessage(chatId, aiAnalysis, env);
+  }
 }
 
 async function generateCroReport(chatId, env, customHeader = null) {
@@ -1026,13 +1114,6 @@ async function generateCroReport(chatId, env, customHeader = null) {
   const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(croChartConfig))}&w=650&h=380&bkg=white`;
   const header = customHeader || '🎯 <b>[EMBUDO DE CONVERSIÓN & CRO]</b> 🌸';
 
-  let croTip = 'Buen flujo. Mantén el botón de WhatsApp visible tras la confirmación de Yape.';
-  if (pendingOrdersCount > paidOrdersCount) {
-    croTip = '🚨 <b>Fricción detectada:</b> Clientes inician pedido pero no envían captura a WhatsApp. Agrega un recordatorio automático.';
-  } else if (trioRate < 15) {
-    croTip = '💡 <b>Oportunidad AOV:</b> Solo el ' + trioRate + '% aprovecha la promo del Trío. Destaca el ahorro en el carrito.';
-  }
-
   const caption = `${header}
 <i>Radiografía de Comportamiento y Checkout</i>
 
@@ -1045,12 +1126,32 @@ async function generateCroReport(chatId, env, customHeader = null) {
 🛍️ <b>Tasa de Tríos (Upsell):</b> ${trioRate}% de pedidos
 
 📍 <b>Top Distritos:</b>
-${distText}
-
-💡 <b>Recomendación Táctica:</b>
-${croTip}`;
+${distText}`;
 
   await sendTelegramPhoto(chatId, chartUrl, caption, env);
+
+  // Análisis Especialista CRO Gemini
+  const croPrompt = `Actúa como Especialista en CRO (Optimización de Conversión) y UX para Dolce 7 Aroma (tienda de perfumería en Lima, Perú).
+Datos del embudo:
+- Total pedidos iniciados: ${totalOrdersCount}
+- Pedidos completados y pagados: ${paidOrdersCount} (${checkoutSuccessRate}%)
+- Pendientes esperando comprobante WhatsApp: ${pendingOrdersCount}
+- Cancelados / fuga: ${cancelledOrdersCount}
+- Regalos canjeados: ${claimedGiftsCount} de ${totalGiftsCount} (${giftSuccessRate}%)
+- Pedidos que compraron combo Trío: ${trioRate}%
+
+Redacta un análisis CRO táctico para Telegram en formato HTML usando <b> y <i> (NO uses markdown ni asteriscos):
+1. 🚨 <b>DETECCIÓN DE FRICCIÓN (¿Dónde se fuga el cliente?):</b> Señala el cuello de botella exacto (ej. salto de Yape a WhatsApp o selección de distrito).
+2. 💡 <b>RECOMENDACIÓN DE MEJORA CONTINUA (Para los siguientes 15 días):</b> Táctica para elevar el ticket promedio y la tasa de cierre.
+3. 📦 <b>PAQUETE CRO LISTO:</b>
+   • ✍️ <b>Mensaje de Recuperación para WhatsApp:</b> Texto persuasivo para contactar a los que dejaron el pedido en estado 'nuevo'.
+   • 🛠️ <b>Instrucción para Antigravity:</b> Qué cambio hacer en la bolsa de compras o checkout.
+Máximo 260 palabras.`;
+
+  const aiCroAnalysis = await askGeminiSpecialist(croPrompt, env);
+  if (aiCroAnalysis) {
+    await sendTelegramMessage(chatId, aiCroAnalysis, env);
+  }
 }
 
 async function generateMonthlyReport(chatId, env, customHeader = null, isClosedMonth = false) {
@@ -1241,7 +1342,7 @@ async function handleTelegramWebhook(request, env) {
 ⚡ <b>COMANDOS OPERATIVOS:</b>
 • <b>/resumen</b> — Ventas de hoy, pedidos pendientes y balance general.
 • <b>/top</b> — Ranking de los 5 perfumes más vendidos en el sitio.
-• <b>/campana</b> — Días restantes para la próxima fecha comercial masiva.
+• <b>/campana</b> — Reloj de campañas comerciales (Usa <code>/campana plan</code> para diseñar la estrategia con IA).
 
 📊 <b>REPORTES & ANÁLISIS:</b>
 • <b>/semana</b> — Reporte semanal con gráfico comparativo de barras.
@@ -1365,7 +1466,7 @@ ${topList}
     return json({ ok: true });
   }
 
-  // 4. Comando /campana
+  // 4. Comando /campana (Director de Campañas de Alta Demanda con IA)
   if (command === '/campana') {
     const next = getNextCampaign();
     if (!next) {
@@ -1373,9 +1474,12 @@ ${topList}
       return json({ ok: true });
     }
 
-    const alertStatus = next.daysLeft <= 30
-      ? '🚨 <b>¡ALERTA ACTIVA!</b> Quedan menos de 30 días. La campaña debe estar en fase de preparación.'
-      : '⏳ <b>En espera:</b> La preparación arranca al llegar a los 30 días previos.';
+    const forcePlan = args.includes('plan') || args.includes('ia') || args.includes('ahora');
+    const isAlertActive = next.daysLeft <= 30;
+
+    const alertStatus = isAlertActive
+      ? '🚨 <b>¡ALERTA DE CAMPAÑA ACTIVADA!</b> Quedan 30 días o menos para la fecha clave. El plan comercial debe ejecutarse ahora.'
+      : '⏳ <b>Estado:</b> En espera de la ventana de 30 días. <i>(Tip: Escribe <code>/campana plan</code> si quieres que la IA diseñe la estrategia anticipada hoy mismo).</i>';
 
     const campMsg = `🎯 <b>[RELOJ DE CAMPAÑAS COMERCIALES]</b> 🌸
 
@@ -1383,12 +1487,42 @@ ${topList}
 🗓️ <b>Día Central:</b> ${next.targetDate}
 ⏱️ <b>Faltan:</b> ${next.daysLeft} días
 
-🎯 <b>Foco Comercial Sugerido:</b>
+🎯 <b>Enfoque Comercial Sugerido:</b>
 ${next.focus}
 
 ${alertStatus}`;
 
     await sendTelegramMessage(chatId, campMsg, env);
+
+    // Si faltan <= 30 días O si el usuario pide ver el plan anticipado con '/campana plan'
+    if (isAlertActive || forcePlan) {
+      await sendTelegramMessage(chatId, `🧠 <i>El Director Especialista IA está elaborando el Plan Comercial para ${next.name}...</i>`, env);
+
+      const campPrompt = `Actúa como el Director Especialista en Campañas Comerciales de Dolce 7 Aroma (tienda de perfumería árabe y equivalente en Lima, Perú).
+Estamos preparando la campaña para: ${next.name} (Día central: ${next.targetDate}, faltan ${next.daysLeft} días).
+Enfoque principal: ${next.focus}.
+
+Diseña el Plan Estratégico de Campaña en formato HTML para Telegram usando <b> y <i> (NO uses markdown ni asteriscos):
+
+1. 🎯 <b>OBJETIVO & PROMOCIÓN ESTRELLA:</b> Propón una oferta atractiva y rentable (ej. Trío/Dúo festivo, caja de regalo prémium o decant 10ml de cortesía).
+2. 🏆 <b>TOP 3 PERFUMES A IMPULSAR:</b> Fragancias ideales para esta temporada (marcas como Lattafa, Afnan o diseñador) y por qué son el regalo perfecto.
+3. 📅 <b>CRONOGRAMA DE EJECUCIÓN (3 Hitos Clave):</b>
+   • Hito 1 (Día 1-10): Qué preparar en diseño, fotos y vitrina.
+   • Hito 2 (Día 11-20): Activación de preventa por redes y WhatsApp.
+   • Hito 3 (Día 21-30): Estrategia de entrega rápida express de última hora en Lima.
+4. 📦 <b>PAQUETES LISTOS PARA ACCIÓN:</b>
+   • 🎨 <b>Para Canva/Diseño:</b> Prompt exacto para crear el banner del carrusel web y post de Instagram.
+   • ✍️ <b>Para WhatsApp / Redes:</b> Copy persuasivo de preventa para estados que genere urgencia.
+   • 🛠️ <b>Para Antigravity (Web):</b> Instrucción técnica para la web (banners hero, modal de regalo o banners de oferta).
+
+Máximo 320 palabras.`;
+
+      const aiPlan = await askGeminiSpecialist(campPrompt, env);
+      if (aiPlan) {
+        await sendTelegramMessage(chatId, aiPlan, env);
+      }
+    }
+
     return json({ ok: true });
   }
 
