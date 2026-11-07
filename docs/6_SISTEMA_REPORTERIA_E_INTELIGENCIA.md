@@ -104,7 +104,7 @@ El bot implementa un Webhook en Cloudflare Worker que procesa comandos bajo vali
 
 | Hito | Actividad / Entregable | Estado |
 | :---: | :--- | :---: |
-| **HITO 1** | **Estructura del Bot y Comandos Telegram (`/help`, `/resumen`, `/top`, `/campana`):**<br>Configuración de Webhook en Worker (`POST /api/telegram-webhook`), validación estricta de `TELEGRAM_CHAT_ID` y respuestas interactivas desde KV. | 🟢 Completado en Código (Pendiente Deploy y Vinculación) |
+| **HITO 1** | **Estructura del Bot y Comandos Telegram (`/help`, `/resumen`, `/top`, `/campana`):**<br>Configuración de Webhook en Worker (`POST /api/telegram-webhook`), validación estricta de `TELEGRAM_CHAT_ID` y respuestas interactivas desde KV. | ✅ Desplegado y Activo en Producción (`dolce7aroma-pedidos-bot`) |
 | **HITO 2** | **Generador de Gráficos Estadísticos (QuickChart API):**<br>Funciones para generar gráficos PNG de barras, embudos y donas y enviarlos vía Telegram. | ⏳ Pendiente |
 | **HITO 3** | **Automatización Periódica (Cron Triggers):**<br>Disparadores programados (Lunes 8am, Día 16 y Día 1) en Cloudflare Worker. | ⏳ Pendiente |
 | **HITO 4** | **Integración del Especialista IA (Gemini API):**<br>Prompting especializado para diagnóstico, semáforos y generación de paquetes para otras IAs. | ⏳ Pendiente |

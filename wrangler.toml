@@ -1,4 +1,4 @@
-name = "dolce7aroma-github-io"
+name = "dolce7aroma-pedidos-bot"
 main = "worker/dolce-aroma-admin-worker.js"
 compatibility_date = "2024-11-01"
 
