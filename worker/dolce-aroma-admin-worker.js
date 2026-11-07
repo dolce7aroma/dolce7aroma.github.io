@@ -731,6 +731,249 @@ async function handleChargeCulqi(request, env) {
   }
 }
 
+// ─── Bot de Telegram Interactivo (Reportería & Comandos) ───
+
+async function sendTelegramMessage(chatId, text, env, extra = {}) {
+  if (!env.TELEGRAM_BOT_TOKEN) return false;
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: 'HTML',
+        ...extra
+      }),
+    });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+function getNextCampaign(now = new Date()) {
+  const currentYear = now.getUTCFullYear();
+  const peruNow = new Date(now.getTime() - 5 * 3600 * 1000);
+
+  const rawCampaigns = [
+    { name: 'San Valentín 💘', month: 2, day: 14, focus: 'Regalos para parejas y Dúos' },
+    { name: 'Día de la Mujer 🌸', month: 3, day: 8, focus: 'Fragancias florales/dulces' },
+    { name: 'Día de la Madre 👑', month: 5, day: 10, focus: 'Frascos 110ml y perfumes prémium' },
+    { name: 'Día del Padre 🎩', month: 6, day: 21, focus: 'Perfumes amaderados y árabes intensos' },
+    { name: 'Fiestas Patrias 🇵🇪', month: 7, day: 28, focus: 'Perfumes pocket 10ml para viajes' },
+    { name: 'Black Friday / Cyber ⚡', month: 11, day: 27, focus: 'Liquidación de stock y tríos con descuento' },
+    { name: 'Navidad & Fin de Año 🎄', month: 12, day: 24, focus: 'Regalos express y preventa anticipada' }
+  ];
+
+  let next = null;
+  let minDiff = Infinity;
+
+  for (const c of rawCampaigns) {
+    let target = new Date(Date.UTC(currentYear, c.month - 1, c.day, 5, 0, 0));
+    if (target.getTime() < peruNow.getTime()) {
+      target = new Date(Date.UTC(currentYear + 1, c.month - 1, c.day, 5, 0, 0));
+    }
+    const diffDays = Math.ceil((target.getTime() - peruNow.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays >= 0 && diffDays < minDiff) {
+      minDiff = diffDays;
+      next = { ...c, daysLeft: diffDays, targetDate: target.toISOString().slice(0, 10) };
+    }
+  }
+  return next;
+}
+
+async function handleTelegramWebhook(request, env) {
+  const update = await request.json().catch(() => null);
+  if (!update) return json({ ok: true });
+
+  const msg = update.message || update.edited_message;
+  if (!msg || !msg.text) return json({ ok: true });
+
+  const chatId = String(msg.chat?.id || '');
+  const authorizedChatId = String(env.TELEGRAM_CHAT_ID || '');
+
+  // Validación estricta de seguridad: solo responde al administrador
+  if (!authorizedChatId || chatId !== authorizedChatId) {
+    await sendTelegramMessage(chatId, '⛔ <b>Acceso Restringido</b>\nEste bot es privado para la administración de Dolce 7 Aroma.', env);
+    return json({ ok: true });
+  }
+
+  const rawText = (msg.text || '').trim();
+  const parts = rawText.split(/\s+/);
+  const command = parts[0].toLowerCase().split('@')[0];
+
+  // 1. Comando /help o /start
+  if (command === '/help' || command === '/ayuda' || command === '/start') {
+    const helpMsg = `🌸 <b>DOLCE 7 AROMA — ASISTENTE INTELIGENTE</b> 🌸
+<i>Sistema de Control & Reportería Comercial</i>
+
+¡Hola! Aquí tienes los mandos disponibles para gestionar tu negocio:
+
+⚡ <b>COMANDOS OPERATIVOS:</b>
+• <b>/resumen</b> — Ventas de hoy, pedidos pendientes y balance general.
+• <b>/top</b> — Ranking de los 5 perfumes más vendidos en el sitio.
+• <b>/campana</b> — Días restantes para la próxima fecha comercial masiva.
+
+📊 <b>REPORTES & ANÁLISIS:</b>
+• <b>/semana</b> — Reporte semanal con gráfico comparativo <i>(Hito 2)</i>.
+• <b>/cro</b> — Embudo de conversión y tasa de abandono en checkout <i>(Hito 2)</i>.
+• <b>/seo</b> — Palabras clave y clics orgánicos en Google <i>(Hito 6)</i>.
+
+ℹ️ <b>AYUDA:</b>
+• <b>/help</b> — Ver este menú de comandos.
+
+<i>🔒 Modo Seguro: Respuestas exclusivas para tu cuenta administradora.</i>`;
+    await sendTelegramMessage(chatId, helpMsg, env);
+    return json({ ok: true });
+  }
+
+  // 2. Comando /resumen o /hoy
+  if (command === '/resumen' || command === '/hoy') {
+    if (!env.ORDERS) {
+      await sendTelegramMessage(chatId, '⚠️ <b>Alerta:</b> El almacenamiento KV (<code>ORDERS</code>) aún no está enlazado en este Worker.', env);
+      return json({ ok: true });
+    }
+
+    try {
+      const listed = await env.ORDERS.list({ prefix: 'order:', limit: 200 });
+      const orders = (await Promise.all(
+        listed.keys.map(k => env.ORDERS.get(k.name).then(v => v ? JSON.parse(v) : null))
+      )).filter(Boolean);
+
+      // Calcular fecha de hoy en hora Perú (UTC-5)
+      const now = new Date();
+      const peruDateStr = new Date(now.getTime() - 5 * 3600 * 1000).toISOString().slice(0, 10);
+
+      const ordersToday = orders.filter(o => {
+        if (!o.creadoEn) return false;
+        const d = new Date(new Date(o.creadoEn).getTime() - 5 * 3600 * 1000);
+        return d.toISOString().slice(0, 10) === peruDateStr;
+      });
+
+      const salesToday = ordersToday.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+      const pendingOrders = orders.filter(o => o.estado === 'nuevo');
+
+      const sevenDaysAgo = now.getTime() - 7 * 24 * 3600 * 1000;
+      const ordersWeek = orders.filter(o => new Date(o.creadoEn).getTime() >= sevenDaysAgo);
+      const salesWeek = ordersWeek.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+
+      // Últimos 3 pedidos para visualización rápida
+      orders.sort((a, b) => (b.creadoEn || '').localeCompare(a.creadoEn || ''));
+      const recent = orders.slice(0, 3);
+      let recentText = '';
+      if (recent.length > 0) {
+        recentText = '\n\n📋 <b>ÚLTIMOS PEDIDOS REGISTRADOS:</b>\n' + recent.map(o => {
+          const stBadge = o.estado === 'nuevo' ? '🟡 Nuevo' : o.estado === 'pagado' ? '🟢 Pagado' : `⚪ ${o.estado}`;
+          return `• <b>#${o.id}</b> — ${o.nombre} (S/ ${Number(o.total || 0).toFixed(2)}) · ${stBadge}`;
+        }).join('\n');
+      }
+
+      const summaryMsg = `⚡ <b>[RESUMEN OPERATIVO · DOLCE 7 AROMA]</b> 🌸
+📅 <i>Fecha: ${peruDateStr}</i>
+
+💰 <b>Ventas de Hoy:</b> S/ ${salesToday.toFixed(2)} (${ordersToday.length} pedido${ordersToday.length === 1 ? '' : 's'})
+🔔 <b>Pedidos Pendientes:</b> ${pendingOrders.length} por atender
+📈 <b>Últimos 7 días:</b> S/ ${salesWeek.toFixed(2)} (${ordersWeek.length} pedidos)${recentText}
+
+<i>💡 Tip: Usa /top para ver qué perfumes están saliendo más.</i>`;
+
+      await sendTelegramMessage(chatId, summaryMsg, env);
+    } catch (e) {
+      await sendTelegramMessage(chatId, `❌ Error consultando pedidos: ${e.message}`, env);
+    }
+    return json({ ok: true });
+  }
+
+  // 3. Comando /top
+  if (command === '/top') {
+    if (!env.ORDERS) {
+      await sendTelegramMessage(chatId, '⚠️ <b>Alerta:</b> El almacenamiento KV (<code>ORDERS</code>) aún no está enlazado.', env);
+      return json({ ok: true });
+    }
+
+    try {
+      const listed = await env.ORDERS.list({ prefix: 'order:', limit: 200 });
+      const orders = (await Promise.all(
+        listed.keys.map(k => env.ORDERS.get(k.name).then(v => v ? JSON.parse(v) : null))
+      )).filter(Boolean);
+
+      const counts = {};
+      for (const o of orders) {
+        if (o.estado === 'cancelado') continue;
+        for (const it of (o.items || [])) {
+          const name = it.name || it.titulo || 'Perfume';
+          const size = it.ml ? ` (${it.ml}ml)` : '';
+          const key = `${name}${size}`;
+          counts[key] = (counts[key] || 0) + (Number(it.qty) || 1);
+        }
+      }
+
+      const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+      if (sorted.length === 0) {
+        await sendTelegramMessage(chatId, '🏆 <b>[TOP PERFUMES]</b>\nAún no hay suficientes ventas registradas para armar el ranking.', env);
+        return json({ ok: true });
+      }
+
+      let topList = sorted.map(([name, qty], idx) => {
+        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}.`;
+        return `${medal} <b>${name}</b>: ${qty} unidad${qty === 1 ? '' : 'es'}`;
+      }).join('\n');
+
+      const topMsg = `🏆 <b>[TOP 5 PERFUMES MÁS VENDIDOS]</b> 🌸
+<i>Basado en el historial de pedidos completados en la web:</i>
+
+${topList}
+
+<i>💡 Usa estos perfumes para el carrusel de inicio y ofertas destacadas.</i>`;
+
+      await sendTelegramMessage(chatId, topMsg, env);
+    } catch (e) {
+      await sendTelegramMessage(chatId, `❌ Error consultando el top: ${e.message}`, env);
+    }
+    return json({ ok: true });
+  }
+
+  // 4. Comando /campana
+  if (command === '/campana') {
+    const next = getNextCampaign();
+    if (!next) {
+      await sendTelegramMessage(chatId, '🎯 <b>[CAMPAÑAS COMERCIALES]</b>\nNo hay campañas programadas próximamente.', env);
+      return json({ ok: true });
+    }
+
+    const alertStatus = next.daysLeft <= 30
+      ? '🚨 <b>¡ALERTA ACTIVA!</b> Quedan menos de 30 días. La campaña debe estar en fase de preparación.'
+      : '⏳ <b>En espera:</b> La preparación arranca al llegar a los 30 días previos.';
+
+    const campMsg = `🎯 <b>[RELOJ DE CAMPAÑAS COMERCIALES]</b> 🌸
+
+📅 <b>Próxima Fecha Clave:</b> ${next.name}
+🗓️ <b>Día Central:</b> ${next.targetDate}
+⏱️ <b>Faltan:</b> ${next.daysLeft} días
+
+🎯 <b>Foco Comercial Sugerido:</b>
+${next.focus}
+
+${alertStatus}`;
+
+    await sendTelegramMessage(chatId, campMsg, env);
+    return json({ ok: true });
+  }
+
+  // 5. Placeholders para Hitos posteriores
+  if (command === '/semana' || command === '/cro' || command === '/seo') {
+    await sendTelegramMessage(chatId, `📊 El comando <b>${command}</b> está asignado al siguiente hito de desarrollo (Hito 2 / Generador de Gráficos e IA). ¡Muy pronto activo!`, env);
+    return json({ ok: true });
+  }
+
+  // 6. Mensaje desconocido
+  await sendTelegramMessage(chatId, '❓ Comando no reconocido.\nEscribe <b>/help</b> para ver la lista de comandos disponibles.', env);
+  return json({ ok: true });
+}
+
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin');
@@ -782,6 +1025,14 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/api/mark-gift-paid') {
       return handleMarkGiftPaid(request, env);
+    }
+    if (url.pathname === '/api/telegram-webhook') {
+      if (request.method === 'POST') {
+        return handleTelegramWebhook(request, env);
+      }
+      if (request.method === 'GET') {
+        return json({ ok: true, status: 'Telegram webhook listening' });
+      }
     }
     return json({ ok: false, error: 'Ruta no encontrada' }, 404);
   },

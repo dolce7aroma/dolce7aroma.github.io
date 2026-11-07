@@ -17,6 +17,10 @@ Para mantener este proyecto escalable y fácil de auditar, la documentación se 
    *Tácticas para crear enlaces estratégicos (deep links) y uso de palabras clave en campañas publicitarias.*
 5. [🔧 Configuración Original y Despliegue](docs/0_CONFIG_ORIGINAL.md)
    *Manual técnico heredado sobre cómo se configuraron inicialmente Cloudflare, Resend, Telegram, GitHub Pages y el entorno local.*
+6. [📋 Reporte de Auditoría y Estado Técnico (06/11/2026)](docs/5_REPORTE_AUDITORIA_2026-11-06.md)
+   *Tablero vivo de auditoría, matriz de pendientes con semáforo y plan estratégico de visibilidad local (Punto SMP).*
+7. [📊 Plan de Inteligencia Comercial y Reportería Automatizada](docs/6_SISTEMA_REPORTERIA_E_INTELIGENCIA.md)
+   *Sistema de monitoreo, bot interactivo de Telegram, analítica CRO/SEO y alertas de campañas masivas con IA.*
 
 ---
 > ⚠️ **Recordatorio de Seguridad:** Nunca guardes contraseñas reales (como el `ADMIN_KEY` o tokens de tarjetas) en este repositorio. Mantén tus credenciales seguras en un administrador de contraseñas local o un archivo `.txt` fuera de este proyecto.
