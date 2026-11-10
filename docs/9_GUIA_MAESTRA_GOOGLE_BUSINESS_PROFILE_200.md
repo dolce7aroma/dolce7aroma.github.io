@@ -114,10 +114,10 @@ Sube estas 6 tarjetas a la sección **«Productos»** de Google Business Profile
 * **Descripción:** Presentación estándar para uso diario intensivo. Maceración prolongada para una fijación en piel de 8 a 12 horas continuas.
 * **Enlace:** `https://dolce7aroma.com/catalogo.html?tamano=50ml`
 
-### Producto 3: Frasco Prémium Tocador 110 ml
-* **Categoría:** *Presentación Prémium*
+### Producto 3: Frasco Grande 110 ml (Formato Ahorro)
+* **Categoría:** *Perfumes 110 ml* (o *Perfumería*)
 * **Precio:** `S/ 90.00`
-* **Descripción:** Frasco de lujo de 110 ml para tocador. Máximo ahorro y rendimiento con las equivalencias más cotizadas del mercado.
+* **Descripción:** La misma concentración macerada y fijación de 8 a 12 horas en piel de todas nuestras fragancias, en nuestra presentación más grande de 110 ml. Más cantidad de perfume por el mejor precio, ideal para tu fragancia favorita de uso diario.
 * **Enlace:** `https://dolce7aroma.com/catalogo.html?tamano=110ml`
 
 ### Producto 4: Perfumería Árabe Macerada

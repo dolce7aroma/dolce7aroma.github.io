@@ -18,7 +18,7 @@ El punto de venta cuenta con una plantilla imprimible oficial de 2 caras lista p
 3. **Escaparate de Precios y Formatos:**
    * **Frasco Pocket 10 ml:** `S/ 20.00` *(Ideal para la cartera, bolsillo o regalo espontáneo).*
    * **Frasco Macerado 50 ml:** `S/ 55.00 - S/ 60.00` *(Uso diario de alta fijación, 8 a 12 horas).*
-   * **Frasco Prémium 110 ml:** `S/ 90.00 - S/ 95.00` *(Presentación de lujo para tocador).*
+   * **Frasco Grande 110 ml:** `S/ 90.00 - S/ 95.00` *(Misma fórmula y calidad macerada, mayor cantidad de perfume por el mejor precio).*
    * **Perfumería Árabe:** Desde `S/ 20.00` *(Lattafa, Afnan, notas orientales intensas).*
 4. **Cierre Digital (Call to Action):**
    * Código QR grande de alta lectura hacia: `https://dolce7aroma.com/catalogo.html?utm_source=pop_mostrador&utm_medium=qr&utm_campaign=mostrador_smp`.
