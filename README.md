@@ -25,6 +25,8 @@ Para mantener este proyecto escalable y fácil de auditar, la documentación se 
    *Conexión directa en tiempo real del Worker a Google Drive para control contable y logístico.*
 9. [🏷️ Material POP Mostrador A4 y Guía de Atención](docs/8_MATERIAL_POP_Y_GUIA_MOSTRADOR_A4.md)
    *Plantilla imprimible lista para portagráfico acrílico, libreto de venta cruzada en caja y manejo de objeciones.*
+10. [📍 Guía Maestra Google Business Profile al 200%](docs/9_GUIA_MAESTRA_GOOGLE_BUSINESS_PROFILE_200.md)
+    *Paso a paso antibloqueo, catálogo de productos, atributos comerciales y estrategia de 50+ reseñas en Google Maps.*
 
 ---
 > ⚠️ **Recordatorio de Seguridad:** Nunca guardes contraseñas reales (como el `ADMIN_KEY` o tokens de tarjetas) en este repositorio. Mantén tus credenciales seguras en un administrador de contraseñas local o un archivo `.txt` fuera de este proyecto.

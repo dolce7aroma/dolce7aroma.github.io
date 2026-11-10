@@ -24,8 +24,8 @@ flowchart TD
     Fase1["Fase 1: Auditoría Web & Punto SMP<br/>(🟢 100% EN PRODUCCIÓN)"] --> Fase2["Fase 2: Pop-up Web Punto Físico SMP<br/>(🟢 100% EN PRODUCCIÓN)"]
     Fase2 --> SEO["Optimización SEO On-Page & Keywords<br/>(🟢 100% EN PRODUCCIÓN)"]
     SEO --> Reporteria["Sistema de Reportería e Inteligencia Comercial IA<br/>(🟢 100% EN PRODUCCIÓN v2.4.0)"]
-    Reporteria --> Fase3["Fase 3: Visibilidad Exterior & Google Maps<br/>(🟢 GUÍA ESTRATÉGICA ACTIVA)"]
-    Fase3 --> Fase4["Fase 4: Conexión Google Sheets & Worker<br/>(🟢 100% IMPLEMENTADO EN WORKER)"]
+    Reporteria --> Fase3["Fase 3: Visibilidad Exterior & Google Maps<br/>(🟢 GUÍA AL 200% LISTA)"]
+    Fase3 --> Fase4["Fase 4: Conexión Google Sheets & Transición BD<br/>(🟢 COMPLETADO · En revisión con jnxcontrol)"]
     Fase4 --> Fase5["Fase 5: Material POP Mostrador A4 & Manuales<br/>(🟢 100% COMPLETADO & MAQUETADO)"]
 ```
 
@@ -123,11 +123,18 @@ El factor número 1 para subir al puesto 1 en Google Maps son las opiniones con 
 
 ---
 
-## 4. Fase 4: Automatización de Pedidos en Google Sheets
-* Conexión directa del endpoint `/api/submit-order` del Cloudflare Worker para insertar cada pedido en una hoja de cálculo en Google Drive en tiempo real, registrando: ID de pedido, Fecha/Hora, Nombre, Teléfono, Distrito, Productos, Total, Método de Pago y Estado (Documentado en `docs/7_AUTOMATIZACION_GOOGLE_SHEETS.md`).
+## 4. Fase 4: Automatización de Pedidos en Google Sheets & Transición de Base de Datos
+* **Estado:** 🟢 100% Implementado y Concluido. Conexión directa del endpoint `/api/submit-order` del Cloudflare Worker para insertar cada pedido en una hoja de cálculo en Google Drive en tiempo real, registrando: ID de pedido, Fecha/Hora, Nombre, Teléfono, Distrito, Productos, Total, Método de Pago y Estado (Documentado en [`docs/7_AUTOMATIZACION_GOOGLE_SHEETS.md`](7_AUTOMATIZACION_GOOGLE_SHEETS.md)).
+* **Transición de Base de Datos Omnicanal:** Se da por concluida la arquitectura transaccional de esta fase (Cloudflare KV + Flat Files + Google Sheets). La integración de base de datos definitiva, control de inventario y sincronización operativa se encuentra en proceso de revisión de compatibilidad y arquitectura técnica con **jnxcontrol** (anteriormente conocido como *KeysControl PRO*).
 
 ---
 
 ## 5. Fase 5: Material POP Mostrador A4 y Guía de Atención Física
-* **Plantilla Imprimible A4:** Diseñada en [`material-pop-a4.html`](../material-pop-a4.html) para portagráfico acrílico de mostrador con QR oficial hacia el catálogo, lista de precios (S/ 20, S/ 55, S/ 90) y gancho de probador gratis de 0.5 ml.
+* **Plantilla Imprimible A4:** Diseñada en [`material-pop-a4.html`](../material-pop-a4.html) para portagráfico acrílico de mostrador de doble cara (Cara 1: Cliente con precios y QR; Cara 2: Vendedora con libreto y Top 3 fragancias).
 * **Manual Operativo y Objeciones:** Guión de venta cruzada para el personal de Bazar Sport Shirley documentado en [`docs/8_MATERIAL_POP_Y_GUIA_MOSTRADOR_A4.md`](8_MATERIAL_POP_Y_GUIA_MOSTRADOR_A4.md).
+
+---
+
+## 6. Fase 3: Despliegue de Google Business Profile (Configuración al 200%)
+* **Guía Maestra y Plan de Ejecución al 200%:** Documentado en [`docs/9_GUIA_MAESTRA_GOOGLE_BUSINESS_PROFILE_200.md`](9_GUIA_MAESTRA_GOOGLE_BUSINESS_PROFILE_200.md).
+* Incluye checklist antibloqueo de Google, catálogo de 6 fichas de productos listas para publicar, atributos comerciales, 5 preguntas pre-cargadas (Q&A), publicaciones de lanzamiento y protocolo para alcanzar 50+ reseñas de 5 estrellas.
