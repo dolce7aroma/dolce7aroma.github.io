@@ -23,6 +23,8 @@ Para mantener este proyecto escalable y fácil de auditar, la documentación se 
    *Sistema de monitoreo, bot interactivo de Telegram, analítica CRO/SEO y alertas de campañas masivas con IA.*
 8. [📈 Automatización de Pedidos en Google Sheets](docs/7_AUTOMATIZACION_GOOGLE_SHEETS.md)
    *Conexión directa en tiempo real del Worker a Google Drive para control contable y logístico.*
+9. [🏷️ Material POP Mostrador A4 y Guía de Atención](docs/8_MATERIAL_POP_Y_GUIA_MOSTRADOR_A4.md)
+   *Plantilla imprimible lista para portagráfico acrílico, libreto de venta cruzada en caja y manejo de objeciones.*
 
 ---
 > ⚠️ **Recordatorio de Seguridad:** Nunca guardes contraseñas reales (como el `ADMIN_KEY` o tokens de tarjetas) en este repositorio. Mantén tus credenciales seguras en un administrador de contraseñas local o un archivo `.txt` fuera de este proyecto.

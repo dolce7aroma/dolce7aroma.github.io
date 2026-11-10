@@ -2,6 +2,16 @@
 
 Este documento registra cronológicamente los cambios y nuevas funciones de la plataforma Dolce 7 Aroma.
 
+## [v2.5.0] - Noviembre 2026
+### Añadido
+- **Fase 4 · Automatización y Sincronización Google Sheets en Tiempo Real:**
+  - Integración nativa del Cloudflare Worker con Google Sheets mediante Google Apps Script (`docs/7_AUTOMATIZACION_GOOGLE_SHEETS.md`).
+  - Registro automático de cada pedido entrante en una hoja de cálculo en Google Drive (`order_id`, fecha, cliente, teléfono, distrito, productos, total, método de pago y estado logístico).
+  - Nuevos comandos administrativos en Telegram: `/sheets` (verificación de estado de enlace) y `/sheets sync` (sincronización forzada de pedidos pendientes desde Cloudflare KV hacia Google Sheets).
+- **Fase 5 · Material POP Mostrador A4 & Guía de Venta Cruzada en Punto Físico:**
+  - Plantilla imprimible oficial A4 de 2 caras en [`material-pop-a4.html`](../material-pop-a4.html) lista para portagráfico acrílico de mostrador (Cara 1 / Frontal: Precios S/ 20, S/ 55, S/ 90, gancho de probador gratis con compra de ropa, código QR oficial hacia el catálogo y badges de pago Yape/Plin/Tarjetas/Efectivo; Cara 2 / Posterior: Guía rápida para el personal de caja, libreto en 3 pasos, Top 3 perfumes para damas/varones/unisex y manejo de objeciones express).
+  - Manual operativo completo de mostrador y protocolo de recolección de reseñas en Google Maps documentado en [`docs/8_MATERIAL_POP_Y_GUIA_MOSTRADOR_A4.md`](8_MATERIAL_POP_Y_GUIA_MOSTRADOR_A4.md).
+
 ## [v2.4.0] - Noviembre 2026
 ### Añadido
 - **Sistema de Inteligencia Comercial & Reportería Automatizada (7 Hitos Completados):**

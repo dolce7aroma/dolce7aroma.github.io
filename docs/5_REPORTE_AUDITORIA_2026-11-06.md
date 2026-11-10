@@ -26,7 +26,7 @@ flowchart TD
     SEO --> Reporteria["Sistema de Reportería e Inteligencia Comercial IA<br/>(🟢 100% EN PRODUCCIÓN v2.4.0)"]
     Reporteria --> Fase3["Fase 3: Visibilidad Exterior & Google Maps<br/>(🟢 GUÍA ESTRATÉGICA ACTIVA)"]
     Fase3 --> Fase4["Fase 4: Conexión Google Sheets & Worker<br/>(🟢 100% IMPLEMENTADO EN WORKER)"]
-    Fase4 --> Fase5["Fase 5: Material POP Mostrador A4 & Manuales<br/>(⏳ SIGUIENTE HITO ACTIVO)"]
+    Fase4 --> Fase5["Fase 5: Material POP Mostrador A4 & Manuales<br/>(🟢 100% COMPLETADO & MAQUETADO)"]
 ```
 
 ---
@@ -123,5 +123,11 @@ El factor número 1 para subir al puesto 1 en Google Maps son las opiniones con 
 
 ---
 
-## 4. Próxima Fase: Fase 4 — Automatización de Pedidos en Google Sheets
-* Conexión directa del endpoint `/api/submit-order` del Cloudflare Worker para insertar cada pedido en una hoja de cálculo en Google Drive en tiempo real, registrando: ID de pedido, Fecha/Hora, Nombre, Teléfono, Distrito, Productos, Total, Método de Pago y Estado.
+## 4. Fase 4: Automatización de Pedidos en Google Sheets
+* Conexión directa del endpoint `/api/submit-order` del Cloudflare Worker para insertar cada pedido en una hoja de cálculo en Google Drive en tiempo real, registrando: ID de pedido, Fecha/Hora, Nombre, Teléfono, Distrito, Productos, Total, Método de Pago y Estado (Documentado en `docs/7_AUTOMATIZACION_GOOGLE_SHEETS.md`).
+
+---
+
+## 5. Fase 5: Material POP Mostrador A4 y Guía de Atención Física
+* **Plantilla Imprimible A4:** Diseñada en [`material-pop-a4.html`](../material-pop-a4.html) para portagráfico acrílico de mostrador con QR oficial hacia el catálogo, lista de precios (S/ 20, S/ 55, S/ 90) y gancho de probador gratis de 0.5 ml.
+* **Manual Operativo y Objeciones:** Guión de venta cruzada para el personal de Bazar Sport Shirley documentado en [`docs/8_MATERIAL_POP_Y_GUIA_MOSTRADOR_A4.md`](8_MATERIAL_POP_Y_GUIA_MOSTRADOR_A4.md).
