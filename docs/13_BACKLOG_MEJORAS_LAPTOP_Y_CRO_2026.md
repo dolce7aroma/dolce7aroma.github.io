@@ -35,3 +35,7 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 2. **Prueba de Conectividad:** Se envió una petición de prueba al Worker real y respondió:
    `{"ok":true,"orderId":"DA-5K4ZLFA","notified":{"email":true,"telegram":true}}` con código **200 OK**.
 3. **Fallback Resiliente:** En caso de cualquier falla de red local, el carrito genera automáticamente un identificador de contingencia `W-XXXXX` y deriva a la pantalla de confirmación por WhatsApp para que **jamás se pierda una venta**.
+
+4. **Resolución de Bloqueo en "ENVIANDO...":** Se detectó que tras responder exitosamente el Worker, una variable no declarada (`cartGift`) en `renderCheckoutConfirm` arrojaba un `ReferenceError` que impedía repintar la vista de éxito. Se declaró `let cartGift = null;` y se blindó toda la confirmación con `try/catch` para garantizar la transición inmediata a la pantalla de confirmación.
+5. **Saludo Concierge WhatsApp:** Se actualizó el texto pre-rellenado del enlace en el Worker para que sea un saludo introductorio directo y elegante: `¡Hola [Nombre]! 👋 Te saludamos de Dolce 7 Aroma 🌸 Confirmamos la recepción de tu pedido #[ID] registrado en nuestra web por un total de S/ [Total].`, eliminando preguntas innecesarias y dejándolo listo para disparar el atajo `/yape` de WhatsApp Business.
+6. **Cache-Buster v5:** Desplegado en `index.html`, `catalogo.html`, `faq.html` y `navidad.html` (`shop.js?v=20261120_v5`).
