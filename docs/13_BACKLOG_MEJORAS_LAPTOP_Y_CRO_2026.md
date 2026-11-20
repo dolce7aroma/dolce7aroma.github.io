@@ -13,7 +13,7 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 | **2** | Al añadir a la bolsa no debería forzar la apertura si el cliente quiere seguir comprando. | UX / Carrito | ✅ RESUELTO |
 | **3** | En recomendación de Dúo Esencial (al llegar a S/ 100) debe mostrar "Delivery GRATIS". | CRO / Incentivo | ✅ RESUELTO |
 | **4** | En laptop, el footer/drawer inferior del carrito ocupa mucho alto y tapa los productos. | UI / Responsive | ✅ RESUELTO |
-| **5** | Ajuste de curva de descuento 110ml: Primero S/ 15 y luego S/ 30 (temporal hasta 2027). | Precios / Promos | ⏳ Pendiente |
+| **5** | Ajuste de curva de descuento 110ml: Primero S/ 15 y luego S/ 30 (temporal hasta 2027). | Precios / Promos | ✅ RESUELTO |
 | **6** | Bolsa flotante visible en todo tipo de ventana (incluso si no está maximizada). | UI / Accesibilidad | ⏳ Pendiente |
 | **7** | Sincronización del video del perfume flotando en el home. | Visual / Rendimiento | ⏳ Pendiente |
 | **8** | Banner de campaña navideña debe estar en lugar TOP (inmediatamente visible). | Marketing / Hero | ⏳ Pendiente |
@@ -112,16 +112,39 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 
 ### Solución Implementada
 1. **Línea de Envío en Totales (`.da-totals`):**
-   * Si `total >= 100`: Muestra `🚚 Envío (Zona A): ¡GRATIS!*` en verde esmeralda.
+   * Si `total >= 100`: Muestra `🚚 Envío: ¡GRATIS!*` en verde esmeralda (sin etiqueta técnica "Zona A").
    * Si `total >= 50`: Muestra `Envío: Por calcular en paso 2`.
    * Si `total < 50`: Muestra `Modalidad: Recojo SMP gratis`.
 2. **Tarjeta de Estado de Entrega (`.da-delivery-status`):**
    * Siempre visible antes del botón de Continuar.
-   * Si califica a delivery gratis: `🎉 🚚 ¡Tu compra tiene DELIVERY GRATIS*! (Válido en Zona A... En zonas periféricas, ¡súper descuento en courier!)`.
-   * Si falta para delivery gratis: `🚚 Agrega S/ [100 - total] más para DELIVERY GRATIS* en Zona A`.
+   * Si califica a delivery gratis: `🎉 🚚 ¡Tu compra tiene DELIVERY GRATIS*! (Válido en SMP, Los Olivos, San Miguel, Lince, Miraflores, San Isidro, Surquillo y más distritos de Lima y Callao. En zonas periféricas, ¡súper descuento en courier!)`.
+   * Si falta para delivery gratis: `🚚 Agrega S/ [100 - total] más para DELIVERY GRATIS*`.
    * Si es menor a S/ 50: `🏬 Recojo GRATIS en Tienda SMP`.
 3. **Paso 2 y WhatsApp Sincronizados:**
    * La línea de envío gratis se refleja en el resumen del formulario.
-   * El mensaje pre-armado de WhatsApp incluye el estado exacto del envío según el distrito y monto.
-4. **Cache-Buster v9:** Desplegado en `index.html`, `catalogo.html`, `faq.html` y `navidad.html` (`shop.js?v=20261120_v9`).
+   * El mensaje pre-armado de WhatsApp incluye el estado exacto del envío según el distrito y monto (`🚚 Envío: ¡GRATIS (S/ 0.00)!*`).
+4. **Cache-Buster v10:** Desplegado en `index.html`, `catalogo.html`, `faq.html` y `navidad.html`.
+
+---
+
+## 🛠️ Detalle de Resolución: Punto 5 (Curva de Descuento 110 ml Temporal 2026–2027)
+
+### Causa & Justificación Comercial
+* Anteriormente, al llevar 2 frascos de 110 ml el descuento era de S/ 30 directos (pagaban S/ 150), y al llevar 3 frascos el descuento subía a S/ 45 (pagaban S/ 225). La diferencia percibida al pasar de 2 a 3 frascos era de solo S/ 15 adicionales de ahorro, desincentivando la compra del 3er frasco grande y castigando el margen en ventas de solo 2 unidades.
+
+### Solución Implementada:
+1. **Dúo Premium (2 frascos de 110 ml):**
+   * Descuento ajustado a **S/ 15** (antes S/ 30).
+   * Precio total: **S/ 165** (antes S/ 180).
+   * Al superar S/ 100, activa automáticamente **🚚 Delivery GRATIS\***.
+2. **Trío Premium (3 frascos de 110 ml):**
+   * Mantiene el 50% de descuento en el 3er frasco (ahorro total acumulado de **S/ 45**).
+   * Precio total: **S/ 225** (antes S/ 270).
+   * Crea un salto psicológico de **+S/ 30 de ahorro adicional** al decidir sumar el 3er frasco grande.
+3. **Sincronización Web:**
+   * Actualizado en el motor del carrito (`DUO_TIERS[110].amount = 15`).
+   * Actualizado en la grilla de promociones de `index.html#ofertas` (`2 unidades S/ 165`).
+   * Actualizado en los packs de campaña de `navidad.html` (`Dúo Premium S/ 165`).
+4. **Cache-Buster v11:** Desplegado en todas las páginas clave.
+
 

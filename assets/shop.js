@@ -136,7 +136,7 @@
   }
   // ─ Ofertas de trío y dúo ─
   // Varios frascos de la misma presentación → descuento
-  //   110 ml: trío -50% sobre el más barato (Trío Premium) · dúo -S/ 30 plano (Dúo Premium)
+  //   110 ml: trío -50% sobre el más barato (Trío Premium, ahorro S/ 45) · dúo -S/ 15 plano (Dúo Premium, ahorro S/ 15, salto de +S/ 30 en el 3ero)
   //   50 ml : trío -S/ 15 plano (Trío Esencial) · dúo -S/ 10 plano (Dúo Esencial)
   //   10 ml : trío -S/ 10 plano (Trío Pocket) · sin oferta de dúo
   const TRIO_TIERS = {
@@ -145,7 +145,7 @@
     10:  { label: 'Trío Pocket · 10 ml',    perTrio: () => 10 }
   };
   const DUO_TIERS = {
-    110: { label: 'Dúo Premium · 110 ml', amount: 30 },
+    110: { label: 'Dúo Premium · 110 ml', amount: 15 },
     50:  { label: 'Dúo Esencial · 50 ml',  amount: 10 }
   };
   // extra: {ml, price} → simula 1 unidad más de ese ml (para proyectar "si sumo 1 más, ¿cuánto ahorro/pago?")

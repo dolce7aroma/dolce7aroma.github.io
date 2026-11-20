@@ -157,17 +157,55 @@ Puedes auto-preguntar desde una cuenta personal y responder oficialmente con la 
 
 ---
 
-## 📢 8. Paso 7: Publicaciones de Lanzamiento (Google Updates / Novedades)
+## 📢 8. Paso 7: Banco de Publicaciones Oficiales (Google Updates / Novedades)
 
-Publicar 1 novedad semanal mantiene la ficha en los primeros lugares:
+Publicar 1 novedad semanal mantiene la ficha en los primeros lugares del algoritmo local:
 
-### Post 1: Apertura y Gancho de Cortesía
-* **Texto:** *«¿Estás cerca de la Av. Perú en San Martín de Porres? 🌸 Ven a conocer nuestro punto oficial en Jr. Callao 482-A (Bazar Sport Shirley). Prueba nuestras 66+ fragancias y por la compra de cualquier prenda en el bazar, ¡reclama tu muestra de 0.5 ml totalmente GRATIS!»*
-* **Botón:** *Más información* ➔ `https://dolce7aroma.com/#boutique`
+### Post 1: Institucional / Catálogo General (Evergreen)
+* **Texto:**
+  > Alta perfumería europea y fragancias árabes en San Martín de Porres ✨
+  >
+  > En Dolce Aroma encuentras inspiraciones olfativas de alta gama elaboradas con maceración controlada para asegurar una excelente fijación y proyección durante todo el día.
+  >
+  > Explora más de 66 creaciones disponibles en 3 presentaciones:
+  > • Pocket 10 ml: S/ 20 (práctico para llevar contigo)
+  > • Macerado 50 ml: S/ 55 (equilibrio perfecto para uso diario)
+  > • Grande 110 ml: S/ 90 (máximo rendimiento)
+  >
+  > 📍 Punto de atención y probadores: Visítanos en Jr. Callao 482-A, San Martín de Porres (dentro de Bazar Sport Shirley, a media cuadra de la Av. Perú).
+  > 🚚 Delivery GRATIS a todo Lima en compras a partir de S/ 100.
+* **Botón:** *Comprar* o *Más información* ➔ `https://dolce7aroma.com/catalogo.html`
+* **Foto:** `Frascos 110 - 50 - 10.png`
 
-### Post 2: Delivery Gratis a Todo Lima
-* **Texto:** *«¿Prefieres recibir tu perfume en casa o trabajo? 🚚 En Dolce 7 Aroma tienes DELIVERY GRATIS a cualquier distrito de Lima en frascos de 50 ml y 110 ml. Haz tu pedido en segundos desde nuestra web oficial.»*
+### Post 2: Experiencia Sensorial / Cero Riesgo (Prueba en Piel)
+* **Texto:**
+  > ¿Cansado de comprar perfumes por internet sin saber cómo huelen en tu piel? 🌸
+  >
+  > En Dolce Aroma te invitamos a vivir la experiencia olfativa en nuestro punto físico de San Martín de Porres. Contamos con probadores de nuestras más de 66 fragancias europeas y árabes para que verifiques la evolución y fijación real de cada nota en tu piel antes de decidirte.
+  >
+  > ✦ Formatos disponibles:
+  > • Pocket 10 ml: S/ 20
+  > • Macerado 50 ml: S/ 55
+  > • Grande 110 ml: S/ 90
+  >
+  > 📍 Encuéntranos en: Jr. Callao 482-A, San Martín de Porres (dentro de Bazar Sport Shirley, a media cuadra de Av. Perú, al lado del Mercado San Antonio).
+  > ⏰ Horario: Lunes a Sábado de 10:00 AM a 8:30 PM.
+  > 🚚 También contamos con delivery a todo Lima desde nuestra web.
+* **Botón:** *Cómo llegar* o *Más información* ➔ `https://dolce7aroma.com/#boutique`
+* **Foto:** Foto real de la vitrina en Bazar Shirley (`IMG_20260312_173357508_HDR.jpg`).
+
+### Post 3: Campaña Navideña & Amigo Secreto (Diciembre)
+* **Texto:**
+  > ¿Buscando el detalle perfecto para Navidad o Amigo Secreto en San Martín de Porres? 🎁
+  >
+  > En Dolce Aroma encuentras las mejores inspiraciones de alta perfumería europea y fragancias árabes con excelente fijación en piel:
+  > • Pocket 10 ml: S/ 20
+  > • Macerado 50 ml: S/ 55
+  > • Grande 110 ml: S/ 90
+  >
+  > ✨ Delivery GRATIS en Lima a partir de S/ 100 o retíralo hoy mismo en Jr. Callao 482-A (dentro de Bazar Sport Shirley).
 * **Botón:** *Comprar* ➔ `https://dolce7aroma.com/catalogo.html`
+* **Foto:** `Frascos 110 - 50 - 10.png` o foto de caja de regalo.
 
 ---
 
