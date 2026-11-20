@@ -881,7 +881,7 @@
              return `<div class="da-trio-row"><span class="l">${p.label}</span><span class="r">${msg}</span></div>`;
            }).join('')}
            <div class="da-trio-asterisk" style="font-size:11px;color:#7b757d;line-height:1.4;margin-top:8px;padding-top:6px;border-top:1px dashed rgba(60,47,71,0.18)">
-             * Delivery gratis desde S/ 100 en Zona A (SMP, Los Olivos, San Miguel, Lince, Miraflores, San Isidro, Surquillo y más). En zonas periféricas, ¡súper descuento en courier!
+             * Delivery gratis desde S/ 100 en SMP, Los Olivos, Breña, Jesús María, Lince, Miraflores, San Isidro, San Miguel, Surquillo y más. En zonas periféricas, ¡súper descuento en courier!
            </div>
          </div>`
       : '';
@@ -893,7 +893,7 @@
       `<div class="da-line da-line-dis"><span>${d.label} · ×${d.count}</span><b>− S/ ${d.amount}</b></div>`
     ).join('');
     const shippingRow = offers.total >= 100
-      ? `<div class="da-line da-line-shipping" style="color:#2e7d32"><span style="color:#2e7d32;font-weight:600">🚚 Envío (Zona A)</span><b style="color:#2e7d32;font-size:16px">¡GRATIS!*</b></div>`
+      ? `<div class="da-line da-line-shipping" style="color:#2e7d32"><span style="color:#2e7d32;font-weight:600">🚚 Envío</span><b style="color:#2e7d32;font-size:16px">¡GRATIS!*</b></div>`
       : (offers.total >= 50
           ? `<div class="da-line da-line-shipping"><span>Envío</span><b style="font-size:12.5px;color:#5d4c70;font-family:inherit">Por calcular en paso 2</b></div>`
           : `<div class="da-line da-line-shipping"><span>Modalidad</span><b style="font-size:12.5px;color:#2e7d32;font-family:inherit">Recojo SMP gratis</b></div>`
@@ -906,7 +906,7 @@
              <span class="da-deliv-title">¡Tu compra tiene <b>DELIVERY GRATIS*</b>!</span>
            </div>
            <div class="da-deliv-sub">
-             * Válido en Zona A (SMP, Los Olivos, San Miguel, Lince, Miraflores, San Isidro, Surquillo y más distritos de Lima y Callao). En zonas periféricas, ¡súper descuento en courier!
+             * Válido en SMP, Los Olivos, Breña, Jesús María, Lince, Miraflores, San Isidro, San Miguel, Surquillo y más distritos de Lima y Callao. En zonas periféricas, ¡súper descuento en courier!
            </div>
          </div>`
       : (offers.total >= 50
@@ -916,7 +916,7 @@
                  <span class="da-deliv-title">Agrega <b>S/ ${100 - offers.total}</b> más para <b>DELIVERY GRATIS*</b></span>
                </div>
                <div class="da-deliv-sub">
-                 * Delivery gratis en compras desde S/ 100 en Zona A (Lima y Callao).
+                 * Delivery gratis en compras desde S/ 100 en Lima y Callao (distritos seleccionados).
                </div>
              </div>`
           : `<div class="da-delivery-status is-pickup">
@@ -1016,7 +1016,7 @@
     const missedOfferHtml = renderMissedOfferHint(offers);
     const shippingLineForm = offers.total >= 100
       ? `<div class="da-line" style="color:#2e7d32;font-size:12px;margin-bottom:3px">
-           <span style="color:#2e7d32">🚚 Envío (Zona A)</span><b style="color:#2e7d32;font-size:15px">¡GRATIS!*</b>
+           <span style="color:#2e7d32">🚚 Envío</span><b style="color:#2e7d32;font-size:15px">¡GRATIS!*</b>
          </div>`
       : '';
     foot.innerHTML = `
@@ -1118,7 +1118,7 @@
         } else {
           const falta = 100 - offers.total;
           box.innerHTML = `
-            <div class="da-zonas-title">🚚 Envío a ${escapeHtml(distrito)} (Zona A)</div>
+            <div class="da-zonas-title">🚚 Envío a ${escapeHtml(distrito)}</div>
             <p style="font-size:12.5px;margin-top:4px;color:#3c2f47">
               Envío por Courier a domicilio. Tarifa con descuento especial.<br/>
               💡 <em>¡Suma S/ ${falta} más a tu bolsa para activar <b>DELIVERY GRATIS</b> a ${escapeHtml(distrito)}!</em>
@@ -1162,7 +1162,7 @@
     return `<div class="da-trio-hint" style="margin-bottom:14px">
       <div class="da-hint-headline">🎉 Ahorra <b>S/ ${p.total}</b> con ${p.label}${freeDeliveryTag}</div>
       <div class="da-trio-row">
-        <span class="r">Sumá 1 más de ${p.ml} ml (desde S/ ${addPrice}) para activarlo — tu ahorro pasaría de S/ ${ahorroActual} a S/ ${p.total}.${p.qualifiesFreeDelivery ? ' ¡Y además tu pedido califica para Delivery Gratis en Zona A!' : ''}</span>
+        <span class="r">Sumá 1 más de ${p.ml} ml (desde S/ ${addPrice}) para activarlo — tu ahorro pasaría de S/ ${ahorroActual} a S/ ${p.total}.${p.qualifiesFreeDelivery ? ' ¡Y además tu pedido califica para Delivery Gratis!*' : ''}</span>
       </div>
       <button type="button" class="da-hint-back" id="da-hint-back">volver a la bolsa</button>
     </div>`;
@@ -1261,7 +1261,7 @@
 
 🛍️ *Productos:*
 ${itemsListText}${giftText}
-${lastOrder.total >= 100 ? (lastOrder.distrito === "San Martín de Porres" ? "🚚 *Envío:* ¡GRATIS (S/ 0.00) / Recojo SMP!*" : (zonas.distritosGratis && zonas.distritosGratis.includes(lastOrder.distrito) ? "🚚 *Envío:* ¡GRATIS (S/ 0.00) en Zona A!*" : "🚚 *Envío:* Subsidio >50% courier asumido por Dolce 7 Aroma")) : (lastOrder.total < 50 ? "🏬 *Modalidad:* Recojo en Tienda SMP" : "🚚 *Envío:* Tarifa preferencial por coordinar")}
+${lastOrder.total >= 100 ? (lastOrder.distrito === "San Martín de Porres" ? "🚚 *Envío:* ¡GRATIS (S/ 0.00) / Recojo SMP!*" : (zonas.distritosGratis && zonas.distritosGratis.includes(lastOrder.distrito) ? "🚚 *Envío:* ¡GRATIS (S/ 0.00)!*" : "🚚 *Envío:* Subsidio >50% courier asumido por Dolce 7 Aroma")) : (lastOrder.total < 50 ? "🏬 *Modalidad:* Recojo en Tienda SMP" : "🚚 *Envío:* Tarifa preferencial por coordinar")}
 
 💰 *Total:* S/ ${lastOrder.total}
 
