@@ -2,6 +2,17 @@
 
 Este documento registra cronológicamente los cambios y nuevas funciones de la plataforma Dolce 7 Aroma.
 
+## [v2.6.0] - Noviembre 2026
+### Añadido
+- **Hito 1 · Soberanía de Datos, Seguimiento en Vivo y Conector ERP:**
+  - **Autonomía Total en Cloudflare:** Migración de persistencia a Cloudflare KV (`ORDERS`, `GIFTS`, `config:reviews`) como base de datos primaria nativa de la tienda.
+  - **Rastreo de Pedidos para Clientes (Tracking Sin Fricción):** Modal interactivo integrado en `assets/site-modals.js` y endpoint seguro `POST /api/track-order` con autenticación por ID de pedido y teléfono (sin contraseña). Despliegue de insignias en tiempo real (`nuevo`, `pagado`, `en_camino`, `entregado`, `cancelado`) y número de guía courier.
+  - **Deducción de Inventario Blindada:** El stock solo se descuenta en `data/productos.json` de forma atómica cuando el pedido pasa a estado `pagado`, protegiendo el inventario de carritos abandonados.
+  - **Captura de Email & Emisión de Recibos Digitales:** Campo obligatorio en checkout (`assets/shop.js`) y despacho automatizado de comprobante formal con desglose por Resend API al confirmar el pago.
+  - **Prueba Social Persistente en la Nube:** Sistema de reseñas desacoplado de Git en `config:reviews` con sincronización en segundo plano (`GET /api/reviews` y `POST /api/save-reviews`).
+  - **Conector REST de Integración Externa:** Endpoint seguro `POST /api/external/update-status` mediante token `KEYSCONTROL_API_KEY` para sincronización bidireccional desde el ERP central.
+  - **Manual Maestro y Argumentario Comercial:** Publicación de [`docs/10_MANUAL_GENERAL_Y_BENEFICIOS.md`](10_MANUAL_GENERAL_Y_BENEFICIOS.md) y actualización de la arquitectura técnica homologada a 19 columnas.
+
 ## [v2.5.0] - Noviembre 2026
 ### Añadido
 - **Fase 4 · Automatización y Sincronización Google Sheets en Tiempo Real:**

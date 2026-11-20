@@ -96,7 +96,7 @@ async function checkRateLimit(ip, env) {
 }
 
 const TRIO_TIERS = {
-  110: { perTrio: () => 30 },
+  110: { perTrio: (cheapest) => Math.round((cheapest || 90) * 0.5) },
   50:  { perTrio: () => 15 },
   10:  { perTrio: () => 10 }
 };
@@ -390,33 +390,40 @@ async function notifyOwner(subject, summary, env) {
 }
 
 function orderSummaryText(record) {
-  const itemsText = record.items.map(it => `- ${it.name} (${it.ml} ml) x${it.qty}${it.premium ? ' + frasco premium' : ''} — S/ ${it.subtotal}`).join('\n');
+  const itemsText = (record.items || []).map(it => `- ${it.name} (${it.ml} ml) x${it.qty}${it.premium ? ' + frasco premium' : ''} — S/ ${it.subtotal}`).join('\n');
   const regaladoPor = record.esRegalo && record.compradorTelefono
     ? `\nRegalado por: ${record.compradorNombre || '(sin nombre)'} · WhatsApp ${record.compradorTelefono}` : '';
-  return `${record.esRegalo ? '🎁' : '🌸'} Nuevo pedido${record.esRegalo ? ' (REGALO)' : ''} — Dolce Aroma
+  const giftNote = record.esRegalo ? '\n🎁 Incluye Bolsa de Regalo Elegante GRATIS' : '';
+  const cleanPhone = String(record.telefono || '').replace(/\D/g, '');
+  const rescueMsg = encodeURIComponent(`Hola ${record.nombre}, te saludamos de Dolce Aroma 🌸 Confirmamos que recibimos tu pedido #${record.id} por un total de S/ ${record.total}. ¡Ya tenemos tus fragancias preparadas! ¿Deseas que te enviemos los datos de Yape/Plin para coordinar tu entrega?`);
+  const waRescueUrl = cleanPhone ? `https://wa.me/51${cleanPhone}?text=${rescueMsg}` : '';
 
-Pedido: #${record.id}
-Cliente: ${record.nombre}
-Teléfono: ${record.telefono}
-Provincia: ${record.provincia || 'Lima'}
-Distrito: ${record.distrito}
-Dirección: ${record.direccion}
-Referencia: ${record.referencia || '-'}
-Método de pago: ${record.metodoPago || '-'}${regaladoPor}
+  return `${record.esRegalo ? '🎁' : '🌸'} <b>¡NUEVO PEDIDO REGISTRADO EN LA WEB!</b>
 
-Productos:
+<b>Pedido:</b> #${record.id}
+<b>Cliente:</b> ${record.nombre}
+<b>Teléfono:</b> <code>${record.telefono}</code>
+<b>Distrito:</b> ${record.distrito}
+<b>Dirección:</b> ${record.direccion}
+<b>Referencia:</b> ${record.referencia || '-'}${regaladoPor}${giftNote}
+
+<b>Productos:</b>
 ${itemsText}
 
-Subtotal: S/ ${record.subtotal}
-Envío: S/ ${record.envio || 0}
-Total: S/ ${record.total}`;
+💰 <b>Total a cobrar:</b> S/ ${record.total}
+
+📲 <b><a href="${waRescueUrl}">👉 TOCAR AQUÍ PARA ABRIR WHATSAPP Y ENVIARLE EL YAPE</a></b>
+
+👉 <b>Comandos de gestión:</b>
+• <code>/pagado ${record.id}</code> (marca pagado y descuenta stock)
+• <code>/cancelar ${record.id}</code> (anula el pedido)
+`;
 }
 
 // Pedido enviado por un CLIENTE (no requiere ADMIN_KEY — es público, pero no toca el repo,
 // solo dispara avisos por correo/Telegram si esos secretos están configurados y lo guarda
 // en KV si el binding ORDERS está enlazado).
 // ─── Automatización Google Sheets (Fase 4) ───
-
 async function syncOrderToGoogleSheets(record, env, action = 'insert') {
   const webhookUrl = env.GOOGLE_SHEETS_WEBHOOK_URL;
   if (!webhookUrl) return false;
@@ -433,6 +440,7 @@ async function syncOrderToGoogleSheets(record, env, action = 'insert') {
 
   const payload = {
     action,
+    empresa_origen: record.empresa_origen || 'RETAIL_DOLCE7AROMA',
     id: record.id,
     fecha: peruDate,
     nombre: record.nombre,
@@ -442,11 +450,16 @@ async function syncOrderToGoogleSheets(record, env, action = 'insert') {
     direccion: record.direccion,
     referencia: record.referencia || '',
     productos: itemsSummary,
+    subtotal: Number(record.subtotal || record.total || 0).toFixed(2),
+    envio: Number(record.envio || 0).toFixed(2),
     total: Number(record.total || 0).toFixed(2),
     metodoPago: record.metodoPago || 'No especificado',
     estado: record.estado || 'nuevo',
+    guia_courier: record.guia_courier || '',
     esRegalo: record.esRegalo ? 'Sí' : 'No',
-    origen: record.origen || 'directo'
+    origen: record.origen || 'directo',
+    items_detalle: JSON.stringify(record.items || []),
+    actualizadoEn: record.actualizadoEn || new Date().toISOString()
   };
 
   try {
@@ -471,7 +484,7 @@ async function handleSubmitOrder(request, env) {
   const body = await request.json().catch(() => null);
   if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
 
-  const { provincia, nombre, telefono, distrito, direccion, referencia, items, metodoPago, esRegalo } = body;
+  const { provincia, nombre, telefono, email, distrito, direccion, referencia, items, metodoPago, esRegalo } = body;
   if (!nombre || !telefono || !distrito || !direccion) {
     return json({ ok: false, error: 'Faltan datos del pedido' }, 400);
   }
@@ -494,7 +507,8 @@ async function handleSubmitOrder(request, env) {
 
   const orderId = generateOrderId();
   const record = {
-    id: orderId, nombre, telefono, provincia: provincia || 'Lima', distrito, direccion, referencia,
+    id: orderId, nombre, telefono, email: email ? String(email).trim().toLowerCase() : '',
+    provincia: provincia || 'Lima', distrito, direccion, referencia,
     items, subtotal: realSubtotal, envio: realShipping, total: realTotal, metodoPago: metodoPago || null, esRegalo: !!esRegalo,
     estado: 'nuevo', creadoEn: new Date().toISOString(),
   };
@@ -535,7 +549,7 @@ async function handleListOrders(request, env) {
 async function handleUpdateOrderStatus(request, env) {
   const body = await request.json().catch(() => null);
   if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
-  const { key, orderId, estado } = body;
+  const { key, orderId, estado, guia_courier } = body;
   if (key !== env.ADMIN_KEY) return json({ ok: false, error: 'Contraseña incorrecta' }, 401);
   if (!env.ORDERS) return json({ ok: false, error: 'Aún no configuraste el almacenamiento de pedidos (KV) en Cloudflare.' }, 400);
   if (!orderId) return json({ ok: false, error: 'Falta el número de pedido' }, 400);
@@ -545,13 +559,237 @@ async function handleUpdateOrderStatus(request, env) {
     const raw = await env.ORDERS.get(`order:${orderId}`);
     if (!raw) return json({ ok: false, error: 'Pedido no encontrado' }, 404);
     const record = JSON.parse(raw);
+    const prevStatus = record.estado;
     record.estado = estado;
+    if (guia_courier !== undefined) record.guia_courier = guia_courier;
     record.actualizadoEn = new Date().toISOString();
+
+    // Cascada de estado 'pagado': Descuenta stock en catálogo y emite recibo oficial
+    if (estado === 'pagado' && prevStatus !== 'pagado') {
+      await deductStockForOrder(record, env).catch(e => console.error('Error deductStock:', e));
+      await sendPaymentConfirmationEmail(record, env).catch(e => console.error('Error email confirmacion:', e));
+    }
+
     await env.ORDERS.put(`order:${orderId}`, JSON.stringify(record));
     await syncOrderToGoogleSheets(record, env, 'update').catch(() => {});
     return json({ ok: true, order: record });
   } catch (e) {
     return json({ ok: false, error: String(e.message || e) }, 502);
+  }
+}
+
+// ─── Deducción atómica de stock al confirmar pago ───
+async function deductStockForOrder(record, env) {
+  if (!record || !Array.isArray(record.items) || !record.items.length) return false;
+  if (!env.GITHUB_TOKEN) {
+    console.warn('deductStockForOrder: GITHUB_TOKEN no configurado en secretos');
+    return false;
+  }
+
+  try {
+    const fileRes = await githubRequest('data/productos.json', null, { method: 'GET' }, env);
+    if (!fileRes.ok) return false;
+    const fileData = await fileRes.json();
+    const rawContent = base64ToUtf8(fileData.content);
+    const catalog = JSON.parse(rawContent);
+    const perfumes = catalog.perfumes || catalog.productos || [];
+
+    let modified = false;
+
+    for (const item of record.items) {
+      const p = perfumes.find(x => (x.id && x.id === item.id) || (x.name && x.name.toLowerCase() === (item.name || '').toLowerCase()));
+      if (p && Array.isArray(p.sizes)) {
+        const sz = p.sizes.find(s => Number(s.ml) === Number(item.ml));
+        if (sz && typeof sz.stock === 'number') {
+          const qty = Number(item.qty || 1);
+          sz.stock = Math.max(0, sz.stock - qty);
+          modified = true;
+        }
+      }
+    }
+
+    if (modified) {
+      const updatedBase64 = utf8ToBase64(JSON.stringify(catalog, null, 2));
+      await putFile('data/productos.json', updatedBase64, `Sistema: descontar stock por pedido pagado #${record.id}`, env);
+      console.log(`Stock descontado exitosamente para pedido #${record.id}`);
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.error('Error en deductStockForOrder:', err);
+    return false;
+  }
+}
+
+// ─── Envío de recibo / confirmación de pago oficial al cliente ───
+async function sendPaymentConfirmationEmail(record, env) {
+  if (!record || !record.email || !env.RESEND_API_KEY) return false;
+  try {
+    const itemsText = (record.items || []).map(it => `- ${it.name} (${it.ml}ml) x${it.qty} - S/ ${it.subtotal}`).join('\n');
+    const emailBody = `¡Hola ${record.nombre}!
+
+Tu pago para el pedido #${record.id} ha sido confirmado con éxito. 
+Tu paquete ha ingresado a preparación en nuestro taller de perfumería.
+
+📦 Resumen de tu pedido:
+${itemsText}
+
+💰 Total pagado: S/ ${record.total}
+📍 Destino: ${record.direccion}, ${record.distrito}
+
+Puedes consultar el estado de tu despacho en cualquier momento desde nuestra web introduciendo tu número de pedido (#${record.id}) y tu teléfono celular.
+
+¡Gracias por tu preferencia!
+Equipo Dolce Aroma`;
+
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: env.ORDER_EMAIL_FROM || 'Dolce Aroma <onboarding@resend.dev>',
+        to: [record.email],
+        subject: `¡Pago Confirmado! Tu pedido #${record.id} está en preparación - Dolce Aroma`,
+        text: emailBody
+      })
+    });
+    return true;
+  } catch (e) {
+    console.error('Error enviando email de pago confirmado:', e);
+    return false;
+  }
+}
+
+// ─── Tracking público seguro para el cliente (ID Pedido + Teléfono) ───
+async function handleTrackOrder(request, env) {
+  const ip = request.headers.get('cf-connecting-ip');
+  if (!(await checkRateLimit(ip, env))) {
+    return json({ ok: false, error: 'Demasiadas consultas. Intenta de nuevo en unos minutos.' }, 429);
+  }
+
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+
+  const orderId = String(body.orderId || '').trim().toUpperCase().replace('#', '');
+  const telefonoRaw = String(body.telefono || '').replace(/\D/g, '');
+
+  if (!orderId || !telefonoRaw) {
+    return json({ ok: false, error: 'Ingresa tu número de pedido y teléfono registrado' }, 400);
+  }
+
+  if (!env.ORDERS) {
+    return json({ ok: false, error: 'Servicio de pedidos no disponible temporalmente' }, 503);
+  }
+
+  const raw = await env.ORDERS.get(`order:${orderId}`);
+  if (!raw) {
+    return json({ ok: false, error: 'No encontramos ningún pedido con ese número. Verifica los datos.' }, 404);
+  }
+
+  const record = JSON.parse(raw);
+  const recTel = String(record.telefono || '').replace(/\D/g, '');
+
+  // Validar teléfono: comparar los últimos 9 dígitos
+  const telIngresado9 = telefonoRaw.slice(-9);
+  const telGuardado9 = recTel.slice(-9);
+
+  if (telIngresado9 !== telGuardado9) {
+    return json({ ok: false, error: 'El número de teléfono no coincide con el pedido.' }, 403);
+  }
+
+  const itemsSummary = (record.items || []).map(it => {
+    const ml = it.ml ? ` (${it.ml}ml)` : '';
+    const qty = it.qty || 1;
+    return `${qty}x ${it.name || 'Perfume'}${ml}`;
+  });
+
+  return json({
+    ok: true,
+    order: {
+      id: record.id,
+      nombre: record.nombre,
+      estado: record.estado || 'nuevo',
+      fecha: record.fecha || record.creadoEn,
+      distrito: record.distrito,
+      provincia: record.provincia,
+      guia_courier: record.guia_courier || '',
+      items: itemsSummary,
+      total: record.total,
+      metodoPago: record.metodoPago || 'Por confirmar',
+      actualizadoEn: record.actualizadoEn || record.creadoEn
+    }
+  });
+}
+
+// ─── Gestión de Reseñas en Cloudflare KV ───
+async function handleGetReviews(request, env) {
+  if (!env.ORDERS) {
+    return json({ ok: true, reviews: [] });
+  }
+  try {
+    const raw = await env.ORDERS.get('config:reviews');
+    if (!raw) {
+      return json({ ok: true, reviews: [] });
+    }
+    return json({ ok: true, reviews: JSON.parse(raw) });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 500);
+  }
+}
+
+async function handleSaveReviews(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+  if (body.key !== env.ADMIN_KEY) return json({ ok: false, error: 'Contraseña incorrecta' }, 401);
+  if (!env.ORDERS) return json({ ok: false, error: 'Almacenamiento no enlazado' }, 500);
+
+  if (!Array.isArray(body.reviews)) {
+    return json({ ok: false, error: 'El campo reviews debe ser una lista' }, 400);
+  }
+
+  try {
+    await env.ORDERS.put('config:reviews', JSON.stringify(body.reviews));
+    return json({ ok: true, total: body.reviews.length });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 500);
+  }
+}
+
+// ─── Endpoint Externo para KeysControl PRO (Actualización de Despacho) ───
+async function handleExternalUpdateStatus(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+
+  const authKey = body.key || body.apiKey || request.headers.get('x-api-key');
+  const validKey = env.KEYSCONTROL_API_KEY || env.ADMIN_KEY;
+  if (!authKey || authKey !== validKey) {
+    return json({ ok: false, error: 'No autorizado' }, 401);
+  }
+
+  const { orderId, estado, guia_courier } = body;
+  if (!orderId) return json({ ok: false, error: 'Falta orderId' }, 400);
+  if (!ORDER_STATUSES.includes(estado)) return json({ ok: false, error: 'Estado no válido' }, 400);
+
+  try {
+    const raw = await env.ORDERS.get(`order:${orderId}`);
+    if (!raw) return json({ ok: false, error: 'Pedido no encontrado' }, 404);
+
+    const record = JSON.parse(raw);
+    const prevStatus = record.estado;
+    record.estado = estado;
+    if (guia_courier !== undefined) record.guia_courier = guia_courier;
+    record.actualizadoEn = new Date().toISOString();
+
+    if (estado === 'pagado' && prevStatus !== 'pagado') {
+      await deductStockForOrder(record, env).catch(e => console.error('Error deductStock external:', e));
+      await sendPaymentConfirmationEmail(record, env).catch(e => console.error('Error email confirmacion external:', e));
+    }
+
+    await env.ORDERS.put(`order:${orderId}`, JSON.stringify(record));
+    await syncOrderToGoogleSheets(record, env, 'update').catch(() => {});
+
+    return json({ ok: true, order: record });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 500);
   }
 }
 
@@ -1637,6 +1875,10 @@ async function handleTelegramWebhook(request, env) {
 ¡Hola! Aquí tienes los mandos disponibles para gestionar tu negocio:
 
 ⚡ <b>COMANDOS OPERATIVOS:</b>
+• <b>/pedidos</b> — Ver pedidos pendientes con link directo a WhatsApp para rescate.
+• <b>/pagado [ID]</b> — Marcar pedido como pagado y descontar stock automáticamente.
+• <b>/cancelar [ID]</b> — Cancelar un pedido abandonado o no concretado.
+• <b>/limpiar_pruebas</b> — Purgar en masa las pruebas anteriores para poner el contador en 0.
 • <b>/resumen</b> — Ventas de hoy, pedidos pendientes y balance general.
 • <b>/top</b> — Ranking de los 5 perfumes más vendidos en el sitio.
 • <b>/campana</b> — Reloj de campañas comerciales (Usa <code>/campana plan</code> para diseñar la estrategia con IA).
@@ -1928,7 +2170,154 @@ Escribe <code>/sheets sync</code> si deseas re-exportar todos los pedidos de la 
   }
 
 
-  // 6. Mensaje desconocido
+  
+  // 12. Comando /pedidos o /pendientes (Rescate Outbound de Ventas)
+  if (command === '/pedidos' || command === '/pendientes') {
+    if (!env.ORDERS) {
+      await sendTelegramMessage(chatId, '⚠️ El almacenamiento KV (<code>ORDERS</code>) no está enlazado.', env);
+      return json({ ok: true });
+    }
+    const listed = await env.ORDERS.list({ prefix: 'order:', limit: 200 });
+    const orders = (await Promise.all(
+      listed.keys.map(k => env.ORDERS.get(k.name).then(v => v ? JSON.parse(v) : null))
+    )).filter(Boolean);
+
+    const pending = orders.filter(o => o.estado === 'nuevo');
+    if (pending.length === 0) {
+      await sendTelegramMessage(chatId, '🎉 <b>¡Todo al día!</b>\nNo tienes pedidos pendientes de atención por ahora.', env);
+      return json({ ok: true });
+    }
+
+    pending.sort((a, b) => (b.creadoEn || '').localeCompare(a.creadoEn || ''));
+    let msg = `🔔 <b>[PEDIDOS PENDIENTES POR ATENDER (${pending.length})]</b> 🌸\n\n`;
+    for (const o of pending.slice(0, 15)) {
+      const cleanPhone = String(o.telefono || '').replace(/\D/g, '');
+      const rescueText = encodeURIComponent(`Hola ${o.nombre}, te saludamos de Dolce Aroma 🌸 Vimos que registraste tu pedido #${o.id} por S/ ${Number(o.total || 0).toFixed(2)}. ¡Ya tenemos tus fragancias preparadas! ¿Deseas coordinar tu entrega por Yape?`);
+      const waLink = cleanPhone ? `https://wa.me/51${cleanPhone}?text=${rescueText}` : null;
+      
+      msg += `📦 <b>#${o.id}</b> — ${o.nombre}\n`;
+      msg += `💰 S/ ${Number(o.total || 0).toFixed(2)} · ${o.distrito || 'Lima'}\n`;
+      if (waLink) {
+        msg += `📲 <a href="${waLink}">Chatear con cliente en WhatsApp</a>\n`;
+      }
+      msg += `👉 Acciones: <code>/pagado ${o.id}</code> | <code>/cancelar ${o.id}</code>\n\n`;
+    }
+    await sendTelegramMessage(chatId, msg, env);
+    return json({ ok: true });
+  }
+
+  // 13. Comando /pagado o /pagar <id>
+  if (command === '/pagado' || command === '/pagar') {
+    const rawId = (args[0] || '').replace(/^[#DA\-]+/i, '').trim();
+    if (!rawId) {
+      await sendTelegramMessage(chatId, '⚠️ Debes indicar el ID del pedido. Ej: <code>/pagado UP8LRP7</code>', env);
+      return json({ ok: true });
+    }
+    if (!env.ORDERS) {
+      await sendTelegramMessage(chatId, '⚠️ Almacenamiento KV no enlazado.', env);
+      return json({ ok: true });
+    }
+    let orderKey = `order:DA-${rawId.toUpperCase()}`;
+    let rawOrder = await env.ORDERS.get(orderKey);
+    if (!rawOrder) {
+      orderKey = `order:${rawId}`;
+      rawOrder = await env.ORDERS.get(orderKey);
+    }
+    if (!rawOrder) {
+      const listed = await env.ORDERS.list({ prefix: 'order:', limit: 200 });
+      const foundKey = listed.keys.find(k => k.name.toUpperCase().includes(rawId.toUpperCase()));
+      if (foundKey) {
+        orderKey = foundKey.name;
+        rawOrder = await env.ORDERS.get(orderKey);
+      }
+    }
+    if (!rawOrder) {
+      await sendTelegramMessage(chatId, `❌ No se encontró ningún pedido con ID <b>${rawId}</b>`, env);
+      return json({ ok: true });
+    }
+
+    const record = JSON.parse(rawOrder);
+    const prevStatus = record.estado;
+    record.estado = 'pagado';
+    record.actualizadoEn = new Date().toISOString();
+
+    if (prevStatus !== 'pagado') {
+      await deductStockForOrder(record, env).catch(e => console.error('Error deductStock:', e));
+      await sendPaymentConfirmationEmail(record, env).catch(e => console.error('Error email:', e));
+    }
+    await env.ORDERS.put(orderKey, JSON.stringify(record));
+    await syncOrderToGoogleSheets(record, env, 'update').catch(() => {});
+
+    await sendTelegramMessage(chatId, `✅ <b>¡Pedido #${record.id} marcado como PAGADO!</b> 🌸\n\n👤 <b>Cliente:</b> ${record.nombre}\n💰 <b>Monto:</b> S/ ${Number(record.total || 0).toFixed(2)}\n\n• Stock descontado en catálogo.\n• Base de datos actualizada.`, env);
+    return json({ ok: true });
+  }
+
+  // 14. Comando /cancelar <id>
+  if (command === '/cancelar') {
+    const rawId = (args[0] || '').replace(/^[#DA\-]+/i, '').trim();
+    if (!rawId) {
+      await sendTelegramMessage(chatId, '⚠️ Debes indicar el ID del pedido. Ej: <code>/cancelar UP8LRP7</code>', env);
+      return json({ ok: true });
+    }
+    if (!env.ORDERS) {
+      await sendTelegramMessage(chatId, '⚠️ Almacenamiento KV no enlazado.', env);
+      return json({ ok: true });
+    }
+    let orderKey = `order:DA-${rawId.toUpperCase()}`;
+    let rawOrder = await env.ORDERS.get(orderKey);
+    if (!rawOrder) {
+      orderKey = `order:${rawId}`;
+      rawOrder = await env.ORDERS.get(orderKey);
+    }
+    if (!rawOrder) {
+      const listed = await env.ORDERS.list({ prefix: 'order:', limit: 200 });
+      const foundKey = listed.keys.find(k => k.name.toUpperCase().includes(rawId.toUpperCase()));
+      if (foundKey) {
+        orderKey = foundKey.name;
+        rawOrder = await env.ORDERS.get(orderKey);
+      }
+    }
+    if (!rawOrder) {
+      await sendTelegramMessage(chatId, `❌ No se encontró ningún pedido con ID <b>${rawId}</b>`, env);
+      return json({ ok: true });
+    }
+
+    const record = JSON.parse(rawOrder);
+    record.estado = 'cancelado';
+    record.actualizadoEn = new Date().toISOString();
+    await env.ORDERS.put(orderKey, JSON.stringify(record));
+    await syncOrderToGoogleSheets(record, env, 'update').catch(() => {});
+
+    await sendTelegramMessage(chatId, `❌ <b>Pedido #${record.id} marcado como CANCELADO</b>.\n(Ya no saldrá como pendiente en tus reportes).`, env);
+    return json({ ok: true });
+  }
+
+  // 15. Comando /limpiar_pruebas (Limpia pedidos prueba pendientes anteriores)
+  if (command === '/limpiar_pruebas' || command === '/purgar_pruebas') {
+    if (!env.ORDERS) {
+      await sendTelegramMessage(chatId, '⚠️ Almacenamiento KV no enlazado.', env);
+      return json({ ok: true });
+    }
+    await sendTelegramMessage(chatId, '⏳ <i>Iniciando limpieza de pedidos de prueba pendientes...</i>', env);
+    const listed = await env.ORDERS.list({ prefix: 'order:', limit: 300 });
+    let count = 0;
+    for (const k of listed.keys) {
+      const raw = await env.ORDERS.get(k.name);
+      if (!raw) continue;
+      const record = JSON.parse(raw);
+      if (record.estado === 'nuevo') {
+        record.estado = 'cancelado';
+        record.nota = 'Cancelado por limpieza de pruebas';
+        record.actualizadoEn = new Date().toISOString();
+        await env.ORDERS.put(k.name, JSON.stringify(record));
+        count++;
+      }
+    }
+    await sendTelegramMessage(chatId, `🧹 <b>¡Limpieza terminada con éxito!</b> 🌸\n\nSe cambiaron <b>${count} pedidos de prueba</b> a estado <code>cancelado</code>.\n\nEscribe <b>/resumen</b> ahora y verás tu contador en <b>0 pedidos pendientes</b>.`, env);
+    return json({ ok: true });
+  }
+
+// 6. Mensaje desconocido
   await sendTelegramMessage(chatId, '❓ Comando no reconocido.\nEscribe <b>/help</b> para ver la lista de comandos disponibles.', env);
   return json({ ok: true });
 
@@ -1977,6 +2366,18 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/api/update-order-status') {
       return handleUpdateOrderStatus(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/track-order') {
+      return handleTrackOrder(request, env);
+    }
+    if ((request.method === 'GET' || request.method === 'POST') && url.pathname === '/api/reviews') {
+      return handleGetReviews(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/save-reviews') {
+      return handleSaveReviews(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/external/update-status') {
+      return handleExternalUpdateStatus(request, env);
     }
     if (request.method === 'POST' && url.pathname === '/api/charge-culqi') {
       return handleChargeCulqi(request, env);

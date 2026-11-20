@@ -10,11 +10,20 @@
 
   gtag('config', 'G-YXYWYS5LCJ');
 </script>
+
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "zg3pjt0bq4");
+</script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catálogo de Perfumes Contratipo y Dupes con Delivery Gratis | Dolce 7 Aroma</title>
+<title>Catálogo de Perfumes Inspirados y Dupes con Delivery Gratis | Dolce 7 Aroma</title>
 <meta name="description" content="Catálogo completo de perfumes inspirados en diseñador. Frascos de 10ml (S/ 20), 50ml y 110ml con delivery gratis en Lima y recojo en Jr. Callao 482-A, SMP." />
-<meta name="keywords" content="catalogo perfumes dupes, perfumes delivery gratis lima, perfumes contratipo lima, perfumes equivalencia peru, perfumes pocket 10ml, perfumes de diseñador lima, perfumes en san martin de porres" />
+<meta name="keywords" content="catalogo perfumes dupes, perfumes inspirados lima, perfumes delivery gratis lima, perfumes contratipo lima, perfumes equivalencia peru, perfumes pocket 10ml, perfumes de diseñador lima, perfumes en san martin de porres" />
 <link rel="canonical" href="https://dolce7aroma.com/catalogo.html" />
 
 <link rel="icon" type="image/png" href="assets/logo-boutique.png" />
@@ -23,7 +32,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Dolce 7 Aroma" />
 <meta property="og:url" content="https://dolce7aroma.com/catalogo.html" />
-<meta property="og:title" content="Catálogo de Perfumes Contratipo y Dupes con Delivery Gratis | Dolce 7 Aroma" />
+<meta property="og:title" content="Catálogo de Perfumes Inspirados y Dupes con Delivery Gratis | Dolce 7 Aroma" />
 <meta property="og:description" content="Catálogo completo de perfumes inspirados en diseñador. Frascos de 10ml (S/ 20), 50ml y 110ml con delivery gratis en Lima y recojo en Jr. Callao 482-A, SMP." />
 <meta property="og:image" content="https://dolce7aroma.com/assets/frascos-dolcearoma.jpg" />
 <meta property="og:image:width" content="1200" />
@@ -31,7 +40,7 @@
 <meta property="og:image:alt" content="Catálogo de Perfumes Dolce Aroma" />
 <meta property="og:locale" content="es_PE" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Catálogo de Perfumes Contratipo y Dupes con Delivery Gratis | Dolce 7 Aroma" />
+<meta name="twitter:title" content="Catálogo de Perfumes Inspirados y Dupes con Delivery Gratis | Dolce 7 Aroma" />
 <meta name="twitter:description" content="Catálogo completo de perfumes inspirados en diseñador. Frascos de 10ml (S/ 20), 50ml y 110ml con delivery gratis en Lima y recojo en Jr. Callao 482-A, SMP." />
 <script type="application/ld+json">
 {
@@ -379,6 +388,7 @@
     <a href="index.html"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce Aroma Perfumes" style="opacity: 0.75; object-fit: cover; width: 200px; height: 90px" /></a>
     <div class="nav-right">
       <a class="nav-link" href="faq.html">FAQ</a>
+      <a class="nav-link" href="#" data-modal="tracking">Seguimiento</a>
       <a class="nav-link" href="#" data-modal="contacto">Contacto</a>
       <div style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--rule);border-radius:999px;font-size:11.5px;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:all .25s" data-cart-open role="button" tabindex="0" onmouseover="this.style.background='var(--plum)';this.style.color='var(--ivory)'" onmouseout="this.style.background='';this.style.color=''">Bolsa <span style="background:var(--gold);color:var(--ivory);font-size:10px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;letter-spacing:0" data-cart-count>0</span></div>
     </div>
@@ -776,6 +786,15 @@ function wire(){
   if(initGender) state.gender = initGender;
   const initTag = params.get('tag');
   if(initTag) state.tag = initTag;
+  const initEstilo = params.get('estilo');
+  if(initEstilo) state.estilo = initEstilo;
+
+  if(state.gender){
+    document.querySelectorAll('#seg-gender button').forEach(x => x.classList.toggle('active', x.dataset.v === state.gender));
+  }
+  if(state.estilo){
+    document.querySelectorAll('#seg-estilo button').forEach(x => x.classList.toggle('active', x.dataset.v === state.estilo));
+  }
 
   renderMeta();
   buildFacets();

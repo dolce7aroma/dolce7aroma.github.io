@@ -1433,12 +1433,38 @@ const DEFAULT_RESENAS = [
   {id:'r7', name:'Vanesa C.', meta:'Cliente desde 2024 · Los Olivos', initials:'VC', stars:5, quote:'Soy clienta fiel hace más de un año. Lo que más me gusta es que el aroma se mantiene en la ropa por días — incluso al día siguiente sigo recibiendo cumplidos.', visible:true}
 ];
 let resenas = [];
-function loadResenas(){
+async function loadResenas(){
+  try{
+    const res = await fetch(`${API_BASE}/api/reviews`);
+    if(res.ok){
+      const data = await res.json();
+      if(data.ok && Array.isArray(data.reviews) && data.reviews.length){
+        resenas = data.reviews;
+        localStorage.setItem(RESENAS_KEY, JSON.stringify(resenas));
+        renderResenas();
+        return;
+      }
+    }
+  }catch(e){}
   try{ const raw = localStorage.getItem(RESENAS_KEY); resenas = raw ? JSON.parse(raw) : [...DEFAULT_RESENAS]; }
   catch(e){ resenas = [...DEFAULT_RESENAS]; }
   if(!resenas.length){ resenas = [...DEFAULT_RESENAS]; }
 }
-function saveResenas(){ localStorage.setItem(RESENAS_KEY, JSON.stringify(resenas)); }
+async function saveResenas(){
+  localStorage.setItem(RESENAS_KEY, JSON.stringify(resenas));
+  try{
+    const key = await getAuthKey();
+    if(key){
+      await fetch(`${API_BASE}/api/save-reviews`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ key, reviews: resenas })
+      });
+    }
+  }catch(e){
+    console.warn('No se pudo respaldar en Cloudflare KV:', e);
+  }
+}
 function renderResenas(){
   const tbody = document.getElementById('resenas-tbody');
   if(!tbody) return;
@@ -2527,11 +2553,16 @@ function renderOrders(orders){
   tbody.querySelectorAll('.ord-estado').forEach(sel => sel.addEventListener('change', () => updateOrderStatus(sel.dataset.id, sel.value)));
 }
 async function updateOrderStatus(orderId, estado){
+  let guia_courier = undefined;
+  if(estado === 'en_camino'){
+    const promptGuia = prompt('Ingresa el número de guía / courier o nombre del motorizado (opcional):');
+    if(promptGuia !== null && promptGuia.trim()) guia_courier = promptGuia.trim();
+  }
   const key = await getAuthKey();
   if(!key) return;
   try{
     const res = await fetch(`${API_BASE}/api/update-order-status`, {
-      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ key, orderId, estado })
+      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ key, orderId, estado, guia_courier })
     });
     const out = await res.json();
     if(out.ok) toast('Estado actualizado');

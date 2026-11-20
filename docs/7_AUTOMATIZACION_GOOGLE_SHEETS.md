@@ -44,7 +44,8 @@ function doPost(e) {
       const headers = [
         'ID Pedido', 'Fecha (Hora Perú)', 'Nombre Cliente', 'Teléfono / WhatsApp', 
         'Provincia', 'Distrito', 'Dirección', 'Referencia', 'Productos Solicitados', 
-        'Total (S/)', 'Método Pago', 'Estado', '¿Regalo?', 'Origen de Visita'
+        'Subtotal (S/)', 'Envío (S/)', 'Total (S/)', 'Método Pago', 'Estado', 
+        'Guía / Courier', '¿Regalo?', 'Origen de Visita', 'Empresa Origen', 'Items Detalle (JSON)'
       ];
       sheet.appendRow(headers);
       
@@ -61,8 +62,10 @@ function doPost(e) {
       const values = sheet.getDataRange().getValues();
       for (let i = 1; i < values.length; i++) {
         if (String(values[i][0]).trim() === String(data.id).trim()) {
-          const statusCell = sheet.getRange(i + 1, 12); // Columna L (Estado)
-          statusCell.setValue(data.estado);
+          sheet.getRange(i + 1, 14).setValue(data.estado); // Columna N (Estado)
+          if (data.guia_courier) {
+            sheet.getRange(i + 1, 15).setValue(data.guia_courier); // Columna O (Guía / Courier)
+          }
           return ContentService.createTextOutput(JSON.stringify({ 
             ok: true, action: 'updated', row: i + 1 
           })).setMimeType(ContentService.MimeType.JSON);
@@ -70,7 +73,7 @@ function doPost(e) {
       }
     }
     
-    // Insertar nueva fila con el pedido
+    // Insertar nueva fila con el pedido consolidado
     const row = [
       data.id,
       data.fecha,
@@ -81,11 +84,16 @@ function doPost(e) {
       data.direccion,
       data.referencia || '',
       data.productos,
+      Number(data.subtotal || data.total || 0),
+      Number(data.envio || 0),
       Number(data.total || 0),
       data.metodoPago,
       data.estado,
+      data.guia_courier || '',
       data.esRegalo,
-      data.origen || 'directo'
+      data.origen || 'directo',
+      data.empresa_origen || 'RETAIL_DOLCE7AROMA',
+      data.items_detalle || ''
     ];
     sheet.appendRow(row);
     

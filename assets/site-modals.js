@@ -291,6 +291,26 @@
         <p>Si buscas un perfume específico, escríbenos por WhatsApp antes de venir para asegurarnos de tenerlo en stock.</p>
       `,
       foot: () => `<a class="sm-btn sm-btn-wa" href="https://wa.me/${WA}?text=${encodeURIComponent('Hola, quisiera coordinar una visita a la boutique.')}" target="_blank" rel="noopener">${ICONS.whatsapp} Coordinar visita</a>`
+    },
+    tracking: {
+      title: 'Seguimiento de <em>Pedido</em>',
+      eyebrow: 'Rastreo en vivo',
+      body: () => `
+        <p style="font-size:13px;color:#5e4d6a;margin-bottom:14px">Ingresa el número de tu pedido y tu teléfono registrado para ver el estado de tu despacho en tiempo real:</p>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
+          <div>
+            <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:#7b757d;margin-bottom:4px">Número de Pedido</label>
+            <input type="text" id="sm-track-id" placeholder="Ej. ORD-87A9F" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid #d4c8b8;border-radius:8px;font-size:14px;outline:none"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:#7b757d;margin-bottom:4px">Teléfono / WhatsApp registrado</label>
+            <input type="tel" id="sm-track-tel" placeholder="Ej. 987654321" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid #d4c8b8;border-radius:8px;font-size:14px;outline:none"/>
+          </div>
+          <button type="button" id="sm-track-btn" class="sm-btn sm-btn-wa" style="width:100%;justify-content:center;cursor:pointer;background:#2563eb;color:#fff;border:none;border-radius:8px;padding:10px;font-weight:700">🔍 Consultar Estado</button>
+        </div>
+        <div id="sm-track-res" style="display:none;margin-top:10px;padding:12px;border-radius:10px;background:#f6f2ec;border:1px solid #d4c8b8"></div>
+      `,
+      foot: () => `<p style="font-size:12px;color:#7b757d;margin:0">¿Tienes dudas con tu entrega? <a href="https://wa.me/${WA}" target="_blank" style="color:#a8895a;font-weight:600">Escríbenos a WhatsApp</a></p>`
     }
   };
 
@@ -328,6 +348,59 @@
       ${foot}
     `;
     document.getElementById('sm-close-btn').addEventListener('click', close);
+    if(id === 'tracking'){
+      const btn = card.querySelector('#sm-track-btn');
+      const resDiv = card.querySelector('#sm-track-res');
+      btn?.addEventListener('click', async () => {
+        const orderId = card.querySelector('#sm-track-id')?.value?.trim();
+        const telefono = card.querySelector('#sm-track-tel')?.value?.trim();
+        if(!orderId || !telefono){
+          resDiv.style.display = 'block';
+          resDiv.innerHTML = '<span style="color:#dc2626">Ingresa tu número de pedido y teléfono.</span>';
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Buscando pedido...';
+        resDiv.style.display = 'block';
+        resDiv.innerHTML = '<span style="color:#5e4d6a">Consultando en el sistema...</span>';
+        try {
+          const r = await fetch('https://dolce7aroma-github-io.cesarfernandezh7.workers.dev/api/track-order', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ orderId, telefono })
+          });
+          const data = await r.json();
+          if(!r.ok || !data.ok) throw new Error(data.error || 'No encontrado');
+          const o = data.order;
+          const statusLabels = {
+            nuevo: { text: 'Solicitud Recibida (Pendiente de pago)', color: '#d97706', bg: '#fef3c7' },
+            pagado: { text: 'Pago Confirmado (En preparación)', color: '#2563eb', bg: '#dbeafe' },
+            en_camino: { text: 'En camino con Courier / Motorizado', color: '#7c3aed', bg: '#ede9fe' },
+            entregado: { text: 'Entregado con éxito', color: '#059669', bg: '#d1fae5' },
+            cancelado: { text: 'Pedido Cancelado', color: '#dc2626', bg: '#fee2e2' }
+          };
+          const st = statusLabels[o.estado] || { text: o.estado, color: '#374151', bg: '#f3f4f6' };
+          resDiv.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <span style="font-weight:700;font-size:15px;color:#1e293b">Pedido #${o.id}</span>
+              <span style="background:${st.bg};color:${st.color};font-weight:700;font-size:11px;padding:3px 8px;border-radius:999px">${st.text}</span>
+            </div>
+            <p style="font-size:12.5px;color:#5e4d6a;margin:4px 0"><strong>Cliente:</strong> ${o.nombre}</p>
+            <p style="font-size:12.5px;color:#5e4d6a;margin:4px 0"><strong>Destino:</strong> ${o.distrito}, ${o.provincia}</p>
+            <p style="font-size:12.5px;color:#5e4d6a;margin:4px 0"><strong>Total:</strong> S/ ${Number(o.total||0).toFixed(2)} (${o.metodoPago})</p>
+            ${o.guia_courier ? `<p style="font-size:13px;color:#7c3aed;font-weight:700;margin:8px 0 0">🚚 Guía / Seguimiento: ${o.guia_courier}</p>` : ''}
+            <div style="margin-top:8px;padding-top:8px;border-top:1px dashed #d4c8b8;font-size:12px;color:#7b757d">
+              ${(o.items||[]).join('<br/>')}
+            </div>
+          `;
+        } catch(err) {
+          resDiv.innerHTML = `<span style="color:#dc2626">${err.message}</span>`;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = '🔍 Consultar Estado';
+        }
+      });
+    }
     // sub-modales (e.g. desde Contacto → Boutique)
     card.querySelectorAll('[data-modal]').forEach(a => a.addEventListener('click', e => {
       e.preventDefault();

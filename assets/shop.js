@@ -63,7 +63,7 @@
   let catalog = [];
   let cart = [];   // [{id, ml, qty}]
   let zonas = { envioGratisMinimo: 150, zonasGratis: [], notaOtrasZonas: '', mensajeEstandarGratis: '¡Felicidades, tu zona tiene envío gratis!' };
-  let pago = { nombreYape: 'Cesar Fernandez', culqiPublicKey: '' };
+  let pago = { nombreYape: 'Dolce 7 Aroma', culqiPublicKey: '' };
   let checkoutStep = 'cart'; // 'cart' | 'form' | 'confirm'
   let lastOrder = null; // datos del último pedido confirmado (para el paso de pago)
   let orderForm = { provincia:'Lima', nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
@@ -96,7 +96,7 @@
       const r = await fetch(PAGO_URL, {cache:'no-cache'});
       if(r.ok){
         const j = await r.json();
-        pago = Object.assign({ nombreYape:'Cesar Fernandez', culqiPublicKey:'', packRegalo: [] }, j);
+        pago = Object.assign({ nombreYape:'Dolce 7 Aroma', culqiPublicKey:'', packRegalo: [] }, j);
         if(pago.contacto && pago.contacto.whatsapp) {
           WHATSAPP_NUMBER = pago.contacto.whatsapp;
         }
@@ -484,6 +484,27 @@
       .da-confirm{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:6px 4px 20px}
       .da-confirm-check{width:56px;height:56px;border-radius:50%;background:#a8895a;color:#fff;display:grid;place-items:center;font-size:26px;margin-bottom:4px}
       .da-confirm h4{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:26px;color:#3c2f47;margin:0}
+      
+      .da-gift-cart-toggle{background:#fdf9f4;border:1.5px solid #a8895a;border-radius:12px;padding:12px 14px;margin:12px 0 6px;text-align:left}
+      .da-gift-cart-toggle label{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;font-size:13px;color:#3c2f47}
+      .da-gift-cart-toggle input[type=checkbox]{width:18px;height:18px;accent-color:#a8895a;flex-shrink:0}
+      .da-gift-cart-toggle .da-gift-cart-sub{font-size:11.5px;color:#5d4c70;margin-top:4px;display:block;margin-left:28px;line-height:1.4}
+      
+      
+
+      .da-size-benefit-box{background:#fdf9f4;border:1px solid #dcd4e0;border-radius:10px;padding:10px 12px;margin:10px 0 14px;font-size:12px;color:#3c2f47;line-height:1.45}
+      .da-size-benefit-box b{color:#a8895a}
+
+      .da-reserve-timer{width:100%;background:linear-gradient(135deg, rgba(168,137,90,0.15), rgba(60,47,71,0.08));border:1.5px solid #a8895a;border-radius:12px;padding:11px 15px;margin-bottom:12px;font-size:12.5px;color:#3c2f47;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:500;box-sizing:border-box}
+      .da-reserve-timer b{color:#a8895a;font-family:'JetBrains Mono',monospace;font-size:14px}
+      .da-yape-box{background:#fdf9f4;border:1.5px solid rgba(168,137,90,0.3);border-radius:14px;padding:16px;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:10px;box-sizing:border-box}
+      .da-yape-num-display{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:#742296;letter-spacing:1px}
+      .da-btn-copy-yape{background:#742296;color:#fff;border:0;border-radius:10px;padding:11px 18px;font-size:13px;font-weight:600;letter-spacing:0.04em;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;font-family:inherit;width:100%;max-width:280px}
+      .da-btn-copy-yape:hover{background:#5c1877;transform:translateY(-1px)}
+      .da-btn-copy-yape.copied{background:#1e7e34}
+      .da-btn-wa-confirm{background:#25D366;color:#fff!important;border:0;border-radius:12px;padding:15px 20px;font-size:14.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;text-decoration:none;box-shadow:0 8px 24px rgba(37,211,102,0.35);transition:all .2s;box-sizing:border-box;margin-top:4px}
+      .da-btn-wa-confirm:hover{background:#20ba5a;transform:translateY(-1px);box-shadow:0 10px 28px rgba(37,211,102,0.45)}
+
       .da-confirm > p{font-size:13px;color:#5d4c70;line-height:1.6;margin:0 0 10px}
       .da-pay-card{width:100%;background:#fff;border:1.5px solid rgba(60,47,71,0.12);border-radius:14px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:14px;box-sizing:border-box}
       .da-pay-title{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#3c2f47;font-weight:600}
@@ -1066,42 +1087,60 @@
   function renderCheckoutConfirm(list, foot){
     if(!lastOrder){ checkoutStep = 'cart'; return renderCart(); }
     const orderTag = lastOrder.orderId ? ` #${lastOrder.orderId}` : '';
-    const waMsg = `Buenos días, soy ${lastOrder.nombre}. Estoy realizando el pago de mi pedido${orderTag}, adjunto la constancia 🧾`;
+    
+    // Lista de productos para el mensaje de WhatsApp si el cliente decide pulsar el botón
+    const itemsListText = (cart || []).map(it => {
+      const p = catalog.find(x => x.id === it.id);
+      const name = p ? p.name : it.id;
+      return `• ${name} (${it.ml} ml) x${it.qty}`;
+    }).join('\n');
+
+    const giftText = (cartGift && cartGift.enabled)
+      ? `\n🎁 *Bolsa de Regalo Dolce Aroma:* Sí (GRATIS)`
+      : '';
+
+    const waMsg = `¡Hola Dolce 7 Aroma! 👋 Acabo de registrar mi pedido en la web:
+
+📦 *Pedido:* #${lastOrder.orderId || 'PENDIENTE'}
+👤 *Cliente:* ${lastOrder.nombre}
+📱 *Teléfono:* ${lastOrder.telefono}
+📍 *Entrega:* ${lastOrder.direccion}, ${lastOrder.distrito} (${lastOrder.provincia || 'Lima'})
+
+🛍️ *Productos:*
+${itemsListText}${giftText}
+
+💰 *Total:* S/ ${lastOrder.total}
+
+Quedo a la espera de sus datos de Yape para transferir y coordinar la entrega. ¡Gracias!`;
+
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
-    const tarjetaHtml = pago.culqiPublicKey
-      ? `<div class="da-pay-card" id="da-pay-card-tarjeta">
-           <div class="da-pay-title">Tarjeta de crédito / débito</div>
-           <p class="da-pay-note">Pago seguro procesado por Culqi — tus datos de tarjeta nunca pasan por nuestro sitio.</p>
-           <button class="da-btn da-btn-primary" style="width:100%" id="da-pay-culqi">Pagar S/ ${lastOrder.total} con tarjeta</button>
-         </div>`
-      : `<div class="da-pay-card da-pay-soon">
-           <div class="da-pay-title">Tarjeta de crédito / débito</div>
-           <p class="da-pay-note">Próximamente 🚧 — por ahora paga con Yape o coordina con nosotros por WhatsApp.</p>
-         </div>`;
+
     list.innerHTML = `
       <div class="da-confirm">
         <div class="da-confirm-check">✓</div>
-        <h4>¡Pedido registrado!</h4>
+        <h4>¡Pedido registrado con éxito!</h4>
         ${lastOrder.orderId ? `<div class="da-confirm-id">Pedido #${lastOrder.orderId}</div>` : ''}
-        <p>Guardamos tu pedido y ya nos llegó la notificación. Elige cómo quieres pagar para coordinar tu entrega:</p>
+        
+        <p style="font-size:14.5px;color:#3c2f47;margin:14px 0 10px;line-height:1.6">
+          Un asesor de Dolce 7 Aroma se comunicará contigo vía WhatsApp al <b>${escapeHtml(lastOrder.telefono)}</b> para coordinar la entrega y facilitar los medios de pago oficiales.
+        </p>
 
-        <div class="da-pay-card">
-          <div class="da-pay-title">Yape</div>
-          <img src="assets/pago-yape.jpg" alt="Código QR para pagar por Yape" class="da-pay-qr"/>
-          <div class="da-pay-name">${escapeHtml(pago.nombreYape)}</div>
-          <a class="da-btn da-btn-wa" style="width:100%" href="${waUrl}" target="_blank" rel="noopener" id="da-pay-wa">
-            Ya pagué, avisar por WhatsApp
-          </a>
-          <p class="da-pay-note">Al abrirse WhatsApp, adjunta la captura de tu pago como segundo mensaje.</p>
+        <div style="width:100%;background:#fdf9f4;border:1.5px solid #dcd4e0;border-radius:12px;padding:14px;margin:12px 0 16px;font-size:12.5px;color:#5d4c70;line-height:1.5;text-align:left;box-sizing:border-box">
+          🔒 <b>Compra 100% segura:</b> Por tu seguridad y privacidad, nunca solicitamos números de tarjeta en esta web. El pago se coordina exclusivamente mediante nuestro canal oficial verificado de WhatsApp.
         </div>
 
-        ${tarjetaHtml}
+        <a class="da-btn-wa-confirm" href="${waUrl}" target="_blank" rel="noopener" id="da-pay-wa">
+          <span>📲</span> ¿Deseas atención inmediata? Escríbenos por WhatsApp
+        </a>
+        <p class="da-pay-note" style="margin-top:4px">
+          Al pulsar se abrirá WhatsApp con el resumen de tu pedido para recibir atención prioritaria.
+        </p>
 
-        <button class="da-btn da-btn-ghost" style="width:100%;margin-top:6px" id="da-confirm-close">Seguir comprando</button>
+        <button class="da-btn da-btn-ghost" style="width:100%;margin-top:14px" id="da-confirm-close">Seguir explorando la tienda</button>
       </div>
     `;
     foot.innerHTML = '';
-    if(pago.culqiPublicKey) document.getElementById('da-pay-culqi')?.addEventListener('click', payWithCulqi);
+
     document.getElementById('da-pay-wa')?.addEventListener('click', ()=>{
       if(lastOrder) {
         trackGA4Event('purchase', {
@@ -1112,15 +1151,14 @@
         });
       }
     });
-    document.getElementById('da-confirm-close').addEventListener('click', ()=>{
+
+    document.getElementById('da-confirm-close')?.addEventListener('click', ()=>{
       cart = []; saveCart();
       checkoutStep = 'cart'; lastOrder = null;
       closeCart();
     });
   }
 
-  // ─── Pago con tarjeta (Culqi) ───
-  // Se activa solo si Admin → Pago tiene cargada una llave pública (pago.culqiPublicKey).
   // Sin ella, la tarjeta de pago muestra "Próximamente" y este código no se ejecuta nunca.
   let culqiScriptLoaded = false;
   function loadCulqiScript(){
