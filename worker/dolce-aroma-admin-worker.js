@@ -367,7 +367,7 @@ async function notifyOwner(subject, summary, env) {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: env.ORDER_EMAIL_FROM || 'Dolce Aroma <onboarding@resend.dev>',
+          from: env.ORDER_EMAIL_FROM || 'Dolce 7 Aroma <onboarding@resend.dev>',
           to: [env.ORDER_EMAIL_TO],
           subject,
           text: summary.replace(/<[^>]+>/g, ''),
@@ -401,7 +401,7 @@ function orderSummaryText(record) {
     ? `\nRegalado por: ${record.compradorNombre || '(sin nombre)'} · WhatsApp ${record.compradorTelefono}` : '';
   const giftNote = record.esRegalo ? '\n🎁 Incluye Bolsa de Regalo Elegante GRATIS' : '';
   const cleanPhone = String(record.telefono || '').replace(/\D/g, '');
-  const rescueMsg = encodeURIComponent(`Hola ${record.nombre}, te saludamos de Dolce Aroma 🌸 Confirmamos que recibimos tu pedido #${record.id} por un total de S/ ${record.total}. ¡Ya tenemos tus fragancias preparadas! ¿Deseas que te enviemos los datos de Yape/Plin para coordinar tu entrega?`);
+  const rescueMsg = encodeURIComponent(`¡Hola ${record.nombre}! 👋 Te saludamos de Dolce 7 Aroma 🌸 Confirmamos la recepción de tu pedido #${record.id} registrado en nuestra web por un total de S/ ${record.total}.`);
   const waRescueUrl = cleanPhone ? `https://wa.me/51${cleanPhone}?text=${rescueMsg}` : '';
 
   return `${record.esRegalo ? '🎁' : '🌸'} <b>¡NUEVO PEDIDO REGISTRADO EN LA WEB!</b>
@@ -646,15 +646,15 @@ ${itemsText}
 Puedes consultar el estado de tu despacho en cualquier momento desde nuestra web introduciendo tu número de pedido (#${record.id}) y tu teléfono celular.
 
 ¡Gracias por tu preferencia!
-Equipo Dolce Aroma`;
+Equipo Dolce 7 Aroma`;
 
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: env.ORDER_EMAIL_FROM || 'Dolce Aroma <onboarding@resend.dev>',
+        from: env.ORDER_EMAIL_FROM || 'Dolce 7 Aroma <onboarding@resend.dev>',
         to: [record.email],
-        subject: `¡Pago Confirmado! Tu pedido #${record.id} está en preparación - Dolce Aroma`,
+        subject: `¡Pago Confirmado! Tu pedido #${record.id} está en preparación - Dolce 7 Aroma`,
         text: emailBody
       })
     });
@@ -999,7 +999,7 @@ async function handleChargeCulqi(request, env) {
         currency_code: 'PEN',
         email,
         source_id: token,
-        description: orderId ? `Pedido Dolce Aroma #${orderId}` : 'Pedido Dolce Aroma',
+        description: orderId ? `Pedido Dolce 7 Aroma #${orderId}` : 'Pedido Dolce 7 Aroma',
       }),
     });
     const charge = await res.json().catch(() => null);
@@ -2198,7 +2198,7 @@ Escribe <code>/sheets sync</code> si deseas re-exportar todos los pedidos de la 
     let msg = `🔔 <b>[PEDIDOS PENDIENTES POR ATENDER (${pending.length})]</b> 🌸\n\n`;
     for (const o of pending.slice(0, 15)) {
       const cleanPhone = String(o.telefono || '').replace(/\D/g, '');
-      const rescueText = encodeURIComponent(`Hola ${o.nombre}, te saludamos de Dolce Aroma 🌸 Vimos que registraste tu pedido #${o.id} por S/ ${Number(o.total || 0).toFixed(2)}. ¡Ya tenemos tus fragancias preparadas! ¿Deseas coordinar tu entrega por Yape?`);
+      const rescueText = encodeURIComponent(`¡Hola ${o.nombre}! 👋 Te saludamos de Dolce 7 Aroma 🌸 Confirmamos la recepción de tu pedido #${o.id} registrado en nuestra web por un total de S/ ${Number(o.total || 0).toFixed(2)}.`);
       const waLink = cleanPhone ? `https://wa.me/51${cleanPhone}?text=${rescueText}` : null;
       
       msg += `📦 <b>#${o.id}</b> — ${o.nombre}\n`;

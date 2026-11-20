@@ -67,6 +67,7 @@
   let checkoutStep = 'cart'; // 'cart' | 'form' | 'confirm'
   let lastOrder = null; // datos del último pedido confirmado (para el paso de pago)
   let orderForm = { provincia:'Lima', nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
+  let cartGift = null;
 
   // ─── Regalar un perfume ───
   let giftMode = false;             
@@ -1070,38 +1071,45 @@
       const data = await r.json().catch(()=>({ok:false}));
       if(!r.ok || !data.ok) throw new Error(data.error || 'No se pudo registrar el pedido');
       lastOrder = { orderId: data.orderId || null, nombre, telefono, provincia, distrito, direccion, referencia, items, subtotal: offers.total, envio, total: totalFinal };
-      trackGA4Event('add_shipping_info', {
-        currency: 'PEN',
-        value: offers.total,
-        items: cart.map(c => formatGA4Item(c, c.qty))
-      });
+      try {
+        trackGA4Event('add_shipping_info', {
+          currency: 'PEN',
+          value: offers.total,
+          items: cart.map(c => formatGA4Item(c, c.qty))
+        });
+      }catch(ge){ console.warn('GA4 error:', ge); }
       checkoutStep = 'confirm';
       renderCart();
-        }catch(err){
+    }catch(err){
       console.warn('Aviso: submit-order fallback activado:', err);
       lastOrder = { orderId: 'W-' + Math.random().toString(36).substring(2, 7).toUpperCase(), nombre, telefono, provincia, distrito, direccion, referencia, items, subtotal: offers.total, envio, total: totalFinal };
       checkoutStep = 'confirm';
-      renderCart();
+      try {
+        renderCart();
+      }catch(re){
+        console.error('Error al renderizar confirmación fallback:', re);
+      }
     }
   }
 
   // ─── Paso 3: confirmación + pago ───
   function renderCheckoutConfirm(list, foot){
-    if(!lastOrder){ checkoutStep = 'cart'; return renderCart(); }
-    const orderTag = lastOrder.orderId ? ` #${lastOrder.orderId}` : '';
-    
-    // Lista de productos para el mensaje de WhatsApp si el cliente decide pulsar el botón
-    const itemsListText = (cart || []).map(it => {
-      const p = catalog.find(x => x.id === it.id);
-      const name = p ? p.name : it.id;
-      return `• ${name} (${it.ml} ml) x${it.qty}`;
-    }).join('\n');
+    try {
+      if(!lastOrder){ checkoutStep = 'cart'; return renderCart(); }
+      const orderTag = lastOrder.orderId ? ` #${lastOrder.orderId}` : '';
+      
+      // Lista de productos para el mensaje de WhatsApp si el cliente decide pulsar el botón
+      const itemsListText = (cart || []).map(it => {
+        const p = catalog.find(x => x.id === it.id);
+        const name = p ? p.name : it.id;
+        return `• ${name} (${it.ml} ml) x${it.qty}`;
+      }).join('\n');
 
-    const giftText = (cartGift && cartGift.enabled)
-      ? `\n🎁 *Bolsa de Regalo Dolce Aroma:* Sí (GRATIS)`
-      : '';
+      const giftText = (typeof cartGift !== 'undefined' && cartGift && cartGift.enabled)
+        ? `\n🎁 *Bolsa de Regalo Dolce 7 Aroma:* Sí (GRATIS)`
+        : '';
 
-    const waMsg = `¡Hola Dolce 7 Aroma! 👋 Acabo de registrar mi pedido en la web:
+      const waMsg = `¡Hola Dolce 7 Aroma! 👋 Acabo de registrar mi pedido en la web:
 
 📦 *Pedido:* #${lastOrder.orderId || 'PENDIENTE'}
 👤 *Cliente:* ${lastOrder.nombre}
@@ -1115,50 +1123,74 @@ ${itemsListText}${giftText}
 
 Quedo a la espera de sus datos de Yape para transferir y coordinar la entrega. ¡Gracias!`;
 
-    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
+      const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
 
-    list.innerHTML = `
-      <div class="da-confirm">
-        <div class="da-confirm-check">✓</div>
-        <h4>¡Pedido registrado con éxito!</h4>
-        ${lastOrder.orderId ? `<div class="da-confirm-id">Pedido #${lastOrder.orderId}</div>` : ''}
-        
-        <p style="font-size:14.5px;color:#3c2f47;margin:14px 0 10px;line-height:1.6">
-          Un asesor de Dolce 7 Aroma se comunicará contigo vía WhatsApp al <b>${escapeHtml(lastOrder.telefono)}</b> para coordinar la entrega y facilitar los medios de pago oficiales.
-        </p>
+      list.innerHTML = `
+        <div class="da-confirm">
+          <div class="da-confirm-check">✓</div>
+          <h4>¡Pedido registrado con éxito!</h4>
+          ${lastOrder.orderId ? `<div class="da-confirm-id">Pedido #${lastOrder.orderId}</div>` : ''}
+          
+          <p style="font-size:14.5px;color:#3c2f47;margin:14px 0 10px;line-height:1.6">
+            Un asesor de Dolce 7 Aroma se comunicará contigo vía WhatsApp al <b>${escapeHtml(lastOrder.telefono)}</b> para coordinar la entrega y facilitar los medios de pago oficiales.
+          </p>
 
-        <div style="width:100%;background:#fdf9f4;border:1.5px solid #dcd4e0;border-radius:12px;padding:14px;margin:12px 0 16px;font-size:12.5px;color:#5d4c70;line-height:1.5;text-align:left;box-sizing:border-box">
-          🔒 <b>Compra 100% segura:</b> Por tu seguridad y privacidad, nunca solicitamos números de tarjeta en esta web. El pago se coordina exclusivamente mediante nuestro canal oficial verificado de WhatsApp.
+          <div style="width:100%;background:#fdf9f4;border:1.5px solid #dcd4e0;border-radius:12px;padding:14px;margin:12px 0 16px;font-size:12.5px;color:#5d4c70;line-height:1.5;text-align:left;box-sizing:border-box">
+            🔒 <b>Compra 100% segura:</b> Por tu seguridad y privacidad, nunca solicitamos números de tarjeta en esta web. El pago se coordina exclusivamente mediante nuestro canal oficial verificado de WhatsApp.
+          </div>
+
+          <a class="da-btn-wa-confirm" href="${waUrl}" target="_blank" rel="noopener" id="da-pay-wa">
+            <span>📲</span> ¿Deseas atención inmediata? Escríbenos por WhatsApp
+          </a>
+          <p class="da-pay-note" style="margin-top:4px">
+            Al pulsar se abrirá WhatsApp con el resumen de tu pedido para recibir atención prioritaria.
+          </p>
+
+          <button class="da-btn da-btn-ghost" style="width:100%;margin-top:14px" id="da-confirm-close">Seguir explorando la tienda</button>
         </div>
+      `;
+      foot.innerHTML = '';
 
-        <a class="da-btn-wa-confirm" href="${waUrl}" target="_blank" rel="noopener" id="da-pay-wa">
-          <span>📲</span> ¿Deseas atención inmediata? Escríbenos por WhatsApp
-        </a>
-        <p class="da-pay-note" style="margin-top:4px">
-          Al pulsar se abrirá WhatsApp con el resumen de tu pedido para recibir atención prioritaria.
-        </p>
+      document.getElementById('da-pay-wa')?.addEventListener('click', ()=>{
+        if(lastOrder) {
+          try {
+            trackGA4Event('purchase', {
+              currency: 'PEN',
+              transaction_id: lastOrder.orderId || 'wa_' + Date.now(),
+              value: lastOrder.total,
+              items: cart.map(c => formatGA4Item(c, c.qty))
+            });
+          }catch(e){}
+        }
+      });
 
-        <button class="da-btn da-btn-ghost" style="width:100%;margin-top:14px" id="da-confirm-close">Seguir explorando la tienda</button>
-      </div>
-    `;
-    foot.innerHTML = '';
-
-    document.getElementById('da-pay-wa')?.addEventListener('click', ()=>{
-      if(lastOrder) {
-        trackGA4Event('purchase', {
-          currency: 'PEN',
-          transaction_id: lastOrder.orderId || 'wa_' + Date.now(),
-          value: lastOrder.total,
-          items: cart.map(c => formatGA4Item(c, c.qty))
+      document.getElementById('da-confirm-close')?.addEventListener('click', ()=>{
+        cart = []; saveCart();
+        checkoutStep = 'cart'; lastOrder = null;
+        closeCart();
+      });
+    } catch(err) {
+      console.error('Error renderCheckoutConfirm:', err);
+      if(list){
+        list.innerHTML = `
+          <div class="da-confirm">
+            <div class="da-confirm-check">✓</div>
+            <h4>¡Pedido registrado con éxito!</h4>
+            ${lastOrder && lastOrder.orderId ? `<div class="da-confirm-id">Pedido #${lastOrder.orderId}</div>` : ''}
+            <p style="font-size:14.5px;color:#3c2f47;margin:14px 0;line-height:1.6">
+              Recibimos tu pedido. Nos comunicaremos contigo por WhatsApp para coordinar tu entrega y el pago.
+            </p>
+            <button class="da-btn da-btn-ghost" style="width:100%;margin-top:14px" id="da-confirm-close-fallback">Seguir explorando</button>
+          </div>
+        `;
+        document.getElementById('da-confirm-close-fallback')?.addEventListener('click', ()=>{
+          cart = []; saveCart();
+          checkoutStep = 'cart'; lastOrder = null;
+          closeCart();
         });
       }
-    });
-
-    document.getElementById('da-confirm-close')?.addEventListener('click', ()=>{
-      cart = []; saveCart();
-      checkoutStep = 'cart'; lastOrder = null;
-      closeCart();
-    });
+      if(foot) foot.innerHTML = '';
+    }
   }
 
   // Sin ella, la tarjeta de pago muestra "Próximamente" y este código no se ejecuta nunca.
