@@ -12,7 +12,7 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 | **1** | Inicio no tiene botón para ir a nuestra filosofía, familias olfativas, etc. | UX / Navegación | ✅ RESUELTO |
 | **2** | Al añadir a la bolsa no debería forzar la apertura si el cliente quiere seguir comprando. | UX / Carrito | ✅ RESUELTO |
 | **3** | En recomendación de Dúo Esencial (al llegar a S/ 100) debe mostrar "Delivery GRATIS". | CRO / Incentivo | ✅ RESUELTO |
-| **4** | En laptop, el footer/drawer inferior del carrito ocupa mucho alto y tapa los productos. | UI / Responsive | ⏳ Pendiente |
+| **4** | En laptop, el footer/drawer inferior del carrito ocupa mucho alto y tapa los productos. | UI / Responsive | ✅ RESUELTO |
 | **5** | Ajuste de curva de descuento 110ml: Primero S/ 15 y luego S/ 30 (temporal hasta 2027). | Precios / Promos | ⏳ Pendiente |
 | **6** | Bolsa flotante visible en todo tipo de ventana (incluso si no está maximizada). | UI / Accesibilidad | ⏳ Pendiente |
 | **7** | Sincronización del video del perfume flotando en el home. | Visual / Rendimiento | ⏳ Pendiente |
@@ -84,3 +84,19 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
    * **Provincias:** Despacho por agencia con pago en destino y embalaje protegido gratis.
    * **Incentivo de Ticket Promedio (AOV):** Si el cliente de Zona A tiene entre S/ 50 y S/ 99, el sistema le muestra el monto exacto faltante para activar su Delivery Gratis.
 3. **Cache-Buster v7:** Desplegado en `index.html`, `catalogo.html`, `faq.html` y `navidad.html`.
+
+---
+
+## 🛠️ Detalle de Resolución: Punto 4 (Optimización de Altura del Carrito en Computadora)
+
+### Solución Implementada:
+1. **Reducción de Altura del Pie del Carrito (`.da-cart-foot`):**
+   * Se unificaron los botones secundarios apilados en una sola línea horizontal sutil: `+ Seguir comprando · Vaciar bolsa`, eliminando más de 80px de altura vertical innecesaria.
+   * Se compactaron los paddings verticales de `20px` a `12px` y se redujo el tamaño del total de `34px` a `26px`.
+   * La caja de ofertas (`da-trio-hint`) ahora tiene un padding estilizado de `10px 14px` con altura máxima controlada (`max-height: 150px` con scroll interno si hay más de 3 niveles de oferta), evitando que crezca indefinidamente.
+2. **Duplicación del Área Visible de Productos:**
+   * La altura útil de la lista de productos (`.da-cart-list`) aumentó de apenas ~220px a más de **450px**, permitiendo visualizar de 3 a 4 perfumes seleccionados en simultáneo en cualquier laptop sin necesidad de scroll forzado.
+   * Se ajustó el tamaño de miniatura de producto a 60px x 60px para una vista proporcionada y elegante.
+3. **Ancho Ampliado en Desktop/Laptop:**
+   * Se incrementó el ancho del panel lateral de 440px a **480px** en pantallas de escritorio, brindando espacio horizontal para que los nombres de los perfumes y los descuentos respiren sin saltos de línea excesivos.
+4. **Cache-Buster v8:** Desplegado en `index.html`, `catalogo.html`, `faq.html` y `navidad.html`.

@@ -350,14 +350,14 @@
       .da-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;background:#f6f4ef;border:0;cursor:pointer;display:grid;place-items:center;z-index:5;box-shadow:0 4px 14px rgba(0,0,0,0.15)}
       .da-close svg{width:16px;height:16px;stroke:#3c2f47;fill:none;stroke-width:1.8}
 
-      .da-cart{position:fixed;top:0;right:0;width:440px;max-width:100vw;height:100vh;background:#f6f4ef;z-index:100;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.2,.7,.2,1), width .3s cubic-bezier(.2,.7,.2,1);box-shadow:-30px 0 80px -20px rgba(0,0,0,0.3)}
+      .da-cart{position:fixed;top:0;right:0;width:480px;max-width:100vw;height:100vh;background:#f6f4ef;z-index:100;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.2,.7,.2,1), width .3s cubic-bezier(.2,.7,.2,1);box-shadow:-30px 0 80px -20px rgba(0,0,0,0.3)}
       .da-cart.open{transform:translateX(0)}
       .da-cart.expanded{width:760px}
       .da-cart-expand{background:transparent}
       .da-cart-expand.active{color:#a8895a}
       .da-cart-head{padding:24px 26px;border-bottom:1px solid rgba(60,47,71,0.1);display:flex;justify-content:space-between;align-items:center}
       .da-cart-head h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:28px;color:#3c2f47;margin:0}
-      .da-cart-list{flex:1;overflow-y:auto;padding:18px 26px;display:flex;flex-direction:column;gap:14px}
+      .da-cart-list{flex:1;overflow-y:auto;padding:14px 20px;display:flex;flex-direction:column;gap:10px}
       .da-cart-empty{text-align:center;padding:60px 20px 40px;color:#5d4c70}
       .da-cart-empty .icon{font-size:40px;margin-bottom:14px}
       .da-cart-empty h4{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:22px;color:#3c2f47;margin:0 0 8px}
@@ -370,8 +370,8 @@
       .da-empty-chip:hover{border-color:#a8895a;background:#f6e9d8;color:#3c2f47}
       .da-empty-chip.gold{background:#a8895a;border-color:#a8895a;color:#f6f4ef}
       .da-empty-chip.gold:hover{background:#8f7449}
-      .da-cart-item{display:grid;grid-template-columns:72px 1fr auto;gap:14px;align-items:center;background:#fff;border-radius:12px;padding:12px}
-      .da-cart-item img{width:72px;height:72px;border-radius:8px;object-fit:cover;background:#dcd4e0}
+      .da-cart-item{display:grid;grid-template-columns:60px 1fr auto;gap:12px;align-items:center;background:#fff;border-radius:12px;padding:10px 12px}
+      .da-cart-item img{width:60px;height:60px;border-radius:8px;object-fit:cover;background:#dcd4e0}
       .da-cart-item .n{font-family:'Cormorant Garamond',serif;font-size:18px;color:#3c2f47;line-height:1.1}
       .da-cart-item .m{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#5d4c70;margin-top:3px}
       .da-cart-item .q{display:flex;align-items:center;gap:8px;margin-top:8px}
@@ -379,27 +379,33 @@
       .da-cart-item .q span{font-size:13px;min-width:18px;text-align:center}
       .da-cart-item .price{font-family:'Cormorant Garamond',serif;font-size:18px;color:#3c2f47;text-align:right}
       .da-cart-item .rm{display:block;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#a8895a;background:transparent;border:0;cursor:pointer;margin-top:6px}
-      .da-cart-foot{padding:20px 26px 26px;border-top:1px solid rgba(60,47,71,0.1);background:#efe9e0}
+      .da-cart-foot{padding:12px 20px 16px;border-top:1px solid rgba(60,47,71,0.1);background:#efe9e0;flex-shrink:0}
       .da-cart-total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
       .da-cart-total span{font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:#5d4c70}
       .da-cart-total b{font-family:'Cormorant Garamond',serif;font-size:36px;color:#3c2f47;font-weight:500}
 
-      .da-totals{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+      .da-totals{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
       .da-line{display:flex;justify-content:space-between;align-items:baseline;gap:14px}
       .da-line span{font-size:11.5px;letter-spacing:0.22em;text-transform:uppercase;color:#5d4c70}
       .da-line b{font-family:'Cormorant Garamond',serif;font-size:20px;color:#3c2f47;font-weight:500}
       .da-line-dis span{color:#a8895a;font-weight:500}
       .da-line-dis b{color:#a8895a}
-      .da-line-total{padding-top:10px;border-top:1px dashed rgba(60,47,71,0.18);margin-top:4px}
+      .da-line-total{padding-top:6px;border-top:1px dashed rgba(60,47,71,0.18);margin-top:2px}
       .da-line-total span{color:#3c2f47;font-weight:500}
-      .da-line-total b{font-size:34px}
+      .da-line-total b{font-size:26px}
       .da-trio-hint{
-        background:linear-gradient(135deg, rgba(168,137,90,0.22), rgba(207,200,216,0.28));
-        border:1.5px solid #a8895a;border-radius:12px;padding:14px 16px;margin-bottom:14px;
-        display:flex;flex-direction:column;gap:8px;
-        box-shadow:0 6px 20px -8px rgba(168,137,90,0.5);
+        background:linear-gradient(135deg, rgba(168,137,90,0.2), rgba(207,200,216,0.25));
+        border:1.5px solid #a8895a;border-radius:12px;padding:10px 14px;margin-bottom:10px;
+        display:flex;flex-direction:column;gap:6px;max-height:150px;overflow-y:auto;
+        box-shadow:0 4px 14px -6px rgba(168,137,90,0.4);
         animation:da-hint-in .35s cubic-bezier(.2,.7,.2,1);
       }
+      .da-foot-actions-row{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:8px}
+      .da-foot-link{background:transparent;border:none;padding:4px 6px;font-family:inherit;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#5d4c70;cursor:pointer;transition:color .2s}
+      .da-foot-link:hover{color:#3c2f47;text-decoration:underline}
+      .da-foot-link.da-foot-clear{color:#8a6475}
+      .da-foot-link.da-foot-clear:hover{color:#c0392b}
+      .da-foot-sep{color:rgba(60,47,71,0.25);font-size:10px}
       @keyframes da-hint-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
       .da-trio-note{font-size:11px;color:#3c2f47;line-height:1.5;padding-bottom:8px;border-bottom:1px dashed rgba(168,137,90,0.45)}
       .da-trio-row{display:flex;flex-direction:column;gap:3px}
@@ -863,9 +869,12 @@
         <div class="da-line da-line-total"><span>Total</span><b>S/ ${offers.total}</b></div>
       </div>
       ${progressHtml}
-      ${keepShoppingHtml}
-      <button class="da-btn da-btn-primary" style="width:100%" id="da-checkout">Continuar con el pedido</button>
-      <button class="da-btn da-btn-ghost" style="width:100%;margin-top:8px" id="da-clear">Vaciar bolsa</button>
+      <button class="da-btn da-btn-primary" style="width:100%;padding:13px 20px;font-size:12px;letter-spacing:0.16em" id="da-checkout">Continuar con el pedido</button>
+      <div class="da-foot-actions-row">
+        <button type="button" class="da-foot-link" id="da-keep-shopping">+ Seguir comprando</button>
+        <span class="da-foot-sep">·</span>
+        <button type="button" class="da-foot-link da-foot-clear" id="da-clear">Vaciar bolsa</button>
+      </div>
     `;
     document.getElementById('da-checkout').addEventListener('click', ()=>{
       checkoutStep = 'form';
