@@ -175,16 +175,17 @@ Publicar 1 novedad semanal mantiene la ficha en los primeros lugares:
 
 El 70% del posicionamiento en el mapa depende de la cantidad y frescura de las opiniones con texto:
 
-1. **Obtener el enlace corto directo de Google:**  
-   En el panel de Google Business Profile, haz clic en **«Solicitar opiniones»** y copia el enlace oficial (ejemplo: `https://g.page/r/XXXXX/review`).
-2. **Mensaje de WhatsApp para enviar 2 horas después de la venta:**
+1. **Enlace Oficial Activo y Verificado:**  
+   `https://g.page/r/CR3Rd0JmWE7yECE/review`
+
+2. **Mensaje de WhatsApp para enviar a clientes o contactos de confianza:**
    ```text
-   ¡Hola [Nombre]! 🌸 Muchas gracias por visitarnos hoy en nuestro punto de Jr. Callao 482-A.
+   ¡Hola [Nombre]! 🌸 Espero que estés súper bien. Te cuento que estamos impulsando Dolce Aroma en Google Maps y me ayudarías muchísimo con un favor de 30 segundos.
    
-   ¿Nos regalarías 30 segundos dejándonos una calificación en Google Maps? Nos ayuda muchísimo como emprendimiento local:
-   👉 [TU_ENLACE_DE_RESEÑA_GOOGLE]
+   ¿Nos regalarías una calificación de 5 estrellas y un breve comentario sobre la calidad y fijación de los perfumes?
+   👉 https://g.page/r/CR3Rd0JmWE7yECE/review
    
-   🎁 ¡Guarda tu captura! En tu próxima visita te obsequiamos una muestra adicional de 0.5 ml de tu aroma favorito. ¡Que disfrutes tu perfume! ✨
+   🎁 ¡Muchísimas gracias por el apoyo de siempre! ✨
    ```
 3. **Regla de Oro en Respuestas:**  
    Responder al 100% de las reseñas en menos de 24 horas mencionando palabras clave locales:  

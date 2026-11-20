@@ -202,8 +202,20 @@
         }
       }
     });
-    const totalDiscount = discounts.reduce((a,b)=>a+b.amount, 0);
-    return { subtotal, discounts, progress, total: subtotal - totalDiscount, totalDiscount };
+        const totalDiscount = discounts.reduce((a,b)=>a+b.amount, 0);
+    const cartCurrentTotal = subtotal - totalDiscount;
+
+    progress.forEach(p => {
+      const unitPrice = cheapestPriceForMl(p.ml) || (p.ml === 110 ? 90 : p.ml === 50 ? 55 : 20);
+      const addedSubtotal = unitPrice * (p.missing || 1);
+      const currentSavings = p.kind === 'upgrade' ? p.amount : 0;
+      const additionalSavings = p.total - currentSavings;
+      const projected = (subtotal + addedSubtotal) - (totalDiscount + additionalSavings);
+      p.projectedTotal = projected;
+      p.qualifiesFreeDelivery = projected >= 100;
+    });
+
+    return { subtotal, discounts, progress, total: cartCurrentTotal, totalDiscount };
   }
   function cartTotal(){ return computeOffers().total; }
   // Precio más bajo disponible del catálogo para un tamaño dado — para estimar "si sumo 1 más de X ml"
@@ -820,15 +832,21 @@
     }));
     const offers = computeOffers();
     const hasDiscount = offers.discounts.length > 0;
-    const progressHtml = offers.progress.length
+        const progressHtml = offers.progress.length
       ? `<div class="da-trio-hint">
            <div class="da-trio-note">✨ Sumá cualquier perfume de la colección en ese tamaño — no hace falta que sea el mismo.</div>
            ${offers.progress.map(p => {
+             const freeDeliveryTag = p.qualifiesFreeDelivery
+               ? ` + 🚚 <b style="color:#a8895a">¡Delivery GRATIS*!</b>`
+               : '';
              const msg = p.kind === 'upgrade'
-               ? `Sumá 1 más → tu ahorro sube a <b>S/ ${p.total}</b>`
-               : `Sumá ${p.missing} más → ahorra <b>S/ ${p.total}</b>`;
+               ? `Sumá 1 más → tu ahorro sube a <b>S/ ${p.total}</b>${freeDeliveryTag}`
+               : `Sumá ${p.missing} más → ahorra <b>S/ ${p.total}</b>${freeDeliveryTag}`;
              return `<div class="da-trio-row"><span class="l">${p.label}</span><span class="r">${msg}</span></div>`;
            }).join('')}
+           <div class="da-trio-asterisk" style="font-size:11px;color:#7b757d;line-height:1.4;margin-top:8px;padding-top:6px;border-top:1px dashed rgba(60,47,71,0.18)">
+             * Delivery gratis desde S/ 100 en Zona A (SMP, Los Olivos, San Miguel, Lince, Miraflores, San Isidro, Surquillo y más). En zonas periféricas, ¡súper descuento en courier!
+           </div>
          </div>`
       : '';
     const keepShoppingHtml = offers.progress.length
@@ -980,40 +998,68 @@
     const box = document.getElementById('da-zonas-info');
     if(!box) return;
     
-    // Check global exceptions first (covers both distritos and provincias)
-    const excepciones = zonas.excepciones || zonas.excepcionesLima || {};
+    const offers = computeOffers();
+    const distritosGratis = zonas.distritosGratis || [];
     
     if (provincia && provincia !== 'Lima' && provincia !== 'Callao') {
-      // Prioridad 1: Excepción en la provincia
-      if(excepciones[provincia]) {
-        box.innerHTML = `<div class="da-zonas-title">🚚 Envío a ${escapeHtml(provincia)}</div>
-                         <p>${escapeHtml(excepciones[provincia])}</p>`;
-        return;
-      }
-      // Prioridad 2: Speech general de provincias
-      const speech = zonas.speechProvincias || 'Envío por agencia con pago en destino. Te confirmamos por WhatsApp.';
-      box.innerHTML = `<div class="da-zonas-title da-zonas-match">🚚 ${escapeHtml(speech)}</div>`;
+      const speech = zonas.speechProvincias || 'Envío por agencia (Shalom / Olva / Marvisur) con pago en destino y embalaje protegido gratis. Te confirmamos por WhatsApp.';
+      box.innerHTML = `<div class="da-zonas-title da-zonas-match">🚚 Envío a ${escapeHtml(provincia)} por Agencia</div>
+                       <p style="font-size:12.5px;margin-top:4px;color:#3c2f47">${escapeHtml(speech)}</p>`;
       return;
     }
     
     if(distrito && distrito !== '-') {
-      // Prioridad 1: Excepción en el distrito
-      if(excepciones[distrito]) {
-        box.innerHTML = `<div class="da-zonas-title">🚚 Envío a ${escapeHtml(distrito)}</div>
-                         <p>${escapeHtml(excepciones[distrito])}</p>`;
+      // Caso 1: San Martín de Porres (sede y recojo físico)
+      if (distrito === 'San Martín de Porres') {
+        const isFreeHome = offers.total >= 100;
+        box.innerHTML = `
+          <div class="da-zonas-title da-zonas-match">🏬 Recojo en Tienda SMP o Envío a Domicilio</div>
+          <p style="font-size:12.5px;margin-top:4px;color:#3c2f47;line-height:1.5">
+            • <b>Punto de Recojo SMP:</b> ¡GRATIS (S/ 0.00)! En Bazar Shirley (Jr. Callao 482-A, SMP).<br/>
+            • <b>Envío a Domicilio:</b> ${isFreeHome ? '<b style="color:#2e7d32">¡100% GRATIS (S/ 0.00)!</b> Tu compra supera los S/ 100.' : 'Disponible por Courier con tarifa preferencial.'}
+          </p>`;
         return;
       }
-      // Prioridad 2: Gratis
-      if((zonas.distritosGratis || []).includes(distrito)) {
-        box.innerHTML = `<div class="da-zonas-title da-zonas-match">🎉 ¡Envío gratis a ${escapeHtml(distrito)}!</div>`;
+
+      // Caso 2: Zona A (Distritos de Lima/Callao con Delivery Gratis en compras >= S/ 100)
+      if (distritosGratis.includes(distrito)) {
+        if (offers.total >= 100) {
+          box.innerHTML = `
+            <div class="da-zonas-title da-zonas-match">🎉 ¡Envío 100% GRATIS a ${escapeHtml(distrito)}!</div>
+            <p style="font-size:12.5px;margin-top:4px;color:#2e7d32">
+              ✓ Tu pedido supera los S/ 100 y califica para <b>Delivery Gratis (Costo de envío: S/ 0.00)</b> en tu distrito.
+            </p>`;
+          return;
+        } else {
+          const falta = 100 - offers.total;
+          box.innerHTML = `
+            <div class="da-zonas-title">🚚 Envío a ${escapeHtml(distrito)} (Zona A)</div>
+            <p style="font-size:12.5px;margin-top:4px;color:#3c2f47">
+              Envío por Courier a domicilio. Tarifa con descuento especial.<br/>
+              💡 <em>¡Suma S/ ${falta} más a tu bolsa para activar <b>DELIVERY GRATIS</b> a ${escapeHtml(distrito)}!</em>
+            </p>`;
+          return;
+        }
+      }
+
+      // Caso 3: Zona B (Zonas Periféricas: Rímac, SJL, SJM, VMT, VES, La Molina, Ate, Chorrillos, etc.)
+      if (offers.total >= 100) {
+        box.innerHTML = `
+          <div class="da-zonas-title da-zonas-match">🎁 ¡Tarifa con Súper Descuento a ${escapeHtml(distrito)}!</div>
+          <p style="font-size:12.5px;margin-top:4px;color:#3c2f47">
+            Por tu compra de <b>S/ ${offers.total}</b> (+S/ 100), Dolce 7 Aroma <b>asume más del 50%</b> de tu costo de courier a domicilio. Te confirmaremos la tarifa mínima por WhatsApp.
+          </p>`;
+        return;
+      } else {
+        box.innerHTML = `
+          <div class="da-zonas-title">🚚 Envío por Courier a ${escapeHtml(distrito)}</div>
+          <p style="font-size:12.5px;margin-top:4px;color:#3c2f47">
+            Envío a domicilio. Cuentas con tarifa preferencial con descuento que te confirmaremos por WhatsApp.
+          </p>`;
         return;
       }
-      // Prioridad 3: General Lima No Gratis
-      const speechLima = zonas.speechLimaNoGratis || 'Envío por Courier. Te confirmamos el monto exacto por WhatsApp.';
-      box.innerHTML = `<div class="da-zonas-title">🚚 Envío a ${escapeHtml(distrito)}</div>
-                       <p>${escapeHtml(speechLima)}</p>`;
-      return;
     }
+    
     box.innerHTML = `
       <div class="da-zonas-title">🚚 Envío: elige tu provincia y distrito para ver opciones</div>
     `;
@@ -1024,13 +1070,14 @@
   function renderMissedOfferHint(offers){
     if(!offers.progress.length) return '';
     const p = offers.progress[0];
-    if(p.missing !== 1) return ''; // solo mostramos la proyección cuando falta exactamente 1 (dato confiable)
+    if(p.missing !== 1) return '';
     const addPrice = cheapestPriceForMl(p.ml);
     const ahorroActual = p.kind === 'upgrade' ? p.amount : 0;
+    const freeDeliveryTag = p.qualifiesFreeDelivery ? ' + 🚚 ¡Delivery GRATIS*!' : '';
     return `<div class="da-trio-hint" style="margin-bottom:14px">
-      <div class="da-hint-headline">🎉 Ahorra <b>S/ ${p.total}</b> con ${p.label}</div>
+      <div class="da-hint-headline">🎉 Ahorra <b>S/ ${p.total}</b> con ${p.label}${freeDeliveryTag}</div>
       <div class="da-trio-row">
-        <span class="r">Sumá 1 más de ${p.ml} ml (desde S/ ${addPrice}) para activarlo — tu ahorro pasaría de S/ ${ahorroActual} a S/ ${p.total}.</span>
+        <span class="r">Sumá 1 más de ${p.ml} ml (desde S/ ${addPrice}) para activarlo — tu ahorro pasaría de S/ ${ahorroActual} a S/ ${p.total}.${p.qualifiesFreeDelivery ? ' ¡Y además tu pedido califica para Delivery Gratis en Zona A!' : ''}</span>
       </div>
       <button type="button" class="da-hint-back" id="da-hint-back">volver a la bolsa</button>
     </div>`;
