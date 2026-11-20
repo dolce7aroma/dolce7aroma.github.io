@@ -167,6 +167,41 @@
     width:18px;height:18px;border-radius:50%;display:grid;place-items:center;letter-spacing:0;
   }
 
+  
+  /* ─── Dropdown de Secciones al lado de Inicio ─── */
+  .nav-inicio-group{display:inline-flex;align-items:center;gap:6px;position:relative}
+  .nav-inicio-btn{
+    width:24px;height:24px;border-radius:6px;border:1px solid var(--rule);background:transparent;
+    display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--plum);
+    transition:all .2s;padding:0;
+  }
+  .nav-inicio-btn:hover, .nav-inicio-group.open .nav-inicio-btn{
+    background:var(--plum);color:var(--ivory);border-color:var(--plum);
+  }
+  .nav-inicio-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+  .nav-inicio-dropdown{
+    position:absolute;top:calc(100% + 10px);left:0;min-width:280px;background:#ffffff;
+    border:1px solid rgba(60,47,71,0.14);border-radius:14px;box-shadow:0 16px 36px rgba(60,47,71,0.16);
+    padding:8px;z-index:100;opacity:0;pointer-events:none;transform:translateY(-6px);
+    transition:opacity .2s ease, transform .2s ease;display:flex;flex-direction:column;gap:4px;
+  }
+  .nav-inicio-group.open .nav-inicio-dropdown,
+  .nav-inicio-group:hover .nav-inicio-dropdown{
+    opacity:1;pointer-events:auto;transform:translateY(0);
+  }
+  .nid-item{
+    display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;
+    text-decoration:none;color:var(--plum);transition:all .15s;
+  }
+  .nid-item:hover{background:var(--lavender-soft)}
+  .nid-icon{
+    font-size:17px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+    background:#fff;border:1px solid var(--rule);border-radius:8px;flex-shrink:0;
+  }
+  .nid-info{display:flex;flex-direction:column;text-align:left}
+  .nid-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;line-height:1.2;color:var(--plum)}
+  .nid-sub{font-family:'Jost',sans-serif;font-size:11px;color:var(--plum-700);letter-spacing:0.02em;margin-top:2px}
+
   /* ───────── HERO ───────── */
   .hero{
     position:relative;
@@ -598,6 +633,8 @@
   .inicio-modal .imitem svg{width:16px;height:16px;stroke:var(--plum-700);fill:none;stroke-width:1.6}
 
   @media (max-width:640px){
+    .nav-inicio-btn, .nav-inicio-dropdown{display:none !important}
+
     .hero{padding:60px 20px 80px}
     .hero-copy h1{font-size:40px}
     .hero-visual{height:420px}
@@ -828,7 +865,49 @@
 <nav class="top" data-screen-label="Top Nav">
   <div class="nav-inner">
     <div class="nav-left">
-      <a class="nav-link active" href="#" id="nav-inicio-link">Inicio</a>
+      <div class="nav-inicio-group" id="nav-inicio-group">
+        <a class="nav-link active" href="#" id="nav-inicio-link">Inicio</a>
+        <button class="nav-inicio-btn" id="nav-inicio-menu-btn" type="button" aria-label="Secciones de Inicio" title="Ver opciones de Inicio">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="nav-inicio-dropdown" id="nav-inicio-dropdown">
+          <a class="nid-item" href="#filosofia">
+            <span class="nid-icon">🌿</span>
+            <div class="nid-info">
+              <span class="nid-title">Nuestra Filosofía</span>
+              <span class="nid-sub">Maceración real & esencias francesas</span>
+            </div>
+          </a>
+          <a class="nid-item" href="#familias">
+            <span class="nid-icon">🌸</span>
+            <div class="nid-info">
+              <span class="nid-title">Familias Olfativas</span>
+              <span class="nid-sub">Floral, Oriental, Amaderado, Cítrico</span>
+            </div>
+          </a>
+          <a class="nid-item" href="#perfumes">
+            <span class="nid-icon">⭐</span>
+            <div class="nid-info">
+              <span class="nid-title">Los Más Pedidos</span>
+              <span class="nid-sub">Fragancias insignia destacadas</span>
+            </div>
+          </a>
+          <a class="nid-item" href="#ofertas">
+            <span class="nid-icon">🎁</span>
+            <div class="nid-info">
+              <span class="nid-title">Ofertas & Promos</span>
+              <span class="nid-sub">Dúo Esencial, Premium y Tríos</span>
+            </div>
+          </a>
+          <a class="nid-item" href="#boutique">
+            <span class="nid-icon">🏬</span>
+            <div class="nid-info">
+              <span class="nid-title">Boutique & Punto SMP</span>
+              <span class="nid-sub">Recojo gratuito en Bazar Shirley</span>
+            </div>
+          </a>
+        </div>
+      </div>
       <a class="nav-link" href="catalogo.html">Perfumes</a>
       <a class="nav-link" href="#ofertas">Ofertas</a>
       <a class="nav-link" href="#boutique">Boutique</a>
@@ -863,7 +942,7 @@
         Alta calidad, precio justo, aroma inolvidable.
       </p>
       <p class="hero-lede">
-        Dolce Aroma nació en Lima con una idea clara: no hacemos perfumes improvisados al instante. Nuestras fragancias reposan semanas en maceración controlada con esencias de Francia para garantizar fijación real de 8 a 12 horas. Presentaciones de 10ml (S/ 20), 50ml y 110ml con delivery gratis en Lima y punto de recojo en San Martín de Porres.
+        Dolce 7 Aroma nació en Lima con una idea clara: no hacemos perfumes improvisados al instante. Nuestras fragancias reposan semanas en maceración controlada con esencias de Francia para garantizar fijación real de 8 a 12 horas. Presentaciones de 10ml (S/ 20), 50ml y 110ml con delivery gratis en Lima y punto de recojo en San Martín de Porres.
       </p>
       <div class="hero-cta">
         <a class="btn btn-ghost" href="#perfumes">
@@ -1063,7 +1142,7 @@
 </section>
 
 <!-- NOTAS OLFATIVAS -->
-<section class="block notas" data-screen-label="Notas Olfativas">
+<section class="block notas" id="familias" data-screen-label="Notas Olfativas">
   <div class="container">
     <div class="section-head">
       <div>
@@ -1565,6 +1644,27 @@
   }
   setInterval(()=>{ qi=(qi+1)%quotes.length; render(); }, 6500);
 
+  
+  // Dropdown de Inicio (botón de 3 líneas)
+  (function(){
+    const group = document.getElementById('nav-inicio-group');
+    const btn = document.getElementById('nav-inicio-menu-btn');
+    if(btn && group){
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        group.classList.toggle('open');
+      });
+      document.addEventListener('click', (e)=>{
+        if(!group.contains(e.target)) group.classList.remove('open');
+      });
+      group.querySelectorAll('.nid-item').forEach(it=>{
+        it.addEventListener('click', ()=>{
+          group.classList.remove('open');
+        });
+      });
+    }
+  })();
+
   // soft scroll-spy for nav (no toca el botón "Inicio" #nav-inicio-link)
   const links = document.querySelectorAll('.nav-link');
   function spy(){
@@ -1721,6 +1821,8 @@
   </div>
   <div class="imlist">
     <a class="imitem" href="index.html"><div><div class="l">Inicio</div><div class="s">Página principal</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="#filosofia" data-close-im><div><div class="l">Nuestra Filosofía</div><div class="s">Maceración real & esencias francesas</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="#familias" data-close-im><div><div class="l">Familias Olfativas</div><div class="s">Floral, Oriental, Amaderado, Cítrico</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <a class="imitem" href="catalogo.html"><div><div class="l">Perfumes</div><div class="s">Catálogo completo</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <a class="imitem" href="#ofertas" data-close-im><div><div class="l">Ofertas</div><div class="s">Combos del momento</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <a class="imitem" href="#boutique" data-close-im><div><div class="l">Boutique</div><div class="s">Punto de venta físico</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>

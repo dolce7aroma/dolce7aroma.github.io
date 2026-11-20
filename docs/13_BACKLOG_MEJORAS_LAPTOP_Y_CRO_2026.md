@@ -9,7 +9,7 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 
 | # | Observación del Dueño | Categoría | Estado |
 | :---: | :--- | :---: | :---: |
-| **1** | Inicio no tiene botón para ir a nuestra filosofía, familias olfativas, etc. | UX / Navegación | ⏳ Pendiente |
+| **1** | Inicio no tiene botón para ir a nuestra filosofía, familias olfativas, etc. | UX / Navegación | ✅ RESUELTO |
 | **2** | Al añadir a la bolsa no debería forzar la apertura si el cliente quiere seguir comprando. | UX / Carrito | ⏳ Pendiente |
 | **3** | En recomendación de Dúo Esencial (al llegar a S/ 100) debe mostrar "Delivery GRATIS". | CRO / Incentivo | ⏳ Pendiente |
 | **4** | En laptop, el footer/drawer inferior del carrito ocupa mucho alto y tapa los productos. | UI / Responsive | ⏳ Pendiente |
@@ -39,3 +39,19 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 4. **Resolución de Bloqueo en "ENVIANDO...":** Se detectó que tras responder exitosamente el Worker, una variable no declarada (`cartGift`) en `renderCheckoutConfirm` arrojaba un `ReferenceError` que impedía repintar la vista de éxito. Se declaró `let cartGift = null;` y se blindó toda la confirmación con `try/catch` para garantizar la transición inmediata a la pantalla de confirmación.
 5. **Saludo Concierge WhatsApp:** Se actualizó el texto pre-rellenado del enlace en el Worker para que sea un saludo introductorio directo y elegante: `¡Hola [Nombre]! 👋 Te saludamos de Dolce 7 Aroma 🌸 Confirmamos la recepción de tu pedido #[ID] registrado en nuestra web por un total de S/ [Total].`, eliminando preguntas innecesarias y dejándolo listo para disparar el atajo `/yape` de WhatsApp Business.
 6. **Cache-Buster v5:** Desplegado en `index.html`, `catalogo.html`, `faq.html` y `navidad.html` (`shop.js?v=20261120_v5`).
+
+---
+
+## 🛠️ Detalle de Resolución: Punto 1 (Menú de Secciones de Inicio)
+
+### Solución Implementada:
+1. **Botón de Líneas junto a Inicio:** Se añadió un botón estilizado con el icono de 3 líneas (`☰`) al lado de la opción **Inicio** en el menú de navegación de laptop/desktop (`nav.top`).
+2. **Desplegable de Secciones (Dropdown):** Al pasar el ratón o hacer clic en el botón de líneas, se despliega un menú flotante de diseño refinado con acceso directo a:
+   - 🌿 **Nuestra Filosofía:** Maceración controlada y esencias de Francia (`#filosofia`).
+   - 🌸 **Familias Olfativas:** Clasificación olfativa (`#familias`).
+   - ⭐ **Los Más Pedidos:** Catálogo de fragancias insignias (`#perfumes`).
+   - 🎁 **Ofertas & Promos:** Combos Dúo y Tríos (`#ofertas`).
+   - 🏬 **Boutique & Punto SMP:** Dirección y recojo en Bazar Shirley (`#boutique`).
+3. **Persistencia e Integridad:** Los demás elementos de la barra de navegación (`Perfumes`, `Ofertas`, `Boutique`, `FAQ`, `Seguimiento`, `Contacto`, `Bolsa`) continúan operando con total normalidad.
+4. **Anclaje:** Se agregó el identificador `id="familias"` a la sección de notas olfativas para permitir el scroll suave automático.
+5. **Consistencia de Marca:** Se actualizó el texto del lede del Hero a **Dolce 7 Aroma**.
