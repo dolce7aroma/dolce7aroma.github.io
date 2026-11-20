@@ -370,7 +370,8 @@ async function notifyOwner(subject, summary, env) {
           from: env.ORDER_EMAIL_FROM || 'Dolce Aroma <onboarding@resend.dev>',
           to: [env.ORDER_EMAIL_TO],
           subject,
-          text: summary,
+          text: summary.replace(/<[^>]+>/g, ''),
+          html: summary.replace(/\n/g, '<br/>'),
         }),
       });
       notified.email = res.ok;
@@ -381,7 +382,12 @@ async function notifyOwner(subject, summary, env) {
       const res = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: summary }),
+        body: JSON.stringify({
+          chat_id: env.TELEGRAM_CHAT_ID,
+          text: summary,
+          parse_mode: 'HTML',
+          disable_web_page_preview: true
+        }),
       });
       notified.telegram = res.ok;
     } catch (e) { /* best-effort */ }
