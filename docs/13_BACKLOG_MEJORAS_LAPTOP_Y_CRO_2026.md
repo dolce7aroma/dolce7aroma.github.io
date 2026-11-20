@@ -10,7 +10,7 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 | # | Observación del Dueño | Categoría | Estado |
 | :---: | :--- | :---: | :---: |
 | **1** | Inicio no tiene botón para ir a nuestra filosofía, familias olfativas, etc. | UX / Navegación | ✅ RESUELTO |
-| **2** | Al añadir a la bolsa no debería forzar la apertura si el cliente quiere seguir comprando. | UX / Carrito | ⏳ Pendiente |
+| **2** | Al añadir a la bolsa no debería forzar la apertura si el cliente quiere seguir comprando. | UX / Carrito | ✅ RESUELTO |
 | **3** | En recomendación de Dúo Esencial (al llegar a S/ 100) debe mostrar "Delivery GRATIS". | CRO / Incentivo | ⏳ Pendiente |
 | **4** | En laptop, el footer/drawer inferior del carrito ocupa mucho alto y tapa los productos. | UI / Responsive | ⏳ Pendiente |
 | **5** | Ajuste de curva de descuento 110ml: Primero S/ 15 y luego S/ 30 (temporal hasta 2027). | Precios / Promos | ⏳ Pendiente |
@@ -55,3 +55,13 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 3. **Persistencia e Integridad:** Los demás elementos de la barra de navegación (`Perfumes`, `Ofertas`, `Boutique`, `FAQ`, `Seguimiento`, `Contacto`, `Bolsa`) continúan operando con total normalidad.
 4. **Anclaje:** Se agregó el identificador `id="familias"` a la sección de notas olfativas para permitir el scroll suave automático.
 5. **Consistencia de Marca:** Se actualizó el texto del lede del Hero a **Dolce 7 Aroma**.
+
+---
+
+## 🛠️ Detalle de Resolución: Punto 2 (Adición a la Bolsa Sin Fricción)
+
+### Solución Implementada:
+1. **Flujo de Compra Continuo:** Se removió la invocación obligatoria a `openCart()` al pulsar "Agregar a la bolsa" en el modal de detalle del producto (`assets/shop.js`). El cliente ahora permanece en la misma pantalla navegando libremente.
+2. **Toast con Botón de Acción Directa:** Se potenció la notificación flotante inferior (`.da-toast`), la cual ahora muestra el mensaje de confirmación del aroma y ahorro disponible acompañado de un botón estilizado `[VER BOLSA →]` por si el cliente desea abrir el carrito de inmediato.
+3. **Animación en Cabecera:** Al agregar un perfume, el contador `Bolsa (X)` en la barra superior ejecuta su micro-animación `bumpCount()`, brindando retroalimentación visual inmediata.
+4. **Cache-Buster v6:** Se actualizó la etiqueta de importación de `shop.js` a `?v=20261120_v6` en todos los archivos HTML para forzar la carga inmediata en los navegadores de los clientes.

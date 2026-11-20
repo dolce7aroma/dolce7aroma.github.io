@@ -221,7 +221,7 @@
     else cart.push({id:item.id, ml:item.ml, qty:item.qty||1});
     saveCart();
     bumpCount();
-    showToast(buildAddToast(item.ml));
+    showToast(buildAddToast(item.ml), true);
     const ga4Item = formatGA4Item(item, item.qty || 1);
     trackGA4Event('add_to_cart', { currency: 'PEN', value: ga4Item.price * ga4Item.quantity, items: [ga4Item] });
   }
@@ -514,8 +514,10 @@
       .da-pay-note{font-size:11.5px;color:#5d4c70;line-height:1.5;margin:0}
       .da-pay-soon{opacity:.6}
 
-      .da-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:#3c2f47;color:#f6f4ef;padding:14px 24px;border-radius:999px;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;z-index:200;transition:transform .3s cubic-bezier(.2,.7,.2,1);box-shadow:0 14px 40px -10px rgba(0,0,0,0.4)}
+      .da-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:#2c2335;color:#f6f4ef;padding:11px 20px;border-radius:999px;font-size:12.5px;letter-spacing:0.02em;text-transform:none;z-index:200;transition:transform .3s cubic-bezier(.2,.7,.2,1);box-shadow:0 14px 40px -10px rgba(0,0,0,0.45);display:flex;align-items:center;gap:14px;border:1px solid #a8895a;max-width:92vw;box-sizing:border-box}
       .da-toast.show{transform:translateX(-50%) translateY(0)}
+      .da-toast-btn{background:#a8895a;color:#fff;border:none;border-radius:999px;padding:6px 14px;font-family:inherit;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:background .2s}
+      .da-toast-btn:hover{background:#c4a470}
 
       @media (max-width: 720px){
         .da-modal{padding:12px}
@@ -570,12 +572,22 @@
     document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); closeCart(); } });
   }
 
-  function showToast(msg){
+  function showToast(msg, withCartButton = false){
     const t = document.getElementById('da-toast');
     if(!t) return;
-    t.textContent = msg;
+    if(withCartButton){
+      t.innerHTML = `<span>${msg}</span><button type="button" class="da-toast-btn" id="da-toast-open-btn">Ver bolsa →</button>`;
+      document.getElementById('da-toast-open-btn')?.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        t.classList.remove('show');
+        openCart();
+      });
+    } else {
+      t.textContent = msg;
+    }
     t.classList.add('show');
-    clearTimeout(t._tt); t._tt = setTimeout(()=>t.classList.remove('show'), 2200);
+    clearTimeout(t._tt);
+    t._tt = setTimeout(()=>t.classList.remove('show'), withCartButton ? 3800 : 2200);
   }
 
   // ─── Modal Ver Detalle ───
@@ -675,7 +687,6 @@
       const qty = parseInt(document.getElementById('da-qty-input').value,10)||1;
       addToCart({id:currentDetail.id, ml:currentDetail.ml, qty});
       closeModal();
-      openCart();
     });
     document.getElementById('da-buy-wa').addEventListener('click', ()=>{
       const qty = parseInt(document.getElementById('da-qty-input').value,10)||1;
