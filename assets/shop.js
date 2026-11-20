@@ -212,7 +212,8 @@
       const additionalSavings = p.total - currentSavings;
       const projected = (subtotal + addedSubtotal) - (totalDiscount + additionalSavings);
       p.projectedTotal = projected;
-      p.qualifiesFreeDelivery = projected >= 100;
+      // Solo mostramos el tag en la oferta pendiente si el carrito aún NO calificaba (< 100) y esta oferta lo activa
+      p.qualifiesFreeDelivery = (cartCurrentTotal < 100) && (projected >= 100);
     });
 
     return { subtotal, discounts, progress, total: cartCurrentTotal, totalDiscount };
@@ -383,6 +384,35 @@
       .da-cart-total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
       .da-cart-total span{font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:#5d4c70}
       .da-cart-total b{font-family:'Cormorant Garamond',serif;font-size:36px;color:#3c2f47;font-weight:500}
+
+      
+      .da-delivery-status{
+        border-radius:12px;padding:10px 14px;margin-bottom:10px;
+        font-size:12px;line-height:1.45;box-sizing:border-box;
+        animation:da-hint-in .35s cubic-bezier(.2,.7,.2,1);
+      }
+      .da-delivery-status.is-free{
+        background:linear-gradient(135deg, rgba(46,125,50,0.12), rgba(168,137,90,0.18));
+        border:1.5px solid #2e7d32;
+        color:#1b4320;
+      }
+      .da-delivery-status.is-progress{
+        background:linear-gradient(135deg, rgba(168,137,90,0.15), rgba(93,76,112,0.1));
+        border:1.5px solid #a8895a;
+        color:#3c2f47;
+      }
+      .da-delivery-status.is-pickup{
+        background:#efe9e0;
+        border:1.5px solid rgba(60,47,71,0.2);
+        color:#5d4c70;
+      }
+      .da-deliv-header{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:3px}
+      .da-deliv-ico{font-size:16px;line-height:1}
+      .da-deliv-title{font-weight:600}
+      .da-delivery-status.is-free .da-deliv-title b{color:#2e7d32}
+      .da-delivery-status.is-progress .da-deliv-title b{color:#a8895a}
+      .da-deliv-sub{font-size:11px;color:#555;line-height:1.35;margin-left:24px}
+      .da-deliv-sub b{color:#3c2f47}
 
       .da-totals{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
       .da-line{display:flex;justify-content:space-between;align-items:baseline;gap:14px}
@@ -862,12 +892,52 @@
     const discountRows = offers.discounts.map(d =>
       `<div class="da-line da-line-dis"><span>${d.label} · ×${d.count}</span><b>− S/ ${d.amount}</b></div>`
     ).join('');
+    const shippingRow = offers.total >= 100
+      ? `<div class="da-line da-line-shipping" style="color:#2e7d32"><span style="color:#2e7d32;font-weight:600">🚚 Envío (Zona A)</span><b style="color:#2e7d32;font-size:16px">¡GRATIS!*</b></div>`
+      : (offers.total >= 50
+          ? `<div class="da-line da-line-shipping"><span>Envío</span><b style="font-size:12.5px;color:#5d4c70;font-family:inherit">Por calcular en paso 2</b></div>`
+          : `<div class="da-line da-line-shipping"><span>Modalidad</span><b style="font-size:12.5px;color:#2e7d32;font-family:inherit">Recojo SMP gratis</b></div>`
+        );
+
+    const deliveryStatusHtml = offers.total >= 100
+      ? `<div class="da-delivery-status is-free">
+           <div class="da-deliv-header">
+             <span class="da-deliv-ico">🎉 🚚</span>
+             <span class="da-deliv-title">¡Tu compra tiene <b>DELIVERY GRATIS*</b>!</span>
+           </div>
+           <div class="da-deliv-sub">
+             * Válido en Zona A (SMP, Los Olivos, San Miguel, Lince, Miraflores, San Isidro, Surquillo y más distritos de Lima y Callao). En zonas periféricas, ¡súper descuento en courier!
+           </div>
+         </div>`
+      : (offers.total >= 50
+          ? `<div class="da-delivery-status is-progress">
+               <div class="da-deliv-header">
+                 <span class="da-deliv-ico">🚚</span>
+                 <span class="da-deliv-title">Agrega <b>S/ ${100 - offers.total}</b> más para <b>DELIVERY GRATIS*</b></span>
+               </div>
+               <div class="da-deliv-sub">
+                 * Delivery gratis en compras desde S/ 100 en Zona A (Lima y Callao).
+               </div>
+             </div>`
+          : `<div class="da-delivery-status is-pickup">
+               <div class="da-deliv-header">
+                 <span class="da-deliv-ico">🏬</span>
+                 <span class="da-deliv-title">Recojo <b>GRATIS</b> en Tienda SMP</span>
+               </div>
+               <div class="da-deliv-sub">
+                 Para envíos a domicilio el pedido mínimo es S/ 50. ¡Supera S/ 100 para Delivery Gratis*! 
+               </div>
+             </div>`
+        );
+
     foot.innerHTML = `
       <div class="da-totals">
         ${subtotalRow}
         ${discountRows}
+        ${shippingRow}
         <div class="da-line da-line-total"><span>Total</span><b>S/ ${offers.total}</b></div>
       </div>
+      ${deliveryStatusHtml}
       ${progressHtml}
       <button class="da-btn da-btn-primary" style="width:100%;padding:13px 20px;font-size:12px;letter-spacing:0.16em" id="da-checkout">Continuar con el pedido</button>
       <div class="da-foot-actions-row">
@@ -944,8 +1014,14 @@
       renderZonasInfo(orderForm.distrito);
     }
     const missedOfferHtml = renderMissedOfferHint(offers);
+    const shippingLineForm = offers.total >= 100
+      ? `<div class="da-line" style="color:#2e7d32;font-size:12px;margin-bottom:3px">
+           <span style="color:#2e7d32">🚚 Envío (Zona A)</span><b style="color:#2e7d32;font-size:15px">¡GRATIS!*</b>
+         </div>`
+      : '';
     foot.innerHTML = `
       <div class="da-totals">
+        ${shippingLineForm}
         <div class="da-line da-line-total"><span>Total del pedido</span><b id="da-total-calc">S/ ${offers.total}</b></div>
       </div>
       ${missedOfferHtml}
@@ -1185,6 +1261,7 @@
 
 🛍️ *Productos:*
 ${itemsListText}${giftText}
+${lastOrder.total >= 100 ? (lastOrder.distrito === "San Martín de Porres" ? "🚚 *Envío:* ¡GRATIS (S/ 0.00) / Recojo SMP!*" : (zonas.distritosGratis && zonas.distritosGratis.includes(lastOrder.distrito) ? "🚚 *Envío:* ¡GRATIS (S/ 0.00) en Zona A!*" : "🚚 *Envío:* Subsidio >50% courier asumido por Dolce 7 Aroma")) : (lastOrder.total < 50 ? "🏬 *Modalidad:* Recojo en Tienda SMP" : "🚚 *Envío:* Tarifa preferencial por coordinar")}
 
 💰 *Total:* S/ ${lastOrder.total}
 

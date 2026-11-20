@@ -100,3 +100,28 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 3. **Ancho Ampliado en Desktop/Laptop:**
    * Se incrementó el ancho del panel lateral de 440px a **480px** en pantallas de escritorio, brindando espacio horizontal para que los nombres de los perfumes y los descuentos respiren sin saltos de línea excesivos.
 4. **Cache-Buster v8:** Desplegado en `index.html`, `catalogo.html`, `faq.html` y `navidad.html`.
+
+---
+
+## 🛠️ Detalle de Resolución: Feedback Tablet & Delivery Gratis en Totales $\ge \text{S/ } 100$
+
+### Diagnóstico de la Causa Raíz
+* En la prueba en tablet (captura con total S/ 200/220), al completarse todas las ofertas pendientes de volumen (`offers.progress.length === 0`), la caja `progressHtml` desaparecía.
+* No existía un distintivo permanente ni una línea de costo de envío en los totales (`.da-totals`), por lo que un cliente que alcanzaba S/ 100 o más no veía ninguna confirmación de **DELIVERY GRATIS** en el paso 1 ni en el paso 2.
+* Además, el cálculo del tag `qualifiesFreeDelivery` se mostraba en sugerencias incluso cuando el carrito ya superaba los S/ 100.
+
+### Solución Implementada
+1. **Línea de Envío en Totales (`.da-totals`):**
+   * Si `total >= 100`: Muestra `🚚 Envío (Zona A): ¡GRATIS!*` en verde esmeralda.
+   * Si `total >= 50`: Muestra `Envío: Por calcular en paso 2`.
+   * Si `total < 50`: Muestra `Modalidad: Recojo SMP gratis`.
+2. **Tarjeta de Estado de Entrega (`.da-delivery-status`):**
+   * Siempre visible antes del botón de Continuar.
+   * Si califica a delivery gratis: `🎉 🚚 ¡Tu compra tiene DELIVERY GRATIS*! (Válido en Zona A... En zonas periféricas, ¡súper descuento en courier!)`.
+   * Si falta para delivery gratis: `🚚 Agrega S/ [100 - total] más para DELIVERY GRATIS* en Zona A`.
+   * Si es menor a S/ 50: `🏬 Recojo GRATIS en Tienda SMP`.
+3. **Paso 2 y WhatsApp Sincronizados:**
+   * La línea de envío gratis se refleja en el resumen del formulario.
+   * El mensaje pre-armado de WhatsApp incluye el estado exacto del envío según el distrito y monto.
+4. **Cache-Buster v9:** Desplegado en `index.html`, `catalogo.html`, `faq.html` y `navidad.html` (`shop.js?v=20261120_v9`).
+
