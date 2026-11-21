@@ -98,3 +98,51 @@ flowchart LR
 3. **Tú:** Tocas el botón, se abre WhatsApp Business, digitas `/yape` y envías tus datos oficiales de forma privada.
 4. **Cliente:** Te envía la captura del pago por Yape.
 5. **Cierre:** Vuelves a Telegram y escribes `/pagado [ID]`. Tu stock web se actualiza automáticamente.
+
+---
+
+## 6. Matriz de Responsabilidades de Medición: ¿Quién hace qué?
+
+Para evitar confusiones y solapamientos, cada herramienta del ecosistema Dolce 7 Aroma tiene una responsabilidad única y complementaria:
+
+```mermaid
+flowchart TD
+    subgraph ATRACCION ["1. ATRACCIÓN & DESCUBRIMIENTO (Google)"]
+        G1["Google Business Profile / Maps\n(Llamadas, visitas al local, cómo llegar)"]
+        G2["Google Search Console\n(Palabras clave buscadas en Lima)"]
+    end
+
+    subgraph ENTRADA ["2. TRÁFICO TOTAL INMUNE A ADBLOCK (Cloudflare)"]
+        CF["Cloudflare Edge & DNS\n• 100% de visitantes únicos\n• Detección de Bots vs Humanos\n• País de origen y dispositivos\n• Comando /visitas y /demanda"]
+    end
+
+    subgraph NAVEGACION ["3. COMPORTAMIENTO & EXPERIENCIA (GA4 & Clarity)"]
+        GA["Google Analytics 4 (GA4)\n(Clics internos, carritos, tiempo en web)"]
+        CL["Microsoft Clarity\n(Grabaciones de pantalla y mapas de calor)"]
+    end
+
+    subgraph CONVERSION ["4. CAJA & CONVERSIÓN REAL (KV + Worker)"]
+        KV["Cloudflare KV (ORDERS)\n• Pedidos reales completados\n• Facturación en Soles (Yape/Plin)\n• Tasa de Conversión en /mes"]
+    end
+
+    ATRACCION --> ENTRADA
+    ENTRADA --> NAVEGACION
+    NAVEGACION --> CONVERSION
+```
+
+### Tabla Comparativa de Herramientas:
+
+| Herramienta | Rol Principal | ¿Qué mide exactamente? | ¿Por qué es necesaria? |
+| :--- | :--- | :--- | :--- |
+| **Cloudflare** | **El Portero Inmune a AdBlock (Tráfico Bruto & Servidor)** | • Total de personas únicas que tocan la web.<br>• Separación de humanos de Perú vs bots de Google/escáneres.<br>• Peticiones de fotos de perfumes para medir interés.<br>• Alimenta **/visitas** y **/demanda**. | **Tiene más visibilidad que nadie:** opera a nivel de servidor/DNS. Ningún bloqueador de anuncios (AdBlock) ni navegador privado puede ocultarse de Cloudflare. |
+| **Google Search Console & Maps** | **Atracción Externa** | • Términos que la gente busca antes de llegar ("perfumes dupes lima").<br>• Clics en la ficha de Google Maps y llamadas al local. | Mide el **descubrimiento orgánico** antes de que toquen tu web. |
+| **Google Analytics 4 (GA4)** | **Comportamiento en Navegador** | • Clics específicos dentro de la página (botón WhatsApp, selector de 10ml/50ml).<br>• Tiempo de permanencia y páginas de salida. | Mide la interacción fina dentro de la web *(nota: pierde ~25% de usuarios que usan AdBlock)*. |
+| **Microsoft Clarity** | **Grabadora de Experiencia Visual** | • Grabaciones en video de cómo navega el cliente con el dedo.<br>• Dónde hace clic repetido por frustración (*rage clicks*). | Permite **ver con tus propios ojos** en qué paso se traba la gente. |
+| **Cloudflare KV (ORDERS)** | **Caja y Conversión de Negocio** | • Pedidos reales recibidos y cobrados por Yape.<br>• Dinero en Soles ingresado.<br>• Alimenta **/resumen**, **/semana** y **/mes**. | Es la verdad financiera: no mide intenciones, mide **ventas y soles reales**. |
+
+### Integración en el Reporte Mensual (`/mes`):
+El informe mensual une lo mejor de los dos mundos:
+1. **Cloudflare:** Aporta el volumen real de personas únicas que entraron en los 30 días.
+2. **KV (Caja):** Aporta los pedidos concretados y soles cobrados.
+3. **El Bot:** Calcula la **Tasa de Conversión Oficial del Negocio**:
+   $$\text{Tasa de Conversión} = \left(\frac{\text{Pedidos Concretados}}{\text{Visitantes Únicos de Cloudflare}}\right) \times 100$$
