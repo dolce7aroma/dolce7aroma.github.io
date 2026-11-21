@@ -78,8 +78,8 @@
     if(document.getElementById('sm-style')) return;
     const css = `
       .sm-wa-float{
-        position:fixed;right:20px;bottom:20px;z-index:80;
-        display:flex;align-items:center;gap:10px;text-decoration:none;
+        position:fixed;left:20px;bottom:20px;z-index:80;
+        display:flex;align-items:center;flex-direction:row-reverse;gap:10px;text-decoration:none;
       }
       .sm-wa-float .sm-wa-label{
         background:#fff;color:#1a1620;font-size:13px;font-weight:600;font-family:sans-serif;
@@ -92,7 +92,7 @@
       .sm-wa-float:hover .sm-wa-icon{transform:scale(1.06)}
       .sm-wa-float .sm-wa-icon svg{width:28px;height:28px;fill:#fff}
       @media (max-width:480px){
-        .sm-wa-float{right:14px;bottom:14px}
+        .sm-wa-float{left:14px;bottom:14px;right:auto}
         .sm-wa-float .sm-wa-label{font-size:12px;padding:8px 12px}
         .sm-wa-float .sm-wa-icon{width:48px;height:48px}
         .sm-wa-float .sm-wa-icon svg{width:24px;height:24px}

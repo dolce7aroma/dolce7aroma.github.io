@@ -511,7 +511,7 @@
         .da-cart-float-label{font-size:15px}
       }
       .da-gift-float{
-        position:fixed;right:20px;bottom:86px;z-index:80;
+        position:fixed;right:20px;bottom:84px;z-index:80;
         display:flex;align-items:center;gap:10px;text-decoration:none;
       }
       .da-gift-float .da-gift-float-label{
