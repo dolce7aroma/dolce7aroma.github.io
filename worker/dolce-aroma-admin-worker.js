@@ -1622,6 +1622,27 @@ ${topMonthText}
 2. ¿Qué perfumes de diseñador tuvieron 0 ventas para reemplazarlos en vitrina?`;
 
   await sendTelegramPhoto(chatId, chartUrl, caption, env);
+
+  const monthPrompt = `Eres el Director de Estrategia E-commerce de Dolce 7 Aroma en Lima, Perú.
+Analiza el cierre mensual:
+- Período: ${monthLabel}
+- Facturación: S/ ${monthSales.toFixed(2)} (${momBadge} MoM)
+- Pedidos: ${monthOrders.length} (Ticket promedio: S/ ${ticketProm})
+- Tráfico Web (Cloudflare): ${monthlyVisits} visitas (Conversión: ${monthlyVisits > 0 ? ((monthOrders.length / monthlyVisits) * 100).toFixed(2) : 0}%)
+- Mix de Estilos: ${arabePct}% Árabes vs ${disenadorPct}% Diseñador
+- Top perfumes: ${topSorted.map(e => `${e[0]} (${e[1]} uds)`).join(', ')}
+
+Dame:
+1. 💡 DIAGNÓSTICO ESTRATÉGICO MENSUAL (2 frases contundentes).
+2. 📦 PLAN DE ABASTECIMIENTO & STOCK (qué perfumes priorizar para el mes que entra).
+3. 🎯 2 ACCIONES DE CRECIMIENTO CLAVE (para WhatsApp, Bazar Shirley y catálogo web).
+
+Formato Telegram HTML impecable (usa <b>negritas</b> y viñetas). Máximo 280 palabras.`;
+
+  const aiMonthlyAnalysis = await askGeminiSpecialist(monthPrompt, env);
+  if (aiMonthlyAnalysis) {
+    await sendTelegramMessage(chatId, aiMonthlyAnalysis, env);
+  }
 }
 
 async function generateSeoReport(chatId, env, customHeader = null) {
