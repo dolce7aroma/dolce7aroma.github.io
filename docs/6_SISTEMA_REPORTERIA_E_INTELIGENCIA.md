@@ -51,15 +51,16 @@ Para mantener la eficiencia operativa, cada tarea debe ser ejecutada por la herr
 * **Entregable Visual:** Gráfico de embudo (funnel) con porcentaje de abandono en cada etapa.
 
 ### C. 🗓️ Reporte Mensual (Día 1 del mes nuevo, 6:00 AM)
-* **Ventana:** Mes completo consolidado (días 1 al 28/30/31) + acumulado anual.
-* **Foco:** Dirección estratégica de negocio, posicionamiento SEO macro y salud financiera.
+* **Ventana:** Mes completo consolidado (días 1 al 28/30/31) + acumulado.
+* **Foco:** Dirección estratégica de negocio, salud financiera, tráfico real y conversión e-commerce.
 * **Métricas Recopiladas:**
-  * Facturación neta y evolución MoM (Mes sobre Mes).
-  * Ranking medio en Google e impresiones orgánicas.
-  * Rotación de catálogo: perfumes estrella vs. perfumes sin rotación (stock dormido).
-  * Tasa de clientes recurrentes.
-  * Plan de optimización y preguntas estratégicas generadas para el nuevo mes.
-* **Entregable Visual:** Gráfico de dona (ventas por categoría) y curva de crecimiento orgánico en Google.
+  * Facturación neta en Soles y evolución MoM (Mes sobre Mes).
+  * Pedidos totales completados y ticket promedio.
+  * **Tráfico Web Real (Cloudflare Analytics):** Visitantes únicos netos sin sesgo de AdBlock.
+  * **Tasa de Conversión Real:** `(Pedidos ÷ Visitas Web) × 100`.
+  * Mix de ventas por estilo (Árabes vs Diseñador) y Top 5 perfumes más vendidos.
+  * **Diagnóstico y Recomendaciones con IA (Gemini Specialist):** Plan de abastecimiento de stock y 2 acciones de crecimiento clave para el mes que empieza.
+* **Entregable Visual:** Foto con gráfico de dona de distribución de ventas por estilo (QuickChart API) + mensaje ejecutivo de la IA.
 
 ---
 

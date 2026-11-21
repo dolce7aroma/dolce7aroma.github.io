@@ -145,7 +145,7 @@
     10:  { label: 'Trío Pocket · 10 ml',    perTrio: () => 10 }
   };
   const DUO_TIERS = {
-    110: { label: 'Dúo Premium · 110 ml', amount: 15 },
+    110: { label: 'Dúo Premium · 110 ml', amount: 30 },
     50:  { label: 'Dúo Esencial · 50 ml',  amount: 10 }
   };
   // extra: {ml, price} → simula 1 unidad más de ese ml (para proyectar "si sumo 1 más, ¿cuánto ahorro/pago?")
