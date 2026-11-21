@@ -516,7 +516,7 @@ async function handleSubmitOrder(request, env) {
     id: orderId, nombre, telefono, email: email ? String(email).trim().toLowerCase() : '',
     provincia: provincia || 'Lima', distrito, direccion, referencia,
     items, subtotal: realSubtotal, envio: realShipping, total: realTotal, metodoPago: metodoPago || null, esRegalo: !!esRegalo,
-    estado: 'nuevo', creadoEn: new Date().toISOString(),
+    estado: 'pendiente_pago', creadoEn: new Date().toISOString(),
   };
 
   if (env.ORDERS) {
@@ -2440,26 +2440,46 @@ Escribe <code>/sheets sync</code> si deseas re-exportar todos los pedidos de la 
       listed.keys.map(k => env.ORDERS.get(k.name).then(v => v ? JSON.parse(v) : null))
     )).filter(Boolean);
 
-    const pending = orders.filter(o => o.estado === 'nuevo');
+    const filterType = (args[0] || '').toLowerCase();
+
+    if (filterType === 'pagados' || filterType === 'pagado') {
+      const paid = orders.filter(o => o.estado === 'pagado');
+      paid.sort((a, b) => (b.creadoEn || '').localeCompare(a.creadoEn || ''));
+      if (paid.length === 0) {
+        await sendTelegramMessage(chatId, '📦 No hay pedidos marcados como pagados por ahora.', env);
+        return json({ ok: true });
+      }
+      let msg = `🟢 <b>[PEDIDOS PAGADOS / EN REPARTO (${paid.length})]</b> 🌸\n<i>Pedidos con Yape confirmado listos para entrega o despacho:</i>\n\n`;
+      for (const o of paid.slice(0, 15)) {
+        msg += `📦 <b>#${o.id}</b> — ${o.nombre}\n`;
+        msg += `💰 S/ ${Number(o.total || 0).toFixed(2)} · ${o.distrito || 'Lima'} · Tel: ${o.telefono || '-'}\n`;
+        msg += `🛍️ Items: ${(o.items || []).map(i => `${i.name || i.aroma} (${i.ml || ''}ml)`).join(', ')}\n\n`;
+      }
+      await sendTelegramMessage(chatId, msg, env);
+      return json({ ok: true });
+    }
+
+    const pending = orders.filter(o => o.estado === 'pendiente_pago' || o.estado === 'nuevo' || o.estado === 'pendiente');
     if (pending.length === 0) {
-      await sendTelegramMessage(chatId, '🎉 <b>¡Todo al día!</b>\nNo tienes pedidos pendientes de atención por ahora.', env);
+      await sendTelegramMessage(chatId, '🎉 <b>¡Todo al día!</b>\nNo tienes pedidos pendientes de pago por ahora.\n\n<i>💡 Tip: Escribe <code>/pedidos pagados</code> para ver los pedidos confirmados en entrega.</i>', env);
       return json({ ok: true });
     }
 
     pending.sort((a, b) => (b.creadoEn || '').localeCompare(a.creadoEn || ''));
-    let msg = `🔔 <b>[PEDIDOS PENDIENTES POR ATENDER (${pending.length})]</b> 🌸\n\n`;
+    let msg = `🟡 <b>[PEDIDOS PENDIENTES DE PAGO (${pending.length})]</b> 🌸\n<i>Clientes que llenaron el carrito en la web pero no han completado el Yape (¡Listos para rescate!):</i>\n\n`;
     for (const o of pending.slice(0, 15)) {
       const cleanPhone = String(o.telefono || '').replace(/\D/g, '');
-      const rescueText = encodeURIComponent(`¡Hola ${o.nombre}! 👋 Te saludamos de Dolce 7 Aroma 🌸 Confirmamos la recepción de tu pedido #${o.id} registrado en nuestra web por un total de S/ ${Number(o.total || 0).toFixed(2)}.`);
+      const rescueText = encodeURIComponent(`¡Hola ${o.nombre}! 👋 Te saludamos de Dolce 7 Aroma 🌸 Vimos que registraste tu pedido #${o.id} en nuestra web por un total de S/ ${Number(o.total || 0).toFixed(2)}. ¿Pudiste coordinar tu pago por Yape o te ayudamos con alguna consulta?`);
       const waLink = cleanPhone ? `https://wa.me/51${cleanPhone}?text=${rescueText}` : null;
       
-      msg += `📦 <b>#${o.id}</b> — ${o.nombre}\n`;
+      msg += `📦 <b>#${o.id}</b> — ${o.nombre} (🟡 <i>Pendiente de pago</i>)\n`;
       msg += `💰 S/ ${Number(o.total || 0).toFixed(2)} · ${o.distrito || 'Lima'}\n`;
       if (waLink) {
-        msg += `📲 <a href="${waLink}">Chatear con cliente en WhatsApp</a>\n`;
+        msg += `📲 <a href="${waLink}">👉 Abrir WhatsApp y Rescatar Venta</a>\n`;
       }
       msg += `👉 Acciones: <code>/pagado ${o.id}</code> | <code>/cancelar ${o.id}</code>\n\n`;
     }
+    msg += `<i>💡 Tip: Escribe <code>/pedidos pagados</code> para ver los pedidos cobrados en proceso de entrega.</i>`;
     await sendTelegramMessage(chatId, msg, env);
     return json({ ok: true });
   }
