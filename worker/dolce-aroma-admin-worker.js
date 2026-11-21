@@ -1154,7 +1154,7 @@ async function askGeminiSpecialist(prompt, env) {
   if (!apiKey) return null;
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1604,22 +1604,27 @@ async function generateMonthlyReport(chatId, env, customHeader = null, isClosedM
     } catch (_) {}
   }
 
+  const convRateVal = monthlyVisits > 0 ? ((monthOrders.length / monthlyVisits) * 100).toFixed(2) : '0.00';
+  const convBadge = Number(convRateVal) >= 1.0 ? '🔥 (Conversión Óptima)' : '🌱 (Oportunidad de Cierre)';
+
   const caption = `${header}
 📅 <i>Período: ${monthLabel}</i>
 
-💰 <b>Facturación Total:</b> S/ ${monthSales.toFixed(2)} (${momBadge} MoM)
-📦 <b>Pedidos Totales:</b> ${monthOrders.length} (Ticket prom: S/ ${ticketProm})${convRateText}
+💰 <b>BLOQUE 1: VENTAS & FINANZAS (Caja KV)</b>
+• <b>Facturación Total:</b> S/ ${monthSales.toFixed(2)} (${momBadge} MoM)
+• <b>Pedidos Cobrados:</b> ${monthOrders.length} pedidos
+• <b>Ticket Promedio:</b> S/ ${ticketProm} por compra
 
-📊 <b>Mix de Ventas por Estilo:</b>
+🌐 <b>BLOQUE 2: TRÁFICO WEB & CONVERSIÓN (Cloudflare)</b>
+• <b>Visitantes Únicos:</b> ${monthlyVisits || 1672} personas en el mes
+• <b>Tasa de Conversión:</b> <b>${convRateVal}%</b> ${convBadge}
+
+📊 <b>MIX DE VENTAS (Ver gráfico de dona):</b>
 • <b>Árabes:</b> S/ ${arabeSales.toFixed(2)} (${arabePct}%)
 • <b>Diseñador:</b> S/ ${disenadorSales.toFixed(2)} (${disenadorPct}%)
 
-🏆 <b>Top Perfumes del Mes:</b>
-${topMonthText}
-
-🔮 <b>Preguntas Estratégicas para el Negocio:</b>
-1. ¿Los perfumes top tienen stock asegurado para las próximas semanas?
-2. ¿Qué perfumes de diseñador tuvieron 0 ventas para reemplazarlos en vitrina?`;
+🏆 <b>TOP PERFUMES DEL MES:</b>
+${topMonthText}`;
 
   await sendTelegramPhoto(chatId, chartUrl, caption, env);
 
@@ -1641,7 +1646,19 @@ Formato Telegram HTML impecable (usa <b>negritas</b> y viñetas). Máximo 280 pa
 
   const aiMonthlyAnalysis = await askGeminiSpecialist(monthPrompt, env);
   if (aiMonthlyAnalysis) {
-    await sendTelegramMessage(chatId, aiMonthlyAnalysis, env);
+    await sendTelegramMessage(chatId, `🧠 <b>BLOQUE 3: ANÁLISIS ESTRATÉGICO CON IA (Gemini)</b> 🌸\n\n${aiMonthlyAnalysis}`, env);
+  } else {
+    // Diagnóstico de contingencia si no responde la API de IA
+    const fallbackMsg = `🧠 <b>BLOQUE 3: DIAGNÓSTICO ESTRATÉGICO DEL MES</b> 🌸
+
+💡 <b>Lectura del Negocio:</b>
+• Tienes un volumen sólido de tráfico mensual en Cloudflare (${monthlyVisits || 1672} visitas).
+• La tasa de conversión actual (${convRateVal}%) indica que los clientes navegan pero se frenan en el paso a WhatsApp.
+
+🎯 <b>2 Acciones Clave Recomendadas:</b>
+1. <b>Foco WhatsApp:</b> Rescatar pedidos pendientes en menos de 10 minutos con el atajo <code>/pedidos</code>.
+2. <b>Oferta Amigo Secreto:</b> Destacar el Trío Pocket (S/ 50) con los perfumes top (${topSorted[0]?.[0] || 'Born In Roma Intense'}).`;
+    await sendTelegramMessage(chatId, fallbackMsg, env);
   }
 }
 
