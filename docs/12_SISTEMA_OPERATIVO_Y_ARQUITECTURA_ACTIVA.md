@@ -65,6 +65,12 @@ flowchart LR
 > **Aclaración sobre el correo de permiso caducado:**
 > **No fue de Culqi.** Fue un correo de **GitHub** avisando que el Personal Access Token (`GITHUB_TOKEN`) caducó.
 
+### Secretos y Variables del Ecosistema Cloudflare:
+* **`CF_ZONE_ID`** (`ad33e3a6436f0874c04c5c8dbcf966a4`): Variable pública en `wrangler.toml` que identifica el dominio `dolce7aroma.com`.
+* **`CF_API_TOKEN`** (Secreto cifrado en Worker): Token de Cloudflare con permisos de `Analytics: Read` y `Workers: Edit` para alimentar el comando `/visitas` y permitir despliegues de infraestructura.
+* **`TELEGRAM_BOT_TOKEN`** & **`TELEGRAM_CHAT_ID`** (`8616800327`): Control y canal seguro del bot.
+* **`ORDERS`** (KV: `4618ca47d7094c31acf4b3219c25d7ed`): Base de datos de pedidos en tiempo real.
+
 ### ¿Por qué la tienda y el bot siguen funcionando aunque ese token haya caducado?
 * La web, la base de datos KV y el bot de Telegram viven en **Cloudflare** y son **independientes de GitHub**. 
 * El `GITHUB_TOKEN` solo se utiliza cuando tú entras al panel web de administración (`perfumes-gestion-da7.html`) y haces clic en "Guardar cambios en catálogo" para que el Worker pueda escribir en el repositorio de GitHub.
