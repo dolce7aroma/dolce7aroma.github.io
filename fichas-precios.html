@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dolce 7 Aroma — Generador de Fichas de Precios para WhatsApp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-light: #f7e096;
+      --gold-dark: #aa8417;
+      --bg-dark: #0a0e17;
+      --card-bg: #111827;
+      --card-border: rgba(212, 175, 55, 0.3);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #05070c;
+      color: #f8fafc;
+      font-family: 'Montserrat', sans-serif;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      max-width: 800px;
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold);
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    header p {
+      color: #94a3b8;
+      font-size: 15px;
+    }
+    .cards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      width: 100%;
+      max-width: 650px;
+    }
+    .card-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+    .btn-download {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #000;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+      transition: transform 0.2s;
+    }
+    .btn-download:hover { transform: translateY(-2px); }
+
+    /* Estilo de la Tarjeta para Exportar (1080x1350 Proporción 4:5 Instagram/WhatsApp) */
+    .export-card {
+      width: 540px; /* Vista previa escalada */
+      height: 675px;
+      background: radial-gradient(circle at 50% 10%, #1e293b 0%, #0a0e17 70%);
+      border: 2px solid var(--gold);
+      border-radius: 20px;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    }
+    .export-card::before {
+      content: '';
+      position: absolute;
+      top: -50px; right: -50px;
+      width: 150px; height: 150px;
+      background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .card-header {
+      text-align: center;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+      padding-bottom: 15px;
+    }
+    .card-header .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: var(--gold);
+      letter-spacing: 2px;
+      font-weight: 800;
+    }
+    .card-header .tagline {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #cbd5e1;
+      margin-top: 2px;
+    }
+    .card-header .title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: #fff;
+      margin-top: 10px;
+      font-weight: 700;
+    }
+
+    /* Grilla de Tamaños */
+    .pricing-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 15px 0;
+    }
+    .price-col {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 14px;
+      padding: 15px 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .price-col.featured {
+      border: 1.5px solid var(--gold);
+      background: rgba(212, 175, 55, 0.08);
+    }
+    .price-col .badge {
+      position: absolute;
+      top: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold);
+      color: #000;
+      font-size: 8.5px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+    .price-col .size {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .price-col .desc {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .price-col .price {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--gold-light);
+    }
+    .price-col .cur {
+      font-size: 13px;
+      color: var(--gold);
+    }
+    .price-col .use {
+      font-size: 9.5px;
+      color: #cbd5e1;
+      margin-top: 6px;
+      line-height: 1.2;
+    }
+
+    /* Promociones / Combos */
+    .promos-box {
+      background: rgba(212, 175, 55, 0.06);
+      border: 1px dashed var(--gold);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .promos-box .box-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .promo-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .promo-item:last-child { border-bottom: none; }
+    .promo-item .name { font-weight: 700; color: #fff; }
+    .promo-item .val { font-weight: 800; color: var(--gold-light); }
+
+    /* Beneficios y Garantías */
+    .perks-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 12px;
+      font-size: 10px;
+      color: #cbd5e1;
+      margin-bottom: 10px;
+    }
+    .perk { display: flex; align-items: center; gap: 5px; }
+    .perk-icon { color: var(--gold); font-size: 11px; }
+
+    /* Footer con Dirección y Pagos */
+    .card-footer {
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9.5px;
+      color: #94a3b8;
+    }
+    .footer-left { line-height: 1.3; }
+    .footer-left strong { color: #fff; display: block; }
+    .footer-right { text-align: right; }
+    .payments-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 10px;
+    }
+
+    /* Tarjeta Top 10 Bestsellers */
+    .top-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .top-col {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+    .top-col-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      text-align: center;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      padding-bottom: 4px;
+    }
+    .top-item {
+      font-size: 10.5px;
+      color: #e2e8f0;
+      padding: 3.5px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+    .top-item strong { color: #fff; }
+    .top-item span { color: #94a3b8; font-size: 9px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌸 Fichas Oficiales de Precios & Promociones</h1>
+    <p>Diseñadas para compartir directamente en <b>WhatsApp, Estados e Instagram</b>. ¡Tienen toda la información para que el cliente compre sin que tengas que escribir!</p>
+  </header>
+
+  <div class="cards-container">
+
+    <!-- FICHA 1: LISTA MAESTRA DE PRECIOS -->
+    <div class="card-wrapper">
+      <div id="card-precios" class="export-card">
+        <div class="card-header">
+          <div class="brand">DOLCE 7 AROMA</div>
+          <div class="tagline">PERFUMES & DUPES DE ALTA FIJACIÓN · LIMA</div>
+          <div class="title">CARTA OFICIAL DE PRESENTACIONES</div>
+        </div>
+
+        <div class="pricing-grid">
+          <!-- 10ml -->
+          <div class="price-col">
+            <div>
+              <div class="size">10 ML</div>
+              <div class="desc">Edición Pocket</div>
+            </div>
+            <div>
+              <div class="price"><span class="cur">S/</span> 20</div>
+              <div class="use">Ideal para llevar en el bolsillo o cartera</div>
+            </div>
+          </div>
+          <!-- 50ml (Destacado) -->
+          <div class="price-col featured">
+            <div class="badge">MÁS ELEGIDO</div>
+            <div>
+              <div class="size">50 ML</div>
+              <div class="desc">Edición Diaria</div>
+            </div>
+            <div>
+              <div class="price"><span class="cur">S/</span> 55</div>
+              <div class="use">Equilibrio perfecto, rinde 1 mes de uso</div>
+            </div>
+          </div>
+          <!-- 110ml -->
+          <div class="price-col">
+            <div class="badge">MAX AHORRO</div>
+            <div>
+              <div class="size">110 ML</div>
+              <div class="desc">Edición Titán</div>
+            </div>
+            <div>
+              <div class="price"><span class="cur">S/</span> 90</div>
+              <div class="use">Máxima duración, rinde más de 3 meses</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="promos-box">
+          <div class="box-title">🎁 COMBOS ESPECIALES DE DICIEMBRE</div>
+          <div class="promo-item">
+            <span class="name">🎉 Trío Pocket (3 de 10ml) — Amigo Secreto</span>
+            <span class="val">S/ 50 <span style="font-size:9px;color:#94a3b8">(Ahorras S/10)</span></span>
+          </div>
+          <div class="promo-item">
+            <span class="name">🚀 Dúo Diario (2 de 50ml) + Delivery Gratis</span>
+            <span class="val">S/ 100 <span style="font-size:9px;color:#94a3b8">(Ahorras S/10)</span></span>
+          </div>
+          <div class="promo-item">
+            <span class="name">👑 Trío Titán (3 de 110ml) + Delivery Gratis</span>
+            <span class="val">S/ 225 <span style="font-size:9px;color:#94a3b8">(Ahorras S/45)</span></span>
+          </div>
+        </div>
+
+        <div class="perks-list">
+          <div class="perk"><span class="perk-icon">✦</span> Concentración Parfum (33% esencia)</div>
+          <div class="perk"><span class="perk-icon">✦</span> Duración 8 a 12 horas en piel</div>
+          <div class="perk"><span class="perk-icon">✦</span> 🎁 Incluye Bolsa de Regalo GRATIS</div>
+          <div class="perk"><span class="perk-icon">✦</span> 66+ fragancias francesas y árabes</div>
+        </div>
+
+        <div class="card-footer">
+          <div class="footer-left">
+            <strong>📍 Punto de Recojo Oficial:</strong>
+            Jr. Callao 482-A, San Martín de Porres (Bazar Shirley)
+          </div>
+          <div class="footer-right">
+            <div class="payments-badge">💜 Yape · Plin · Efectivo</div>
+            <div style="font-size:8.5px;margin-top:3px;color:#d4af37">Envíos a toda Lima y Perú</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-download" onclick="downloadCard('card-precios', 'Dolce7Aroma_Precios_Oficiales.png')">
+        📸 Descargar Imagen para WhatsApp (Ficha 1)
+      </button>
+    </div>
+
+    <!-- FICHA 2: TOP 10 PERFUMES MÁS VENDIDOS -->
+    <div class="card-wrapper">
+      <div id="card-top10" class="export-card">
+        <div class="card-header">
+          <div class="brand">DOLCE 7 AROMA</div>
+          <div class="tagline">LOS MÁS PEDIDOS EN LIMA · 100% GARANTÍA</div>
+          <div class="title">TOP 10 PERFUMES FAVORITOS</div>
+        </div>
+
+        <div class="top-grid">
+          <!-- Damas -->
+          <div class="top-col">
+            <div class="top-col-title">👑 TOP DAMAS (DULCES & SEDUCTORAS)</div>
+            <div class="top-item">
+              <div><strong>1. Born In Roma Intense</strong><br><span>Inspirado en Valentino · Alta fijación</span></div>
+            </div>
+            <div class="top-item">
+              <div><strong>2. Black Opium Over Red</strong><br><span>Cereza negra, café y vainilla · YSL</span></div>
+            </div>
+            <div class="top-item">
+              <div><strong>3. Yara Elixir (Árabe)</strong><br><span>Dulzor cremoso viral de TikTok</span></div>
+            </div>
+            <div class="top-item">
+              <div><strong>4. Yum Boujee Marshmallow</strong><br><span>Algodón de azúcar gourmet · Kayali</span></div>
+            </div>
+            <div class="top-item">
+              <div><strong>5. Can Can / Fantasy</strong><br><span>Clásicos dulces que nunca fallan</span></div>
+            </div>
+          </div>
+
+          <!-- Caballeros -->
+          <div class="top-col">
+            <div class="top-col-title">🔥 TOP CABALLEROS (NOCHE & PODER)</div>
+            <div class="top-item">
+              <div><strong>1. One Million</strong><br><span>El rey de la seducción · Paco Rabanne</span></div>
+            </div>
+            <div class="top-item">
+              <div><strong>2. Sauvage</strong><br><span>Fresco, masculino y versátil · Dior</span></div>
+            </div>
+            <div class="top-item">
+              <div><strong>3. 9 PM (Árabe)</strong><br><span>Dupe Ultra Male para fiestas · Afnan</span></div>
+            </div>
+            <div class="top-item">
+              <div><strong>4. Invictus Intense</strong><br><span>Aroma de victoria y cumplidos</span></div>
+            </div>
+            <div class="top-item">
+              <div><strong>5. Boss The Scent Elixir</strong><br><span>Elegancia pura y sensualidad</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="promos-box" style="margin-top:0">
+          <div class="box-title" style="margin-bottom:2px">💰 PRECIOS POR UNIDAD</div>
+          <div style="display:flex;justify-content:space-around;font-size:12px;font-weight:800;color:var(--gold-light);padding:4px 0">
+            <span>10ml: S/ 20</span>
+            <span>•</span>
+            <span>50ml: S/ 55</span>
+            <span>•</span>
+            <span>110ml: S/ 90</span>
+          </div>
+          <div style="text-align:center;font-size:9.5px;color:#cbd5e1;margin-top:3px">
+            ✨ Puedes combinar los aromas que quieras en cualquier tamaño o promo.
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <div class="footer-left">
+            <strong>🎁 Cortesía:</strong> Bolsa de Regalo Gratis en todos tus pedidos.
+          </div>
+          <div class="footer-right">
+            <strong style="color:var(--gold)">🌐 dolce7aroma.com</strong>
+            <div style="font-size:8.5px;color:#94a3b8">Catálogo con 66 fragancias</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-download" onclick="downloadCard('card-top10', 'Dolce7Aroma_Top10_Mas_Vendidos.png')">
+        📸 Descargar Imagen para WhatsApp (Ficha 2)
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    function downloadCard(elementId, filename) {
+      const card = document.getElementById(elementId);
+      html2canvas(card, {
+        scale: 2.5, // Ultra alta resolución para que se lea nítido en celulares
+        backgroundColor: '#0a0e17',
+        useCORS: true
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>
