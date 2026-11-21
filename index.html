@@ -657,7 +657,7 @@
 
   
   /* ── Tablets y Pantallas Reducidas (<= 1024px): Menú Móvil Limpio y Logo Centrado ── */
-  @media (max-width: 1024px){
+  @media (max-width: 1140px){
     .nav-inner{
       padding:10px 18px !important;
       grid-template-columns:auto 1fr auto !important;
@@ -1135,7 +1135,7 @@
     display:none;
   }
   .gcg-head{
-    display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:18px;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:14px;
   }
   .gcg-title-wrap{
     display:flex;flex-direction:column;gap:4px;
@@ -1156,47 +1156,110 @@
     display:flex;gap:8px;align-items:center;
   }
   .gcg-arrow{
-    width:38px;height:38px;border-radius:50%;background:#ffffff;
+    width:40px;height:40px;border-radius:50%;background:#ffffff;
     border:1px solid rgba(36,24,43,0.12);color:var(--plum);display:grid;place-items:center;
-    cursor:pointer;transition:all .2s ease;box-shadow:0 2px 8px rgba(36,24,43,0.04);
+    cursor:pointer;transition:all .25s ease;box-shadow:0 2px 8px rgba(36,24,43,0.05);
   }
   .gcg-arrow:hover{
     background:var(--plum);color:var(--ivory);border-color:var(--plum);
-    transform:translateY(-1px);
+    transform:scale(1.05);
   }
   .gcg-arrow svg{
     width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;
   }
   .gcg-track-wrap{
-    position:relative;overflow:hidden;margin:0 -4px;padding:8px 4px 18px;
+    position:relative;overflow:hidden;margin:0 -20px;padding:12px 20px 8px;
   }
   .gcg-track{
     display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;
     scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;
-    padding-bottom:4px;
+    padding:10px 0 16px;scroll-padding:0 24px;
   }
   .gcg-track::-webkit-scrollbar{
     display:none;
   }
   .gcg-track .card-uniform{
-    flex:0 0 280px;scroll-snap-align:start;box-sizing:border-box;
-    border-radius:18px;border:1px solid rgba(36,24,43,0.08);
-    box-shadow:0 4px 16px -2px rgba(36,24,43,0.04), 0 12px 28px -6px rgba(36,24,43,0.06);
-    transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+    flex:0 0 280px;scroll-snap-align:center;scroll-snap-stop:always;box-sizing:border-box;
+    border-radius:20px;border:1px solid rgba(36,24,43,0.08);background:#ffffff;
+    box-shadow:0 4px 16px -2px rgba(36,24,43,0.04), 0 10px 24px -6px rgba(36,24,43,0.05);
+    transition:transform .4s cubic-bezier(.25,1,.5,1), opacity .4s ease, border-color .4s ease, box-shadow .4s ease;
   }
   .gcg-track .card-uniform:hover{
-    transform:translateY(-5px);border-color:rgba(184,149,82,0.4);
-    box-shadow:0 8px 24px -4px rgba(36,24,43,0.08), 0 20px 40px -8px rgba(36,24,43,0.1);
+    transform:translateY(-4px);border-color:rgba(184,149,82,0.4);
+    box-shadow:0 8px 24px -4px rgba(36,24,43,0.08), 0 16px 36px -8px rgba(36,24,43,0.09);
+  }
+  .gcg-dots{
+    display:flex;justify-content:center;align-items:center;gap:8px;margin-top:14px;
+  }
+  .c-dot{
+    width:8px;height:8px;border-radius:50%;background:rgba(36,24,43,0.2);
+    border:none;padding:0;cursor:pointer;transition:all .3s ease;
+  }
+  .c-dot.active{
+    width:26px;border-radius:4px;background:var(--gold);
+    box-shadow:0 0 10px rgba(184,149,82,0.45);
   }
 
-  @media(max-width:640px){
-    .carousel-gender-tabs{gap:8px;margin:18px 0 14px}
+  /* Efecto Coverflow / Centrado Dinámico en Celulares y Tablets */
+  @media(max-width:860px){
+    .carousel-gender-tabs{gap:8px;margin:16px 0 12px}
     .cgt-btn{padding:7px 13px;font-size:10px}
     .gcg-title{font-size:25px}
     .gcg-sub{font-size:11.5px}
-    .gcg-track{gap:14px}
+    .gcg-track-wrap{
+      margin:0 -18px;padding:8px 18px 12px;
+    }
+    .gcg-track{
+      /* Padding exacto para que la primera y última foto queden 100% centradas */
+      padding:10px calc(50vw - 140px) 16px;
+      gap:14px;
+    }
     .gcg-track .card-uniform{
-      flex:0 0 78vw;max-width:290px;
+      flex:0 0 280px;max-width:280px;
+      scroll-snap-align:center;
+      scroll-snap-stop:always;
+      transform:scale(0.92);
+      opacity:0.75;
+    }
+    .gcg-track .card-uniform.is-centered{
+      transform:scale(1);
+      opacity:1;
+      border-color:rgba(184,149,82,0.6);
+      box-shadow:0 16px 36px -8px rgba(36,24,43,0.15), 0 0 18px rgba(184,149,82,0.22);
+    }
+  }
+
+  /* Carrusel de Ofertas en Móvil y Tablets */
+  @media(max-width:860px){
+    .ofertas-grid{
+      display:flex !important;
+      overflow-x:auto !important;
+      scroll-snap-type:x mandatory !important;
+      scroll-behavior:smooth !important;
+      -webkit-overflow-scrolling:touch !important;
+      scrollbar-width:none !important;
+      padding:10px calc(50vw - 145px) 20px !important;
+      gap:16px !important;
+      margin:0 -18px !important;
+    }
+    .ofertas-grid::-webkit-scrollbar{
+      display:none !important;
+    }
+    .ofertas-grid .oferta-card{
+      flex:0 0 290px !important;
+      max-width:290px !important;
+      min-height:480px !important;
+      scroll-snap-align:center !important;
+      scroll-snap-stop:always !important;
+      transform:scale(0.92);
+      opacity:0.75;
+      transition:transform .4s cubic-bezier(.25,1,.5,1), opacity .4s ease, border-color .4s ease, box-shadow .4s ease;
+    }
+    .ofertas-grid .oferta-card.is-centered{
+      transform:scale(1);
+      opacity:1;
+      border-color:rgba(184,149,82,0.65);
+      box-shadow:0 18px 40px -8px rgba(36,24,43,0.18), 0 0 22px rgba(184,149,82,0.25);
     }
   }
 
@@ -1234,7 +1297,7 @@
       <a class="nav-link" href="#ofertas">Ofertas</a>
       <a class="nav-link" href="#boutique">Boutique</a>
     </div>
-    <a href="index.html" class="nav-logo-wrap"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce 7 Aroma Perfumes" /></a>
+    <a href="index.html" class="nav-logo-wrap"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce 7 Aroma Perfumes" loading="eager" /></a>
     <div class="nav-right">
       <a class="nav-link" href="faq.html">FAQ</a>
       <a class="nav-link" href="#" data-modal="tracking">Seguimiento</a>
@@ -1415,6 +1478,7 @@
       <div class="gcg-track-wrap">
         <div class="gcg-track" id="featured-men"></div>
       </div>
+      <div class="gcg-dots" id="dots-hombre"></div>
     </div>
 
     <!-- CARRUSEL 2: 🌸 DAMA -->
@@ -1437,6 +1501,7 @@
       <div class="gcg-track-wrap">
         <div class="gcg-track" id="featured-women"></div>
       </div>
+      <div class="gcg-dots" id="dots-mujer"></div>
     </div>
 
     <div style="display:flex;justify-content:center;margin-top:60px">
@@ -1507,26 +1572,34 @@
 
     <div class="ofertas-grid">
 
-      <article class="oferta-card">
+      <!-- OFERTA 1 (La Mejor Oferta - Destacada): Dúo y Trío Premium 110 ml -->
+      <article class="oferta-card oferta-hero">
         <div class="oferta-head">
-          <span class="oferta-num">N° 01</span>
-          <span class="oferta-tag">-S/ 10 en el 3°</span>
+          <span class="oferta-num">N° 01 · TOP</span>
+          <span class="oferta-tag oferta-tag-hero">-50% en el 3° · ¡Ahorras S/ 45!</span>
         </div>
-        <h3 class="oferta-title">Trío <em>Pocket</em><br/>10 ml</h3>
-        <p class="oferta-desc">Ideal para llevar en el bolso, retocar el aroma en cualquier lugar y tener variedad antes de elegir tu perfume ideal. <strong>El tercero, diez soles menos.</strong></p>
+        <h3 class="oferta-title">Dúo & Trío <em>Premium</em><br/>110 ml</h3>
+        <p class="oferta-desc">Nuestra presentación más exclusiva. Máxima fijación y el costo por mililitro más conveniente. <strong>El segundo a S/ 150 y el tercero llega con 50% de descuento directo.</strong></p>
         <div class="oferta-foot">
-          <div class="oferta-price">S/ 50<small>antes S/ 60</small></div>
-          <a class="oferta-cta" href="catalogo.html?ml=10">Armar trío <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <div>
+            <div class="oferta-tiers">
+              <div class="oferta-tier"><span>2 unidades (Dúo Premium)</span><span><b>S/ 150</b><small>antes S/ 180</small></span></div>
+            </div>
+            <div class="oferta-tier-label">3 unidades (Trío Premium)</div>
+            <div class="oferta-price">S/ 225<small>antes S/ 270</small></div>
+          </div>
+          <a class="oferta-cta" href="catalogo.html?ml=110">Armar dúo o trío <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
       </article>
 
+      <!-- OFERTA 2: Dúo y Trío Esencial 50 ml -->
       <article class="oferta-card">
         <div class="oferta-head">
           <span class="oferta-num">N° 02</span>
-          <span class="oferta-tag">-S/ 15 en el 3°</span>
+          <span class="oferta-tag">Delivery Gratis desde S/ 100</span>
         </div>
-        <h3 class="oferta-title">Trío <em>Esencial</em><br/>50 ml</h3>
-        <p class="oferta-desc">El tamaño perfecto y equilibrado que también entra en tu bolso, perfectos para diferentes ocasiones. <strong>Ahorra desde el segundo frasco.</strong></p>
+        <h3 class="oferta-title">Dúo & Trío <em>Esencial</em><br/>50 ml</h3>
+        <p class="oferta-desc">El equilibrio perfecto para tocador o cartera. Dos frascos para alternar tus fragancias favoritas. <strong>Lleva dos frascos por S/ 100 con delivery incluido.</strong></p>
         <div class="oferta-foot">
           <div>
             <div class="oferta-tiers">
@@ -1539,28 +1612,23 @@
         </div>
       </article>
 
-      <article class="oferta-card oferta-hero">
+      <!-- OFERTA 3: Trío Pocket 10 ml -->
+      <article class="oferta-card">
         <div class="oferta-head">
           <span class="oferta-num">N° 03</span>
-          <span class="oferta-tag oferta-tag-hero">-50% en el 3°</span>
+          <span class="oferta-tag">-S/ 10 en el 3°</span>
         </div>
-        <h3 class="oferta-title">Trío <em>Premium</em><br/>110 ml</h3>
-        <p class="oferta-desc">Para los verdaderos amantes del perfume. Máxima duración, el formato más exclusivo y la mejor inversión para tus fragancias favoritas. <strong>El tercero llega con 50% de descuento.</strong></p>
+        <h3 class="oferta-title">Trío <em>Pocket</em><br/>10 ml</h3>
+        <p class="oferta-desc">Ideal para llevar en el bolsillo o cartera, retocar el aroma en cualquier momento o probar fragancias antes de comprar en grande. <strong>El tercero, diez soles menos.</strong></p>
         <div class="oferta-foot">
-          <div>
-            <div class="oferta-tiers">
-              <div class="oferta-tier"><span>2 unidades (Dúo Premium)</span><span><b>S/ 150</b><small>antes S/ 180</small></span></div>
-            </div>
-            <div class="oferta-tier-label">3 unidades</div>
-            <div class="oferta-price">S/ 225<small>antes S/ 270</small></div>
-          </div>
-          <a class="oferta-cta" href="catalogo.html?ml=110">Armar dúo o trío <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <div class="oferta-price">S/ 50<small>antes S/ 60</small></div>
+          <a class="oferta-cta" href="catalogo.html?ml=10">Armar trío <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
       </article>
 
     </div>
-  </div>
-</section>
+    <div class="gcg-dots" id="dots-ofertas"></div>
+  </div></section>
 
 <!-- NOTAS OLFATIVAS -->
 <section class="block notas" id="familias" data-screen-label="Notas Olfativas">
@@ -1911,6 +1979,69 @@
       </article>`;
   }
 
+  function setupCarouselCentering(track, dotsContainer){
+    if(!track) return;
+    const cards = Array.from(track.children);
+    if(!cards.length) return;
+
+    if(dotsContainer){
+      dotsContainer.innerHTML = cards.map((_, i) => `<button class="c-dot${i===0?' active':''}" data-dot="${i}" type="button" aria-label="Ir a tarjeta ${i+1}"></button>`).join('');
+      dotsContainer.querySelectorAll('.c-dot').forEach((dot, idx) => {
+        dot.addEventListener('click', () => {
+          if(cards[idx]){
+            cards[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          }
+        });
+      });
+    }
+
+    function updateActive(){
+      const trackRect = track.getBoundingClientRect();
+      const trackCenter = trackRect.left + trackRect.width / 2;
+      let closestCard = cards[0];
+      let closestDist = Infinity;
+
+      cards.forEach(card => {
+        const cardRect = card.getBoundingClientRect();
+        const cardCenter = cardRect.left + cardRect.width / 2;
+        const dist = Math.abs(trackCenter - cardCenter);
+        if(dist < closestDist){
+          closestDist = dist;
+          closestCard = card;
+        }
+      });
+
+      cards.forEach((card, idx) => {
+        const isCentered = (card === closestCard);
+        card.classList.toggle('is-centered', isCentered);
+        if(dotsContainer && dotsContainer.children[idx]){
+          dotsContainer.children[idx].classList.toggle('active', isCentered);
+        }
+      });
+    }
+
+    let tId;
+    track.addEventListener('scroll', () => {
+      updateActive();
+      clearTimeout(tId);
+      tId = setTimeout(updateActive, 80);
+    }, { passive: true });
+
+    setTimeout(updateActive, 180);
+  }
+
+  function scrollCarouselToNext(track, dir){
+    if(!track) return;
+    const cards = Array.from(track.children);
+    if(!cards.length) return;
+    const current = track.querySelector('.is-centered') || cards[0];
+    const curIdx = cards.indexOf(current);
+    const targetIdx = dir === 'next'
+      ? Math.min(curIdx + 1, cards.length - 1)
+      : Math.max(curIdx - 1, 0);
+    cards[targetIdx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
   async function renderFeatured(catalog){
     const list = catalog.filter(p => p.featured === true);
     // ── Hero carousel: top 5 destacados + anuncios activos ──
@@ -1927,29 +2058,40 @@
 
     const elMen = document.getElementById('featured-men');
     const elWomen = document.getElementById('featured-women');
+    const dotsMen = document.getElementById('dots-hombre');
+    const dotsWomen = document.getElementById('dots-mujer');
 
     if(elMen){
       elMen.innerHTML = menList.length
         ? menList.map(buildPerfumeCardHtml).join('')
         : '<p style="padding:20px;color:var(--plum-700)">No hay perfumes masculinos destacados.</p>';
+      setupCarouselCentering(elMen, dotsMen);
     }
     if(elWomen){
       elWomen.innerHTML = womenList.length
         ? womenList.map(buildPerfumeCardHtml).join('')
         : '<p style="padding:20px;color:var(--plum-700)">No hay perfumes femeninos destacados.</p>';
+      setupCarouselCentering(elWomen, dotsWomen);
     }
 
-    // Navegación de Flechas en los Carruseles
+    // Inicializar carrusel de ofertas en móvil
+    const elOfertas = document.querySelector('.ofertas-grid');
+    const dotsOfertas = document.getElementById('dots-ofertas');
+    if(elOfertas){
+      setupCarouselCentering(elOfertas, dotsOfertas);
+    }
+
+    // Navegación de Flechas en los Carruseles (con centrado garantizado)
     document.querySelectorAll('[data-carousel-prev]').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = btn.dataset.carouselPrev === 'hombre' ? elMen : elWomen;
-        if(target) target.scrollBy({ left: -300, behavior: 'smooth' });
+        scrollCarouselToNext(target, 'prev');
       });
     });
     document.querySelectorAll('[data-carousel-next]').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = btn.dataset.carouselNext === 'hombre' ? elMen : elWomen;
-        if(target) target.scrollBy({ left: 300, behavior: 'smooth' });
+        scrollCarouselToNext(target, 'next');
       });
     });
 
