@@ -100,7 +100,7 @@
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{background:var(--ivory);color:var(--plum);font-family:'Jost',sans-serif;font-weight:400;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  html,body{background:var(--ivory);color:var(--plum);font-family:'Jost',sans-serif;font-weight:400;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;width:100%;max-width:100vw;overflow-x:hidden;position:relative}
   body{overflow-x:hidden}
 
   .serif{font-family:'Cormorant Garamond',serif;font-weight:400;letter-spacing:-0.01em}
@@ -631,6 +631,32 @@
   .inicio-modal .imitem .l{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--plum)}
   .inicio-modal .imitem .s{font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--plum-700);margin-top:3px}
   .inicio-modal .imitem svg{width:16px;height:16px;stroke:var(--plum-700);fill:none;stroke-width:1.6}
+
+  
+  /* ── Ajuste para Laptops Medianas (1025px - 1280px) ── */
+  @media (max-width: 1280px) and (min-width: 1025px){
+    .nav-inner{padding:12px 24px;gap:16px}
+    .nav-left, .nav-right{gap:16px}
+    .nav-logo{height:72px}
+  }
+
+  /* ── Tablets y Ventanas Reducidas (<= 1024px): Colapso Limpio sin Desbordamiento ── */
+  @media (max-width: 1024px){
+    .nav-inicio-btn, .nav-inicio-dropdown{display:none !important}
+    .nav-inner{padding:12px 18px !important;gap:10px !important;grid-template-columns:auto 1fr auto !important;width:100% !important;max-width:100% !important}
+    .nav-right{gap:8px !important}
+    .nav-right .nav-link{display:none !important}
+    .nav-left{display:flex !important;gap:0 !important}
+    .nav-left .nav-link{display:none !important}
+    .nav-left #nav-inicio-link{display:inline-flex !important;align-items:center;gap:6px;background:var(--plum);color:var(--ivory);padding:9px 14px;border-radius:999px;font-size:11px;letter-spacing:0.16em;border:0;text-transform:uppercase}
+    .nav-left #nav-inicio-link::after{display:none !important}
+    .nav-left #nav-inicio-link::before{content:"☰";font-size:15px;line-height:0;margin-right:2px}
+    .nav-logo{height:56px !important;max-width:140px !important}
+
+    .announce{padding:10px 16px !important;font-size:11px !important;letter-spacing:0.06em !important;gap:0 !important}
+    .announce-social, .announce a[href*="wa.me"]{display:none !important}
+    .announce-msg{flex:1 !important;text-align:center !important;font-size:11px !important;min-height:20px !important}
+  }
 
   @media (max-width:640px){
     .nav-inicio-btn, .nav-inicio-dropdown{display:none !important}
@@ -1418,8 +1444,8 @@
   </div>
 </footer>
 
-<script src="assets/site-modals.js?v=3"></script>
-<script src="assets/shop.js?v=20261120_v13"></script>
+<script src="assets/site-modals.js?v=4"></script>
+<script src="assets/shop.js?v=20261120_v14"></script>
 <script>
   // ── Render perfumes destacados (featured:true) usando el catálogo compartido ──
   const FAMILY_LABEL_HOME = {floral:'Floral',oriental:'Oriental',amaderado:'Amaderado',citrico:'Cítrico',chipre:'Chipre',aromatico:'Aromático',frutal:'Frutal'};
