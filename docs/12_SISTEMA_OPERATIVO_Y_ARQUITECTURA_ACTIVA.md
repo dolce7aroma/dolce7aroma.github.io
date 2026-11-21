@@ -41,11 +41,24 @@ flowchart LR
   * **Rol 2 (Dueño / Administrador General):** Tu cuenta personal (Chat ID: `8616800327`), con acceso al 100% de los módulos financieros, estratégicos y operativos.
   * **Rol 1 (Operativo / Mostrador):** *Por definir* (previsto para colaboradores en tienda física o atención de mostrador; restringido solo a consulta de stock y validación de entregas, sin acceso a finanzas).
 
-* **Estructura Oficial por Categorías Padre:**
-  1. **📦 PEDIDOS & CAJA:** `/resumen` (o `/hoy`), `/pedidos` (rescate WhatsApp), `/pagado [ID]` (descuenta stock), `/cancelar [ID]`.
-  2. **🏷️ CATÁLOGO & STOCK:** `/precios [aroma]` (consulta rápida de stock y precios de 10ml, 50ml y 110ml para mostrador).
-  3. **🌐 TRÁFICO, SEO & DEMANDA:** `/visitas` (tráfico real Cloudflare sin AdBlock), `/demanda` (radiografía de audiencia real, qué sexo son, perfumes más vistos y recomendación comercial), `/seo` (indexación y salud web).
-  4. **🎯 ESTRATEGIA & CAMPAÑAS:** `/semana` (balance semanal unificado + top ventas + CRO), `/campana` (reloj comercial y planificador de fechas clave).
+* **Estructura Oficial por Categorías Padre (con Fechas y Leyendas de Uso):**
+  1. **📦 PEDIDOS & CAJA (Operación Diaria):**
+     * `/resumen` (o `/hoy`) — Caja del día y balance en soles *(📅 Cada noche al cerrar)*.
+     * `/pedidos` — Pedidos pendientes con botón directo a WhatsApp *(📅 En tiempo real)*.
+     * `/pagado [ID]` — Confirmar cobro y descontar stock *(📅 Al verificar comprobante Yape)*.
+     * `/cancelar [ID]` — Cancelar pedido no concretado.
+  2. **🏷️ MOSTRADOR & CONSULTA RÁPIDA:**
+     * `/precios [aroma]` — Stock y precios al instante *(📅 Con cliente al frente en Bazar Shirley)*.
+  3. **📊 ESTRATEGIA & CRECIMIENTO (Rutina de Negocio):**
+     * `/semana` — Rendimiento semanal con gráfico de barras *(📅 Lunes 8:00 AM)*.
+     * `/cro` — Embudo de conversión y abandonos *(📅 Día 16 de cada mes)*.
+     * `/mes` — Facturación mensual, tráfico web de Cloudflare, tasa de conversión y gráfico de dona *(📅 Día 1 de cada mes a las 6:00 AM)*.
+     * `/top` — Ranking de los 5 perfumes más vendidos en la web.
+     * `/campana` — Reloj comercial y planificador de fechas *(📅 Pre-campañas y quincenas)*.
+  4. **🌐 TRÁFICO WEB & DEMANDA (Auditoría de Clientes):**
+     * `/visitas` — Tráfico real en Cloudflare Analytics *(📅 Diario o interdiario para ver volumen)*.
+     * `/demanda` — Radiografía de visitantes reales, proporción mujer/hombre, aromas buscados y recomendación *(📅 Viernes y sábados para armar ofertas del fin de semana)*.
+     * `/seo` — Indexación en Google y distritos más activos *(📅 Quincenal o mensual)*.
   5. **⚙️ SISTEMA & DEV (Comandos Ocultos de Mantenimiento):** `/sheets sync`, `/probar_cron`, `/limpiar_pruebas`.
 
 ---
