@@ -1566,11 +1566,49 @@ async function generateMonthlyReport(chatId, env, customHeader = null, isClosedM
   const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(monthChartConfig))}&w=650&h=380&bkg=white`;
   const header = customHeader || '🗓️ <b>[REPORTE MENSUAL ESTRATÉGICO]</b> 🌸';
 
+  // Integración Cloudflare Analytics en el Reporte Mensual
+  let monthlyVisits = 0;
+  let convRateText = '';
+  if (env.CF_API_TOKEN) {
+    try {
+      const zId = env.CF_ZONE_ID || 'ad33e3a6436f0874c04c5c8dbcf966a4';
+      const sDate = evalStart.toISOString().split('T')[0];
+      const cfQuery = `{
+        viewer {
+          zones(filter: { zoneTag: "${zId}" }) {
+            httpRequests1dGroups(
+              limit: 31,
+              filter: { date_geq: "${sDate}" }
+            ) {
+              uniq { uniques }
+            }
+          }
+        }
+      }`;
+      const cfRes = await fetch('https://api.cloudflare.com/client/v4/graphql', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.CF_API_TOKEN}`,
+          'Content-Type': 'application/json',
+          'User-Agent': 'DolceBot'
+        },
+        body: JSON.stringify({ query: cfQuery })
+      });
+      const cfData = await cfRes.json();
+      const groups = cfData?.data?.viewer?.zones?.[0]?.httpRequests1dGroups || [];
+      monthlyVisits = groups.reduce((acc, g) => acc + (g.uniq?.uniques || 0), 0);
+      if (monthlyVisits > 0) {
+        const rate = ((monthOrders.length / monthlyVisits) * 100).toFixed(2);
+        convRateText = `\n🌐 <b>Tráfico Web:</b> ${monthlyVisits} visitas (Conversión: <b>${rate}%</b>)`;
+      }
+    } catch (_) {}
+  }
+
   const caption = `${header}
 📅 <i>Período: ${monthLabel}</i>
 
 💰 <b>Facturación Total:</b> S/ ${monthSales.toFixed(2)} (${momBadge} MoM)
-📦 <b>Pedidos Totales:</b> ${monthOrders.length} (Ticket prom: S/ ${ticketProm})
+📦 <b>Pedidos Totales:</b> ${monthOrders.length} (Ticket prom: S/ ${ticketProm})${convRateText}
 
 📊 <b>Mix de Ventas por Estilo:</b>
 • <b>Árabes:</b> S/ ${arabeSales.toFixed(2)} (${arabePct}%)
@@ -2043,24 +2081,25 @@ async function handleTelegramWebhook(request, env) {
 <i>Gestión Comercial y Operativa</i>
 
 📦 <b>PEDIDOS & CAJA (Operación Diaria):</b>
-• <b>/resumen</b> — Caja del día, pedidos cobrados y balance en soles.
-• <b>/pedidos</b> — Pedidos pendientes con botón directo a WhatsApp.
-• <b>/pagado [ID]</b> — Confirmar cobro de Yape y descontar stock.
+• <b>/resumen</b> — Caja del día y balance en soles (📅 <i>Uso: Cada noche al cerrar</i>).
+• <b>/pedidos</b> — Pedidos pendientes con botón a WhatsApp (📅 <i>Uso: Tiempo real</i>).
+• <b>/pagado [ID]</b> — Confirmar cobro y descontar stock (📅 <i>Uso: Al validar Yape</i>).
 • <b>/cancelar [ID]</b> — Cancelar pedido no concretado.
 
 🏷️ <b>MOSTRADOR & CONSULTA RÁPIDA:</b>
-• <b>/precios [aroma]</b> — Consultar stock y precios en 1 segundo (ej: <code>/precios asad</code>).
+• <b>/precios [aroma]</b> — Stock y precios al instante (📅 <i>Uso: Con cliente al frente</i>).
 
-📊 <b>ESTRATEGIA & CRECIMIENTO (Revisión Semanal):</b>
-• <b>/semana</b> — Rendimiento semanal con gráfico comparativo de barras.
-• <b>/cro</b> — Embudo de conversión y carritos abandonados.
-• <b>/top</b> — Los 5 perfumes más vendidos en la web.
-• <b>/campana</b> — Reloj comercial (Usa <code>/campana plan</code> para armar estrategia).
+📊 <b>ESTRATEGIA & CRECIMIENTO (Rutina de Negocio):</b>
+• <b>/semana</b> — Rendimiento semanal y gráfico (📅 <i>Uso: Lunes 8:00 AM</i>).
+• <b>/cro</b> — Embudo de conversión y abandonos (📅 <i>Uso: Día 16 de cada mes</i>).
+• <b>/mes</b> — Facturación, tráfico web y donas (📅 <i>Uso: Día 1 de cada mes</i>).
+• <b>/top</b> — Ranking de los 5 perfumes más vendidos en la web.
+• <b>/campana</b> — Reloj comercial y planificador (📅 <i>Uso: Pre-campañas</i>).
 
-🌐 <b>TRÁFICO WEB:</b>
-• <b>/visitas</b> — Tráfico real de visitantes y páginas vistas en Cloudflare.
-• <b>/demanda</b> — Radiografía de visitantes reales, qué buscan y recomendación.
-• <b>/seo</b> — Salud de indexación en Google y distritos más activos.
+🌐 <b>TRÁFICO WEB & DEMANDA (Auditoría de Clientes):</b>
+• <b>/visitas</b> — Tráfico real en Cloudflare (📅 <i>Uso: Diario o interdiario</i>).
+• <b>/demanda</b> — Radiografía de público, sexo y aromas (📅 <i>Uso: Viernes y sábados</i>).
+• <b>/seo</b> — Indexación en Google y distritos (📅 <i>Uso: Quincenal</i>).
 
 ℹ️ <b>/help</b> — Ver este menú organizado.
 
