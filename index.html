@@ -142,21 +142,23 @@
   }
   .nav-inner{
     max-width:1440px;margin:0 auto;
-    padding:12px 40px;
-    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px;
+    padding:10px 40px;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;
   }
-  .nav-left, .nav-right{display:flex;gap:34px;align-items:center}
+  .nav-left, .nav-right{display:flex;gap:30px;align-items:center}
   .nav-right{justify-content:flex-end}
   .nav-link{
-    font-size:12.5px;letter-spacing:0.22em;text-transform:uppercase;font-weight:400;color:var(--plum);
-    position:relative;padding:6px 0;cursor:pointer;transition:color .2s;
+    font-size:12px;letter-spacing:0.2em;text-transform:uppercase;font-weight:400;color:var(--plum);
+    position:relative;padding:6px 0;cursor:pointer;transition:color .2s;white-space:nowrap;
   }
   .nav-link::after{
     content:"";position:absolute;left:50%;right:50%;bottom:0;height:1px;background:var(--plum);transition:left .25s,right .25s;
   }
   .nav-link:hover::after, .nav-link.active::after{left:0;right:0}
-  .nav-logo{height:96px;width:auto;cursor:pointer;transition:transform .4s;display:block;object-fit:contain}
-  .nav-logo:hover{transform:scale(1.04)}
+  .nav-logo-wrap{display:flex;align-items:center;justify-content:center;line-height:0;text-decoration:none}
+  .nav-logo{height:76px;width:auto;max-width:180px;cursor:pointer;transition:transform .3s ease;display:block;object-fit:contain}
+  .nav-logo:hover{transform:scale(1.03)}
+  .mobile-menu-trigger{display:none}
   .icon-btn{
     width:36px;height:36px;border-radius:50%;display:grid;place-items:center;
     border:1px solid transparent;cursor:pointer;transition:all .2s;
@@ -166,48 +168,13 @@
   .cart-pill{
     display:inline-flex;align-items:center;gap:10px;padding:8px 14px 8px 12px;
     border:1px solid var(--rule);border-radius:999px;
-    font-size:11.5px;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:all .25s;
+    font-size:11.5px;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:all .25s;white-space:nowrap;
   }
   .cart-pill:hover{background:var(--plum);color:var(--ivory);border-color:var(--plum)}
   .cart-pill .count{
     background:var(--gold);color:var(--ivory);font-size:10px;font-weight:500;
     width:18px;height:18px;border-radius:50%;display:grid;place-items:center;letter-spacing:0;
   }
-
-  
-  /* ─── Dropdown de Secciones al lado de Inicio ─── */
-  .nav-inicio-group{display:inline-flex;align-items:center;gap:6px;position:relative}
-  .nav-inicio-btn{
-    width:24px;height:24px;border-radius:6px;border:1px solid var(--rule);background:transparent;
-    display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--plum);
-    transition:all .2s;padding:0;
-  }
-  .nav-inicio-btn:hover, .nav-inicio-group.open .nav-inicio-btn{
-    background:var(--plum);color:var(--ivory);border-color:var(--plum);
-  }
-  .nav-inicio-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
-  .nav-inicio-dropdown{
-    position:absolute;top:calc(100% + 10px);left:0;min-width:280px;background:#ffffff;
-    border:1px solid rgba(60,47,71,0.14);border-radius:14px;box-shadow:0 16px 36px rgba(60,47,71,0.16);
-    padding:8px;z-index:100;opacity:0;pointer-events:none;transform:translateY(-6px);
-    transition:opacity .2s ease, transform .2s ease;display:flex;flex-direction:column;gap:4px;
-  }
-  .nav-inicio-group.open .nav-inicio-dropdown,
-  .nav-inicio-group:hover .nav-inicio-dropdown{
-    opacity:1;pointer-events:auto;transform:translateY(0);
-  }
-  .nid-item{
-    display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;
-    text-decoration:none;color:var(--plum);transition:all .15s;
-  }
-  .nid-item:hover{background:var(--lavender-soft)}
-  .nid-icon{
-    font-size:17px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;
-    background:#fff;border:1px solid var(--rule);border-radius:8px;flex-shrink:0;
-  }
-  .nid-info{display:flex;flex-direction:column;text-align:left}
-  .nid-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;line-height:1.2;color:var(--plum)}
-  .nid-sub{font-family:'Jost',sans-serif;font-size:11px;color:var(--plum-700);letter-spacing:0.02em;margin-top:2px}
 
   /* ───────── HERO ───────── */
   .hero{
@@ -689,32 +656,50 @@
   .inicio-modal .imitem svg{width:16px;height:16px;stroke:var(--plum-700);fill:none;stroke-width:1.6}
 
   
-  /* ── Ajuste para Laptops y Tablets (641px - 1280px): Todos los botones y logo perfectamente visibles ── */
-  @media (max-width: 1280px) and (min-width: 861px){
-    .nav-inner{padding:10px 22px;gap:14px;grid-template-columns:1fr auto 1fr;width:100%;max-width:100%}
-    .nav-left, .nav-right{gap:14px}
-    .nav-link{font-size:11px;letter-spacing:0.12em}
-    .nav-logo{height:68px;width:auto}
-    .cart-pill{padding:7px 12px;font-size:10.5px;letter-spacing:0.12em}
-    .announce{padding:8px 20px;font-size:11px;letter-spacing:0.08em}
-  }
-
-  @media (max-width: 860px) and (min-width: 641px){
-    .nav-inner{padding:8px 12px;gap:8px;grid-template-columns:1fr auto 1fr;width:100%;max-width:100%}
-    .nav-left, .nav-right{gap:8px}
-    .nav-link{font-size:10.5px;letter-spacing:0.06em}
-    .nav-logo{height:58px;width:auto}
-    .cart-pill{padding:6px 10px;font-size:10px;letter-spacing:0.06em;gap:6px}
-    .cart-pill .count{width:16px;height:16px;font-size:9.5px}
-    .icon-btn{width:30px;height:30px}
-    .icon-btn svg{width:15px;height:15px}
-    .announce{padding:8px 14px;font-size:10.5px;letter-spacing:0.05em}
-    .announce-social, .announce a[href*="wa.me"]{display:none}
+  /* ── Tablets y Pantallas Reducidas (<= 1024px): Menú Móvil Limpio y Logo Centrado ── */
+  @media (max-width: 1024px){
+    .nav-inner{
+      padding:10px 18px !important;
+      grid-template-columns:auto 1fr auto !important;
+      gap:10px !important;
+      width:100% !important;
+    }
+    .nav-left .nav-link{display:none !important}
+    .nav-right .nav-link{display:none !important}
+    .mobile-menu-trigger{
+      display:inline-flex !important;
+      align-items:center;
+      gap:7px;
+      background:var(--plum);
+      color:var(--ivory);
+      padding:9px 15px;
+      border-radius:999px;
+      font-size:11px;
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      border:0;
+      cursor:pointer;
+      transition:background .2s;
+    }
+    .mobile-menu-trigger:hover{background:var(--plum-700)}
+    .nav-logo-wrap{display:flex;justify-content:center;align-items:center}
+    .nav-logo{
+      height:54px !important;
+      max-width:140px !important;
+      width:auto !important;
+      opacity:1 !important;
+    }
+    .nav-right{gap:8px !important}
+    .cart-pill{padding:7px 12px !important;font-size:10.5px !important;letter-spacing:0.12em !important}
+    .announce{padding:8px 16px !important;font-size:11px !important}
+    .announce-social, .announce a[href*="wa.me"]{display:none !important}
   }
 
   @media (max-width:640px){
-    .nav-inicio-btn, .nav-inicio-dropdown{display:none !important}
-
+    .nav-inner{padding:8px 12px !important}
+    .mobile-menu-trigger{padding:7px 11px;font-size:10px;gap:5px}
+    .nav-logo{height:46px !important;max-width:120px !important}
+    .announce-msg{flex:1 !important;text-align:center !important;font-size:10.5px !important;letter-spacing:0.04em !important;min-height:20px !important}
     .hero{padding:60px 20px 80px}
     .hero-copy h1{font-size:40px}
     .hero-visual{height:420px}
@@ -1098,55 +1083,16 @@
 <nav class="top" data-screen-label="Top Nav">
   <div class="nav-inner">
     <div class="nav-left">
-      <div class="nav-inicio-group" id="nav-inicio-group">
-        <a class="nav-link active" href="#" id="nav-inicio-link">Inicio</a>
-        <button class="nav-inicio-btn" id="nav-inicio-menu-btn" type="button" aria-label="Secciones de Inicio" title="Ver opciones de Inicio">
-          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <div class="nav-inicio-dropdown" id="nav-inicio-dropdown">
-          <a class="nid-item" href="#filosofia">
-            <span class="nid-icon">🌿</span>
-            <div class="nid-info">
-              <span class="nid-title">Nuestra Filosofía</span>
-              <span class="nid-sub">Maceración real & esencias francesas</span>
-            </div>
-          </a>
-          <a class="nid-item" href="#familias">
-            <span class="nid-icon">🌸</span>
-            <div class="nid-info">
-              <span class="nid-title">Familias Olfativas</span>
-              <span class="nid-sub">Floral, Oriental, Amaderado, Cítrico</span>
-            </div>
-          </a>
-          <a class="nid-item" href="#perfumes">
-            <span class="nid-icon">⭐</span>
-            <div class="nid-info">
-              <span class="nid-title">Los Más Pedidos</span>
-              <span class="nid-sub">Fragancias insignia destacadas</span>
-            </div>
-          </a>
-          <a class="nid-item" href="#ofertas">
-            <span class="nid-icon">🎁</span>
-            <div class="nid-info">
-              <span class="nid-title">Ofertas & Promos</span>
-              <span class="nid-sub">Dúo Esencial, Premium y Tríos</span>
-            </div>
-          </a>
-          <a class="nid-item" href="#boutique">
-            <span class="nid-icon">🏬</span>
-            <div class="nid-info">
-              <span class="nid-title">Boutique & Punto SMP</span>
-              <span class="nid-sub">Recojo gratuito en Bazar Shirley</span>
-            </div>
-          </a>
-        </div>
-      </div>
+      <button class="mobile-menu-trigger" id="mobile-menu-btn" type="button" aria-label="Abrir Menú de Navegación">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <span>Menú</span>
+      </button>
+      <a class="nav-link active" href="index.html" id="nav-inicio-link">Inicio</a>
       <a class="nav-link" href="catalogo.html">Perfumes</a>
       <a class="nav-link" href="#ofertas">Ofertas</a>
       <a class="nav-link" href="#boutique">Boutique</a>
-      <a class="nav-link" href="navidad.html" style="color:#a8895a;font-weight:500">Navidad 🎄</a>
     </div>
-    <a href="#"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce Aroma Perfumes" style="opacity: 0.75; object-fit: cover; width: 200px; height: 90px" /></a>
+    <a href="index.html" class="nav-logo-wrap"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce 7 Aroma Perfumes" /></a>
     <div class="nav-right">
       <a class="nav-link" href="faq.html">FAQ</a>
       <a class="nav-link" href="#" data-modal="tracking">Seguimiento</a>
@@ -1225,7 +1171,7 @@
     <div class="bn-overlay"></div>
     <div class="bn-content">
       <span class="bn-badge">🎄 EDICIÓN ESPECIAL NAVIDAD 2026</span>
-      <h2 class="bn-title">Regala un Aroma <em>Inolvidable</em></h2>
+      <h2 class="bn-title">Feliz Navidad <em>Dolce 7 Aroma</em></h2>
       <p class="bn-desc">
         Packs exclusivos de <b>Navidad</b> con bolsa de regalo boutique de cortesía, atomizador de cortesía y delivery gratis en Lima.
       </p>
@@ -1236,7 +1182,7 @@
         <span class="bn-pack-pill">Trío Premium 110ml <b>S/ 225</b></span>
       </div>
       <div class="bn-cta-btn">
-        Ver Guía de Regalos Navideños
+        Ver Packs y Guía de Regalos
         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </div>
     </div>
@@ -1679,7 +1625,7 @@
 </footer>
 
 <script src="assets/site-modals.js?v=4"></script>
-<script src="assets/shop.js?v=20261120_v16"></script>
+<script src="assets/shop.js?v=20261121_v17"></script>
 <script>
   // ── Render perfumes destacados (featured:true) usando el catálogo compartido ──
   const FAMILY_LABEL_HOME = {floral:'Floral',oriental:'Oriental',amaderado:'Amaderado',citrico:'Cítrico',chipre:'Chipre',aromatico:'Aromático',frutal:'Frutal'};
@@ -1905,27 +1851,6 @@
   setInterval(()=>{ qi=(qi+1)%quotes.length; render(); }, 6500);
 
   
-  // Dropdown de Inicio (botón de 3 líneas)
-  (function(){
-    const group = document.getElementById('nav-inicio-group');
-    const btn = document.getElementById('nav-inicio-menu-btn');
-    if(btn && group){
-      btn.addEventListener('click', (e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-        group.classList.toggle('open');
-      });
-      document.addEventListener('click', (e)=>{
-        if(!group.contains(e.target)) group.classList.remove('open');
-      });
-      group.querySelectorAll('.nid-item').forEach(it=>{
-        it.addEventListener('click', ()=>{
-          group.classList.remove('open');
-        });
-      });
-    }
-  })();
-
   // soft scroll-spy for nav (no toca el botón "Inicio" #nav-inicio-link)
   const links = document.querySelectorAll('.nav-link');
   function spy(){
@@ -1972,7 +1897,7 @@
     }, 4000);
   })();
 
-  // ── Mobile INICIO menu modal ──
+  // ── Mobile & Tablet Menu Modal ──
   function openInicioModal(){
     const modal = document.getElementById('inicio-modal');
     if(!modal) return;
@@ -1988,15 +1913,19 @@
     document.body.style.overflow='';
   }
   document.addEventListener('click', e => {
+    if(e.target.closest('#mobile-menu-btn, .mobile-menu-trigger')){
+      e.preventDefault();
+      openInicioModal();
+      return;
+    }
     const link = e.target.closest('#nav-inicio-link');
     if(link){
-      if(window.innerWidth <= 640){
+      if(window.innerWidth <= 1024){
         e.preventDefault();
         openInicioModal();
-        return;
+      } else {
+        window.scrollTo({top:0, behavior:'smooth'});
       }
-      // En tablets y laptops mayores a 640px, Inicio hace scroll suave arriba
-      window.scrollTo({top:0, behavior:'smooth'});
       return;
     }
     if(e.target.closest('#inicio-modal-close')) closeInicioModal();
@@ -2005,6 +1934,7 @@
   document.addEventListener('keydown', e=>{
     if(e.key==='Escape') closeInicioModal();
   });
+
   (function(){
     const btn = document.getElementById('btn-search');
     if(!btn) return;
@@ -2082,18 +2012,24 @@
 <!-- INICIO MODAL (mobile menu) -->
 <div class="inicio-modal" id="inicio-modal" aria-hidden="true">
   <div class="imhead">
-    <h3>Menú <em>Dolce Aroma</em></h3>
+    <h3>Menú <em>Dolce 7 Aroma</em></h3>
     <button class="imclose" id="inicio-modal-close" aria-label="Cerrar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
   <div class="imlist">
-    <a class="imitem" href="index.html"><div><div class="l">Inicio</div><div class="s">Página principal</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <a class="imitem" href="#filosofia" data-close-im><div><div class="l">Nuestra Filosofía</div><div class="s">Maceración real & esencias francesas</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <a class="imitem" href="#familias" data-close-im><div><div class="l">Familias Olfativas</div><div class="s">Floral, Oriental, Amaderado, Cítrico</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <a class="imitem" href="catalogo.html"><div><div class="l">Perfumes</div><div class="s">Catálogo completo</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <a class="imitem" href="#ofertas" data-close-im><div><div class="l">Ofertas</div><div class="s">Combos del momento</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <a class="imitem" href="#boutique" data-close-im><div><div class="l">Boutique</div><div class="s">Punto de venta físico</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <a class="imitem" href="faq.html"><div><div class="l">FAQ</div><div class="s">Preguntas frecuentes</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <a class="imitem" href="#" data-modal="contacto" data-close-im><div><div class="l">Contacto</div><div class="s">WhatsApp, redes y boutique</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></a>
+    <a class="imitem is-festive" href="navidad.html" style="background:linear-gradient(135deg, rgba(168,137,90,0.18), rgba(60,47,71,0.08));border:1.5px solid rgba(168,137,90,0.45);box-shadow:0 4px 16px -4px rgba(168,137,90,0.25)">
+      <div>
+        <div class="l" style="color:#a8895a;display:flex;align-items:center;gap:6px">🎄 Navidad Dolce 7 Aroma</div>
+        <div class="s" style="color:#5a4868">Packs de Regalo, Dúos y Tríos Especiales</div>
+      </div>
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+    <a class="imitem" href="index.html"><div><div class="l">Inicio</div><div class="s">Portada principal</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="catalogo.html"><div><div class="l">Perfumes</div><div class="s">Catálogo completo de fragancias</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="#ofertas" data-close-im><div><div class="l">Ofertas & Promos</div><div class="s">Dúo Esencial, Premium y Tríos</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="#boutique" data-close-im><div><div class="l">Boutique & Tienda</div><div class="s">Punto de recojo físico SMP</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="faq.html"><div><div class="l">FAQ</div><div class="s">Preguntas frecuentes y envíos</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="#" data-modal="tracking" data-close-im><div><div class="l">Seguimiento</div><div class="s">Consulta el estado de tu pedido</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem" href="#" data-modal="contacto" data-close-im><div><div class="l">Contacto</div><div class="s">WhatsApp, teléfono y redes</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </div>
 </div>
 

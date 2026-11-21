@@ -104,13 +104,35 @@
     border-bottom:1px solid var(--rule);
     box-shadow:0 4px 24px rgba(36, 24, 43, 0.025);
   }
-  .nav-inner{max-width:1440px;margin:0 auto;padding:18px 40px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px}
-  .nav-left,.nav-right{display:flex;gap:34px;align-items:center}
+  .nav-inner{
+    max-width:1440px;margin:0 auto;
+    padding:10px 40px;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;
+  }
+  .nav-left,.nav-right{display:flex;gap:30px;align-items:center}
   .nav-right{justify-content:flex-end}
-  .nav-link{font-size:12.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--plum);cursor:pointer;position:relative;padding:6px 0}
-  .nav-link::after{content:"";position:absolute;left:50%;right:50%;bottom:0;height:1px;background:var(--plum);transition:left .25s,right .25s}
+  .nav-link{
+    font-size:12px;letter-spacing:0.2em;text-transform:uppercase;font-weight:400;color:var(--plum);
+    position:relative;padding:6px 0;cursor:pointer;transition:color .2s;white-space:nowrap;
+  }
+  .nav-link::after{
+    content:"";position:absolute;left:50%;right:50%;bottom:0;height:1px;background:var(--plum);transition:left .25s,right .25s;
+  }
   .nav-link:hover::after, .nav-link.active::after{left:0;right:0}
-  .nav-logo{height:96px;width:auto;display:block;object-fit:contain}
+  .nav-logo-wrap{display:flex;align-items:center;justify-content:center;line-height:0;text-decoration:none}
+  .nav-logo{height:76px;width:auto;max-width:180px;cursor:pointer;transition:transform .3s ease;display:block;object-fit:contain}
+  .nav-logo:hover{transform:scale(1.03)}
+  .mobile-menu-trigger{display:none}
+  .cart-pill{
+    display:inline-flex;align-items:center;gap:10px;padding:8px 14px 8px 12px;
+    border:1px solid var(--rule);border-radius:999px;
+    font-size:11.5px;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:all .25s;white-space:nowrap;
+  }
+  .cart-pill:hover{background:var(--plum);color:var(--ivory);border-color:var(--plum)}
+  .cart-pill .count{
+    background:var(--gold);color:var(--ivory);font-size:10px;font-weight:500;
+    width:18px;height:18px;border-radius:50%;display:grid;place-items:center;letter-spacing:0;
+  }
 
   /* page intro */
   .intro{
@@ -316,18 +338,42 @@
   }
   
   @media(max-width:1024px){
-    .nav-inicio-btn, .nav-inicio-dropdown{display:none !important}
-    nav.top .nav-inner{padding:12px 18px !important;gap:10px !important;grid-template-columns:auto 1fr auto !important;width:100% !important;max-width:100% !important}
-    .nav-right .nav-link{display:none !important}
-    .nav-left{display:flex !important;gap:0 !important}
+    nav.top .nav-inner{
+      padding:10px 18px !important;
+      gap:10px !important;
+      grid-template-columns:auto 1fr auto !important;
+      width:100% !important;
+      max-width:100% !important;
+    }
     .nav-left .nav-link{display:none !important}
-    .nav-left #nav-inicio-link{display:inline-flex !important;align-items:center;gap:6px;background:var(--plum);color:var(--ivory);padding:9px 14px;border-radius:999px;font-size:11px;letter-spacing:0.16em;border:0;text-transform:uppercase}
-    .nav-left #nav-inicio-link::after{display:none !important}
-    .nav-left #nav-inicio-link::before{content:"☰";font-size:15px;line-height:0;margin-right:2px}
-    .nav-logo{height:56px !important;max-width:140px !important}
-    .announce{padding:10px 16px !important;font-size:11px !important;letter-spacing:0.06em !important;gap:0 !important}
+    .nav-right .nav-link{display:none !important}
+    .mobile-menu-trigger{
+      display:inline-flex !important;
+      align-items:center;
+      gap:7px;
+      background:var(--plum);
+      color:var(--ivory);
+      padding:9px 15px;
+      border-radius:999px;
+      font-size:11px;
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      border:0;
+      cursor:pointer;
+      transition:background .2s;
+    }
+    .mobile-menu-trigger:hover{background:var(--plum-700)}
+    .nav-logo-wrap{display:flex;justify-content:center;align-items:center}
+    .nav-logo{
+      height:54px !important;
+      max-width:140px !important;
+      width:auto !important;
+      opacity:1 !important;
+    }
+    .nav-right{gap:8px !important}
+    .cart-pill{padding:7px 12px !important;font-size:10.5px !important;letter-spacing:0.12em !important}
+    .announce{padding:8px 16px !important;font-size:11px !important}
     .announce-social, .announce a[href*="wa.me"]{display:none !important}
-    .announce-msg{flex:1 !important;text-align:center !important;font-size:11px !important;min-height:20px !important}
   }
 
   @media(max-width:640px){
@@ -467,59 +513,23 @@
 <nav class="top">
   <div class="nav-inner">
     <div class="nav-left">
-      <div class="nav-inicio-group" id="nav-inicio-group">
-        <a class="nav-link" id="nav-inicio-link" href="index.html">Inicio</a>
-        <button class="nav-inicio-btn" id="nav-inicio-menu-btn" type="button" aria-label="Secciones de Inicio" title="Ver opciones de Inicio">
-          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <div class="nav-inicio-dropdown" id="nav-inicio-dropdown">
-          <a class="nid-item" href="index.html#filosofia">
-            <span class="nid-icon">🌿</span>
-            <div class="nid-info">
-              <span class="nid-title">Nuestra Filosofía</span>
-              <span class="nid-sub">Maceración real & esencias francesas</span>
-            </div>
-          </a>
-          <a class="nid-item" href="index.html#familias">
-            <span class="nid-icon">🌸</span>
-            <div class="nid-info">
-              <span class="nid-title">Familias Olfativas</span>
-              <span class="nid-sub">Floral, Oriental, Amaderado, Cítrico</span>
-            </div>
-          </a>
-          <a class="nid-item" href="index.html#perfumes">
-            <span class="nid-icon">⭐</span>
-            <div class="nid-info">
-              <span class="nid-title">Los Más Pedidos</span>
-              <span class="nid-sub">Fragancias insignia destacadas</span>
-            </div>
-          </a>
-          <a class="nid-item" href="index.html#ofertas">
-            <span class="nid-icon">🎁</span>
-            <div class="nid-info">
-              <span class="nid-title">Ofertas & Promos</span>
-              <span class="nid-sub">Dúo Esencial, Premium y Tríos</span>
-            </div>
-          </a>
-          <a class="nid-item" href="index.html#boutique">
-            <span class="nid-icon">🏬</span>
-            <div class="nid-info">
-              <span class="nid-title">Boutique & Punto SMP</span>
-              <span class="nid-sub">Recojo gratuito en Bazar Shirley</span>
-            </div>
-          </a>
-        </div>
-      </div>
-      <a class="nav-link active">Perfumes</a>
+      <button class="mobile-menu-trigger" id="mobile-menu-btn" type="button" aria-label="Abrir Menú de Navegación">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <span>Menú</span>
+      </button>
+      <a class="nav-link" href="index.html">Inicio</a>
+      <a class="nav-link active" href="catalogo.html">Perfumes</a>
       <a class="nav-link" href="index.html#ofertas">Ofertas</a>
       <a class="nav-link" href="index.html#boutique">Boutique</a>
     </div>
-    <a href="index.html"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce Aroma Perfumes" style="opacity: 0.75; object-fit: cover; width: 200px; height: 90px" /></a>
+    <a href="index.html" class="nav-logo-wrap"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce 7 Aroma Perfumes" /></a>
     <div class="nav-right">
       <a class="nav-link" href="faq.html">FAQ</a>
       <a class="nav-link" href="#" data-modal="tracking">Seguimiento</a>
       <a class="nav-link" href="#" data-modal="contacto">Contacto</a>
-      <div style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--rule);border-radius:999px;font-size:11.5px;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:all .25s" data-cart-open role="button" tabindex="0" onmouseover="this.style.background='var(--plum)';this.style.color='var(--ivory)'" onmouseout="this.style.background='';this.style.color=''">Bolsa <span style="background:var(--gold);color:var(--ivory);font-size:10px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;letter-spacing:0" data-cart-count>0</span></div>
+      <div class="cart-pill" data-cart-open role="button" tabindex="0">
+        Bolsa <span class="count" data-cart-count>0</span>
+      </div>
     </div>
   </div>
 </nav>
@@ -648,7 +658,7 @@
 </footer>
 
 <script src="assets/site-modals.js?v=4"></script>
-<script src="assets/shop.js?v=20261120_v16"></script>
+<script src="assets/shop.js?v=20261121_v17"></script>
 <script>
 const FAMILY_LABEL = {floral:'Floral', oriental:'Oriental', amaderado:'Amaderado', citrico:'Cítrico', chipre:'Chipre', aromatico:'Aromático', frutal:'Frutal'};
 const TAG_LABEL = {'mas-vendido':'Más vendido','nuevo':'Nuevo','edicion-limitada':'Edición limitada','agotado':'Agotado'};
@@ -980,40 +990,15 @@ function wire(){
     document.body.style.overflow='';
   }
   document.addEventListener('click', e => {
-    const link = e.target.closest('#nav-inicio-link');
-    if(link){
-      // En desktop, el link navega normal (href). En móvil, abre el menú.
-      if(window.innerWidth <= 640){
-        e.preventDefault();
-        openInicioModal();
-      }
+    if(e.target.closest('#mobile-menu-btn, .mobile-menu-trigger')){
+      e.preventDefault();
+      openInicioModal();
       return;
     }
     if(e.target.closest('#inicio-modal-close')) closeInicioModal();
     if(e.target.closest('[data-close-im]')) closeInicioModal();
   });
   document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeInicioModal(); });
-
-
-  // Dropdown de Inicio (botón de 3 líneas)
-  (function(){
-    const group = document.getElementById('nav-inicio-group');
-    const btn = document.getElementById('nav-inicio-menu-btn');
-    if(btn && group){
-      btn.addEventListener('click', (e)=>{
-        e.stopPropagation();
-        group.classList.toggle('open');
-      });
-      document.addEventListener('click', (e)=>{
-        if(!group.contains(e.target)) group.classList.remove('open');
-      });
-      group.querySelectorAll('.nid-item').forEach(it=>{
-        it.addEventListener('click', ()=>{
-          group.classList.remove('open');
-        });
-      });
-    }
-  })();
 
 </script>
 
