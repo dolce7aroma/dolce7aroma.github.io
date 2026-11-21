@@ -866,6 +866,159 @@
     color: var(--plum, #3c2f47);
   }
 
+
+  /* ───────── Banner Campaña Navideña 2026 ───────── */
+  .banner-navidad-wrap{
+    padding:36px 40px 10px;
+    max-width:1440px;
+    margin:0 auto;
+  }
+  .banner-navidad-card{
+    position:relative;
+    display:flex;
+    align-items:center;
+    min-height:430px;
+    border-radius:24px;
+    overflow:hidden;
+    background:#1c1022;
+    border:1.5px solid rgba(168,137,90,0.38);
+    box-shadow:0 24px 50px -12px rgba(45,26,56,0.35);
+    text-decoration:none;
+    transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+  .banner-navidad-card:hover{
+    transform:translateY(-3px);
+    border-color:rgba(168,137,90,0.75);
+    box-shadow:0 30px 60px -10px rgba(45,26,56,0.45);
+  }
+  .bn-bg-img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:right center;
+    transition:transform .7s cubic-bezier(.2,.8,.2,1);
+  }
+  .banner-navidad-card:hover .bn-bg-img{
+    transform:scale(1.03);
+  }
+  .bn-overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg, rgba(28,16,34,0.94) 0%, rgba(28,16,34,0.82) 48%, rgba(28,16,34,0.2) 80%, transparent 100%);
+    pointer-events:none;
+  }
+  .bn-content{
+    position:relative;
+    z-index:2;
+    max-width:620px;
+    padding:50px 54px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    color:#fff;
+  }
+  .bn-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(168,137,90,0.24);
+    border:1px solid rgba(168,137,90,0.55);
+    color:#f0dcba;
+    font-size:11px;
+    letter-spacing:0.24em;
+    text-transform:uppercase;
+    font-weight:600;
+    padding:6px 16px;
+    border-radius:999px;
+    width:fit-content;
+    backdrop-filter:blur(6px);
+  }
+  .bn-title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(34px, 4.2vw, 54px);
+    font-weight:300;
+    line-height:1.06;
+    letter-spacing:-0.01em;
+    color:#ffffff;
+    margin:0;
+  }
+  .bn-title em{
+    font-style:italic;
+    color:#e5c792;
+    font-weight:400;
+  }
+  .bn-desc{
+    font-size:14.5px;
+    line-height:1.65;
+    color:#ded4e6;
+    margin:0;
+  }
+  .bn-packs-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:2px;
+  }
+  .bn-pack-pill{
+    font-size:12px;
+    padding:6px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.18);
+    color:#f6f2ec;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    backdrop-filter:blur(4px);
+  }
+  .bn-pack-pill b{
+    color:#dfbe82;
+    font-family:'Cormorant Garamond',serif;
+    font-size:17px;
+  }
+  .bn-pack-pill.is-highlight{
+    background:rgba(168,137,90,0.25);
+    border-color:#a8895a;
+    color:#fff;
+  }
+  .bn-cta-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:12px;
+    background:#a8895a;
+    color:#1a1620;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    padding:15px 30px;
+    border-radius:999px;
+    width:fit-content;
+    margin-top:8px;
+    transition:all .25s ease;
+    box-shadow:0 8px 24px rgba(168,137,90,0.35);
+  }
+  .banner-navidad-card:hover .bn-cta-btn{
+    background:#c8ab7a;
+    transform:translateX(5px);
+  }
+  @media(max-width:992px){
+    .banner-navidad-wrap{padding:28px 20px 10px}
+    .banner-navidad-card{min-height:380px}
+    .bn-content{padding:40px 32px;max-width:520px}
+  }
+  @media(max-width:768px){
+    .banner-navidad-wrap{padding:20px 16px 0}
+    .banner-navidad-card{min-height:auto}
+    .bn-bg-img{position:absolute;height:100%;object-position:center top}
+    .bn-overlay{background:linear-gradient(180deg, rgba(28,16,34,0.92) 0%, rgba(28,16,34,0.85) 60%, rgba(28,16,34,0.45) 100%)}
+    .bn-content{padding:32px 20px;max-width:100%}
+    .bn-title{font-size:32px}
+    .bn-cta-btn{width:100%;justify-content:center}
+  }
+
 </style>
 </head>
 <body>
@@ -937,6 +1090,7 @@
       <a class="nav-link" href="catalogo.html">Perfumes</a>
       <a class="nav-link" href="#ofertas">Ofertas</a>
       <a class="nav-link" href="#boutique">Boutique</a>
+      <a class="nav-link" href="navidad.html" style="color:#a8895a;font-weight:500">Navidad 🎄</a>
     </div>
     <a href="#"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce Aroma Perfumes" style="opacity: 0.75; object-fit: cover; width: 200px; height: 90px" /></a>
     <div class="nav-right">
@@ -1008,6 +1162,31 @@
     <span>Oriental · Amaderado <span class="star">✦</span> Floral · Cítrico <span class="star">✦</span> Chipre · Almizcle <span class="star">✦</span> Ambarino · Especiado <span class="star">✦</span> Frutal · Acuático <span class="star">✦</span> Aromático <span class="star">✦</span></span>
   </div>
 </div>
+
+
+<!-- BANNER CAMPAÑA NAVIDAD & AMIGO SECRETO 2026 -->
+<section class="banner-navidad-wrap" data-screen-label="Campaña Navideña">
+  <a href="navidad.html" class="banner-navidad-card" aria-label="Especial Navidad y Amigo Secreto 2026">
+    <img src="assets/banner-navidad.jpg" alt="Especial Navidad y Amigo Secreto Dolce 7 Aroma" class="bn-bg-img" loading="lazy" />
+    <div class="bn-overlay"></div>
+    <div class="bn-content">
+      <span class="bn-badge">🎄 EDICIÓN ESPECIAL NAVIDAD 2026</span>
+      <h2 class="bn-title">Regala un Aroma <em>Inolvidable</em></h2>
+      <p class="bn-desc">
+        Packs exclusivos para <b>Navidad y Amigo Secreto</b> con bolsa de regalo boutique gratis, atomizador de cortesía y delivery gratis en Lima.
+      </p>
+      <div class="bn-packs-row">
+        <span class="bn-pack-pill">Trío Pocket <b>S/ 50</b></span>
+        <span class="bn-pack-pill">Dúo Esencial <b>S/ 100</b></span>
+        <span class="bn-pack-pill is-highlight">Dúo Premium <b>S/ 165</b></span>
+      </div>
+      <div class="bn-cta-btn">
+        Ver Guía de Regalos Navideños
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+    </div>
+  </a>
+</section>
 
 <!-- NUESTROS PERFUMES -->
 <section class="block" id="perfumes" data-screen-label="Nuestros Perfumes">
@@ -1717,6 +1896,7 @@
   // ── Banner rotator ──
   (function(){
     const messages = [
+      '🎄 Especial Navidad 2026: Packs de Regalo con Bolsa de Lujo Gratis',
       '\uD83C\uDF81 Atomizador 10ml + 2 probadores de regalo',
       '\uD83D\uDE9A Delivery gratis · Av. Perú y San Miguel',
       '\u2B50 Aroma de calidad a un precio justo',

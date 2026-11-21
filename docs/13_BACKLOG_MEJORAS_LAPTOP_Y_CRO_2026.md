@@ -16,7 +16,7 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 | **5** | Ajuste de curva de descuento 110ml: Primero S/ 15 y luego S/ 30 (temporal hasta 2027). | Precios / Promos | ✅ RESUELTO |
 | **6** | Bolsa flotante visible en todo tipo de ventana (incluso si no está maximizada). | UI / Accesibilidad | ✅ RESUELTO |
 | **7** | Sincronización del video del perfume flotando en el home. | Visual / Rendimiento | ⏳ Pendiente |
-| **8** | Banner de campaña navideña debe estar en lugar TOP (inmediatamente visible). | Marketing / Hero | ⏳ Pendiente |
+| **8** | Banner de campaña navideña debe estar en lugar TOP (inmediatamente visible). | Marketing / Hero | ✅ RESUELTO |
 | **9** | Desglose visible de "Descuento por promociones: -S/ XX" cuando hay varios descuentos. | Checkout / Transparencia | ⏳ Pendiente |
 | **10** | Bandeja/caja de sugerencias "¿Qué perfume buscas?" para capturar demanda insatisfecha. | Conversión / Feedback | ⏳ Pendiente |
 | **11** | Mensaje de envío a Lima no coherente con el Delivery Gratis en compras mayores a S/ 100. | Logística / Copy | ✅ RESUELTO |
@@ -168,3 +168,28 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 
 
 
+
+---
+
+## 🛠️ Detalle de Resolución: Punto 8 (Banner de Campaña Navideña 2026 de Alta Gama)
+
+### Causa & Requerimiento
+* El dueño de Dolce 7 Aroma solicitó que el banner navideño no fuera genérico ni plano, sino una **imagen editorial profesional de alta gama** (estilo Dior/Chanel/Jo Malone) colocada en una ubicación TOP y prominente para la campaña festiva de Diciembre.
+
+### Solución Implementada:
+1. **Generación Fotográfica de Lujo (`assets/banner-navidad.jpg`):**
+   * Fotografía editorial comercial 16:9 con iluminación cálida de boutique.
+   * Protagonismo de los 3 formatos icónicos de la marca: Frasco de 110 ml con reflejos ámbar y atomizador dorado, frasco de 50 ml y atomizador de bolsillo de 10 ml.
+   * Packaging de alta gama: Bolsa boutique en burdeos/ciruela con cinta satinada de champán, follaje invernal escarchado, luces bokeh doradas y amplio espacio negativo oscuro a la izquierda para tipografía editorial.
+2. **Sección Panorámica Editorial en `index.html`:**
+   * Ubicada inmediatamente después del Hero y la marquesina olfativa, justo antes de "Nuestros Perfumes Más Destacados".
+   * Tarjeta con radio de 24px, borde dorado tenue y sombra profunda, con degradado envolvente.
+   * Tipografía serif en Cormorant Garamond (*"Regala un Aroma Inolvidable"*), pastillas de acceso rápido a los 3 packs (`Trío Pocket S/ 50`, `Dúo Esencial S/ 100`, `Dúo Premium S/ 165`) y botón de llamado a la acción hacia `navidad.html`.
+3. **Presencia Multi-Punto en Cabecera:**
+   * **Menú Superior:** Enlace directo destacado `Navidad 🎄` en la barra de navegación principal.
+   * **Cintillo Rotativo Superior:** Mensaje prioritario: `🎄 Especial Navidad 2026: Packs de Regalo con Bolsa de Lujo Gratis`.
+   * **Hero Arch Slide #1:** Registrado en `data/anuncios-hero.json` para abrir el carrusel del Hero como slide principal de temporada.
+   * **Integración en `navidad.html`:** Cabecera reforzada con la imagen editorial de campaña enmarcada.
+4. **Responsive Total:**
+   * En Desktop/Laptop: Formato apaisado panorámico con texto a la izquierda e imagen a la derecha.
+   * En Tablet y Móvil: Degradado vertical para legibilidad 100% sobre pantalla táctil y botón CTA de ancho completo.

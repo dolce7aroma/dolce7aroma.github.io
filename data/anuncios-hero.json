@@ -1,4 +1,16 @@
 {
-  "schema": { "version": 1 },
-  "anuncios": []
+  "schema": {
+    "version": 1
+  },
+  "anuncios": [
+    {
+      "id": "navidad-2026",
+      "activo": true,
+      "titulo": "Especial Navidad 2026",
+      "subtitulo": "Packs de regalo con bolsa de lujo gratis y delivery",
+      "imagen": "assets/banner-navidad.jpg",
+      "textoBoton": "Ver Packs Navideños",
+      "link": "navidad.html"
+    }
+  ]
 }
