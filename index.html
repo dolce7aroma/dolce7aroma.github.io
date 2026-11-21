@@ -709,9 +709,9 @@
     .nav-right .nav-link{display:none !important}
     .nav-left{display:flex !important;gap:0}
     .nav-left .nav-link{display:none !important}
-    .nav-left #nav-inicio-link{display:inline-flex !important;align-items:center;gap:6px;background:var(--plum);color:var(--ivory);padding:10px 16px;border-radius:999px;font-size:11px;letter-spacing:0.18em;border:0}
-    .nav-left #nav-inicio-link::after{display:none}
-    .nav-left #nav-inicio-link::before{content:"☰";font-size:16px;line-height:0;letter-spacing:0;margin-right:2px}
+    .nav-left #nav-inicio-link{display:none !important}
+    
+    
     .nav-logo{height:60px}
     .announce{padding:10px 16px !important;font-size:11px !important;letter-spacing:0.08em !important;gap:0 !important}
     .announce-social, .announce a[href*="wa.me"]{display:none !important}
@@ -1110,6 +1110,96 @@
     .bn-cta-btn{width:100%;justify-content:center}
   }
 
+
+  /* ───────── Carruseles de Perfumes por Género (Hombre & Mujer) ───────── */
+  .carousel-gender-tabs{
+    display:flex;gap:10px;margin:28px 0 20px;flex-wrap:wrap;align-items:center;
+  }
+  .cgt-btn{
+    background:#ffffff;border:1px solid rgba(36,24,43,0.12);border-radius:999px;
+    padding:8px 18px;font-size:11.5px;letter-spacing:0.12em;text-transform:uppercase;
+    font-weight:600;color:var(--plum);cursor:pointer;transition:all .25s ease;
+    box-shadow:0 2px 8px rgba(36,24,43,0.03);font-family:inherit;
+  }
+  .cgt-btn:hover{
+    border-color:var(--plum);background:var(--lavender-soft);
+  }
+  .cgt-btn.active{
+    background:var(--plum);color:var(--ivory);border-color:var(--plum);
+    box-shadow:0 4px 14px rgba(36,24,43,0.18);
+  }
+  .gender-carousel-group{
+    margin-top:36px;transition:opacity .3s ease;
+  }
+  .gender-carousel-group.is-hidden{
+    display:none;
+  }
+  .gcg-head{
+    display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:18px;
+  }
+  .gcg-title-wrap{
+    display:flex;flex-direction:column;gap:4px;
+  }
+  .gcg-badge{
+    font-size:10.5px;letter-spacing:0.24em;text-transform:uppercase;color:var(--gold);font-weight:600;
+  }
+  .gcg-title{
+    font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:var(--plum);line-height:1.1;margin:0;
+  }
+  .gcg-title em{
+    font-style:italic;color:var(--gold);
+  }
+  .gcg-sub{
+    font-size:12.5px;color:var(--plum-700);
+  }
+  .gcg-nav{
+    display:flex;gap:8px;align-items:center;
+  }
+  .gcg-arrow{
+    width:38px;height:38px;border-radius:50%;background:#ffffff;
+    border:1px solid rgba(36,24,43,0.12);color:var(--plum);display:grid;place-items:center;
+    cursor:pointer;transition:all .2s ease;box-shadow:0 2px 8px rgba(36,24,43,0.04);
+  }
+  .gcg-arrow:hover{
+    background:var(--plum);color:var(--ivory);border-color:var(--plum);
+    transform:translateY(-1px);
+  }
+  .gcg-arrow svg{
+    width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;
+  }
+  .gcg-track-wrap{
+    position:relative;overflow:hidden;margin:0 -4px;padding:8px 4px 18px;
+  }
+  .gcg-track{
+    display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;
+    scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+    padding-bottom:4px;
+  }
+  .gcg-track::-webkit-scrollbar{
+    display:none;
+  }
+  .gcg-track .card-uniform{
+    flex:0 0 280px;scroll-snap-align:start;box-sizing:border-box;
+    border-radius:18px;border:1px solid rgba(36,24,43,0.08);
+    box-shadow:0 4px 16px -2px rgba(36,24,43,0.04), 0 12px 28px -6px rgba(36,24,43,0.06);
+    transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .gcg-track .card-uniform:hover{
+    transform:translateY(-5px);border-color:rgba(184,149,82,0.4);
+    box-shadow:0 8px 24px -4px rgba(36,24,43,0.08), 0 20px 40px -8px rgba(36,24,43,0.1);
+  }
+
+  @media(max-width:640px){
+    .carousel-gender-tabs{gap:8px;margin:18px 0 14px}
+    .cgt-btn{padding:7px 13px;font-size:10px}
+    .gcg-title{font-size:25px}
+    .gcg-sub{font-size:11.5px}
+    .gcg-track{gap:14px}
+    .gcg-track .card-uniform{
+      flex:0 0 78vw;max-width:290px;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -1298,8 +1388,55 @@
       </p>
     </div>
 
-    <div class="products" id="featured-products">
-      <!-- cards rendered from data/perfumes.json (featured:true) -->
+        <!-- Selector de Filtro Rápido (Tabs) -->
+    <div class="carousel-gender-tabs">
+      <button class="cgt-btn active" data-gender-tab="todos" type="button">✨ Ver Todos (10)</button>
+      <button class="cgt-btn" data-gender-tab="hombre" type="button">🎩 Para Caballero (4)</button>
+      <button class="cgt-btn" data-gender-tab="mujer" type="button">🌸 Para Dama (6)</button>
+    </div>
+
+    <!-- CARRUSEL 1: 🎩 CABALLERO -->
+    <div class="gender-carousel-group" id="group-hombre">
+      <div class="gcg-head">
+        <div class="gcg-title-wrap">
+          <span class="gcg-badge">🎩 COLECCIÓN MASCULINA</span>
+          <h3 class="gcg-title">Aromas para <em>Caballero</em></h3>
+          <span class="gcg-sub">Fijación de 8 a 12 horas · Desliza horizontalmente para ver todos</span>
+        </div>
+        <div class="gcg-nav">
+          <button class="gcg-arrow" data-carousel-prev="hombre" type="button" aria-label="Anterior perfume de caballero">
+            <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="gcg-arrow" data-carousel-next="hombre" type="button" aria-label="Siguiente perfume de caballero">
+            <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="gcg-track-wrap">
+        <div class="gcg-track" id="featured-men"></div>
+      </div>
+    </div>
+
+    <!-- CARRUSEL 2: 🌸 DAMA -->
+    <div class="gender-carousel-group" id="group-mujer">
+      <div class="gcg-head">
+        <div class="gcg-title-wrap">
+          <span class="gcg-badge">🌸 COLECCIÓN FEMENINA</span>
+          <h3 class="gcg-title">Aromas para <em>Dama</em></h3>
+          <span class="gcg-sub">Dulzura, magnetismo y elegancia · Desliza horizontalmente para ver todos</span>
+        </div>
+        <div class="gcg-nav">
+          <button class="gcg-arrow" data-carousel-prev="mujer" type="button" aria-label="Anterior perfume de dama">
+            <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="gcg-arrow" data-carousel-next="mujer" type="button" aria-label="Siguiente perfume de dama">
+            <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="gcg-track-wrap">
+        <div class="gcg-track" id="featured-women"></div>
+      </div>
     </div>
 
     <div style="display:flex;justify-content:center;margin-top:60px">
@@ -1736,58 +1873,106 @@
     }catch(e){ return []; }
   }
 
+  function buildPerfumeCardHtml(p){
+    const sizesAll = (p.sizes||[]).slice().sort((a,b)=>b.ml-a.ml);
+    const inStock = sizesAll.filter(s=>s.stock>0 && s.price);
+    const allBase = [...(p.notes_top||[]), ...(p.notes_heart||[])].slice(0,3).join(', ');
+    const occList = (p.occasion||[]).slice(0,3);
+    const photo = window.DA.resolvePhoto(p);
+    const OCC_LABEL = {dia:'🌅 Día',noche:'🌙 Noche',oficina:'💼 Oficina',fiesta:'🎉 Fiesta',cita:'❤️ Cita',diario:'🏠 Uso diario',especial:'✨ Evento especial',verano:'☀️ Verano',invierno:'🧥 Invierno',regalo:'🎁 Para regalar',romantico:'❤️ Romántico',deporte:'🏃 Deporte',viaje:'✈️ Viaje',formal:'👔 Formal',casual:'👕 Casual'};
+    const INTENSITY = {sutil:'🌸 Sutil', moderada:'🌿 Moderada', intensa:'🔥 Intensa'};
+    const tagClass = p.tag ? `b-${p.tag}` : (p.featured ? 'b-featured' : '');
+    const tagBadge = p.tag ? (TAG_LABEL_HOME[p.tag]||p.tag) : (p.featured ? '★ Destacado' : 'Atelier');
+    return `
+      <article class="product card-uniform" data-perfume-id="${p.id}" data-detail="${p.id}">
+        <div class="image">
+          <span class="badge ${tagClass}">${tagBadge}</span>
+          ${!inStock.length ? '<span class="badge" style="background:#a04848;color:var(--ivory);top:46px">Sin stock</span>' : ''}
+          <span class="gender-mark">${p.gender||''}</span>
+          <button class="quick" aria-label="Vista rápida" data-detail="${p.id}">
+            <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <img src="${photo}" alt="${p.name}" onerror="this.src='assets/perfume-110ml.jpg'"/>
+        </div>
+        <div class="cu-body">
+          <div class="cu-name">${p.name}</div>
+          <div class="cu-insp">${p.inspiration || 'Atelier'}</div>
+          <p class="cu-notes"><b>${FAMILY_LABEL_HOME[p.family]||''}.</b> ${allBase || (p.description||'').slice(0,80)}</p>
+          ${p.intensity ? `<div class="cu-intensity"><span class="cu-label">Intensidad</span><span class="cu-intensity-val">${INTENSITY[p.intensity]||p.intensity}</span></div>` : ''}
+          ${occList.length ? `<div class="cu-chips">${occList.map(o=>`<span class="cu-chip">${OCC_LABEL[o]||o}</span>`).join('')}</div>` : ''}
+          <div class="cu-sizes">
+            ${inStock.length ? inStock.map(s=>`<span class="cu-size-chip">${s.ml} ml · S/${s.price}</span>`).join('') : '<span class="cu-size-chip" style="opacity:.5;font-style:italic">Sin stock</span>'}
+          </div>
+          <button class="cu-cta" data-detail="${p.id}">
+            Ver detalle
+            <span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </button>
+        </div>
+      </article>`;
+  }
+
   async function renderFeatured(catalog){
     const list = catalog.filter(p => p.featured === true);
-    // ── Hero carousel: top 5 destacados + anuncios activos, mezclados ──
+    // ── Hero carousel: top 5 destacados + anuncios activos ──
     const productSlides = list.slice(0, 5).map(p => ({ type:'producto', perfume:p }));
     const anuncioSlides = (await loadAnunciosHero()).map(a => ({ type:'anuncio', ...a }));
     const heroPool = (productSlides.length || anuncioSlides.length)
       ? [...productSlides, ...anuncioSlides]
       : (catalog.length ? [{ type:'producto', perfume: catalog[0] }] : []);
     setupHeroCarousel(heroPool);
-    const el = document.getElementById('featured-products');
-    if(!el) return;
-    if(!list.length){
-      el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--plum-700)"><p style="font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic">Aún no hay perfumes marcados como destacados.</p><p style="font-size:13px;margin-top:8px">Marca alguno desde el Admin para que aparezca aquí.</p></div>`;
-      return;
+
+    // Separación por Género (Hombre & Mujer)
+    const menList = list.filter(p => (p.gender||'').toLowerCase().includes('hombre'));
+    const womenList = list.filter(p => (p.gender||'').toLowerCase().includes('mujer') || (p.gender||'').toLowerCase().includes('unisex'));
+
+    const elMen = document.getElementById('featured-men');
+    const elWomen = document.getElementById('featured-women');
+
+    if(elMen){
+      elMen.innerHTML = menList.length
+        ? menList.map(buildPerfumeCardHtml).join('')
+        : '<p style="padding:20px;color:var(--plum-700)">No hay perfumes masculinos destacados.</p>';
     }
-    el.innerHTML = list.map(p => {
-      const sizesAll = (p.sizes||[]).slice().sort((a,b)=>b.ml-a.ml);
-      const inStock = sizesAll.filter(s=>s.stock>0 && s.price);
-      const allBase = [...(p.notes_top||[]), ...(p.notes_heart||[])].slice(0,3).join(', ');
-      const occList = (p.occasion||[]).slice(0,3);
-      const photo = window.DA.resolvePhoto(p);
-      const OCC_LABEL = {dia:'🌅 Día',noche:'🌙 Noche',oficina:'💼 Oficina',fiesta:'🎉 Fiesta',cita:'❤️ Cita',diario:'🏠 Uso diario',especial:'✨ Evento especial',verano:'☀️ Verano',invierno:'🧥 Invierno',regalo:'🎁 Para regalar',romantico:'❤️ Romántico',deporte:'🏃 Deporte',viaje:'✈️ Viaje',formal:'👔 Formal',casual:'👕 Casual'};
-      const INTENSITY = {sutil:'🌸 Sutil', moderada:'🌿 Moderada', intensa:'🔥 Intensa'};
-      const tagClass = p.tag ? `b-${p.tag}` : (p.featured ? 'b-featured' : '');
-      const tagBadge = p.tag ? (TAG_LABEL_HOME[p.tag]||p.tag) : (p.featured ? '★ Destacado' : 'Atelier');
-      return `
-        <article class="product card-uniform" data-perfume-id="${p.id}" data-detail="${p.id}">
-          <div class="image">
-            <span class="badge ${tagClass}">${tagBadge}</span>
-            ${!inStock.length ? '<span class="badge" style="background:#a04848;color:var(--ivory);top:46px">Sin stock</span>' : ''}
-            <span class="gender-mark">${p.gender||''}</span>
-            <button class="quick" aria-label="Vista rápida" data-detail="${p.id}">
-              <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-            <img src="${photo}" alt="${p.name}" onerror="this.src='assets/perfume-110ml.jpg'"/>
-          </div>
-          <div class="cu-body">
-            <div class="cu-name">${p.name}</div>
-            <div class="cu-insp">${p.inspiration || 'Atelier'}</div>
-            <p class="cu-notes"><b>${FAMILY_LABEL_HOME[p.family]||''}.</b> ${allBase || (p.description||'').slice(0,80)}</p>
-            ${p.intensity ? `<div class="cu-intensity"><span class="cu-label">Intensidad</span><span class="cu-intensity-val">${INTENSITY[p.intensity]||p.intensity}</span></div>` : ''}
-            ${occList.length ? `<div class="cu-chips">${occList.map(o=>`<span class="cu-chip">${OCC_LABEL[o]||o}</span>`).join('')}</div>` : ''}
-            <div class="cu-sizes">
-              ${inStock.length ? inStock.map(s=>`<span class="cu-size-chip">${s.ml} ml · S/${s.price}</span>`).join('') : '<span class="cu-size-chip" style="opacity:.5;font-style:italic">Sin stock</span>'}
-            </div>
-            <button class="cu-cta" data-detail="${p.id}">
-              Ver detalle
-              <span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-            </button>
-          </div>
-        </article>`;
-    }).join('');
+    if(elWomen){
+      elWomen.innerHTML = womenList.length
+        ? womenList.map(buildPerfumeCardHtml).join('')
+        : '<p style="padding:20px;color:var(--plum-700)">No hay perfumes femeninos destacados.</p>';
+    }
+
+    // Navegación de Flechas en los Carruseles
+    document.querySelectorAll('[data-carousel-prev]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.carouselPrev === 'hombre' ? elMen : elWomen;
+        if(target) target.scrollBy({ left: -300, behavior: 'smooth' });
+      });
+    });
+    document.querySelectorAll('[data-carousel-next]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.carouselNext === 'hombre' ? elMen : elWomen;
+        if(target) target.scrollBy({ left: 300, behavior: 'smooth' });
+      });
+    });
+
+    // Pestañas de Filtro Rápido (Todos / Hombre / Mujer)
+    const groupMen = document.getElementById('group-hombre');
+    const groupWomen = document.getElementById('group-mujer');
+    document.querySelectorAll('[data-gender-tab]').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('[data-gender-tab]').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const g = tab.dataset.genderTab;
+        if(g === 'todos'){
+          if(groupMen) groupMen.classList.remove('is-hidden');
+          if(groupWomen) groupWomen.classList.remove('is-hidden');
+        } else if(g === 'hombre'){
+          if(groupMen) groupMen.classList.remove('is-hidden');
+          if(groupWomen) groupWomen.classList.add('is-hidden');
+        } else if(g === 'mujer'){
+          if(groupMen) groupMen.classList.add('is-hidden');
+          if(groupWomen) groupWomen.classList.remove('is-hidden');
+        }
+      });
+    });
   }
 
   // ── Hero carousel (top 3 destacados) ──
