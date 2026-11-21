@@ -19,6 +19,7 @@ id = "4618ca47d7094c31acf4b3219c25d7ed"
 [vars]
 ORDER_EMAIL_TO = "dolce7aroma@gmail.com"
 TELEGRAM_CHAT_ID = "8616800327"
+CF_ZONE_ID = "ad33e3a6436f0874c04c5c8dbcf966a4"
 
 # Disparadores Automáticos (Cron Triggers)
 # 1) Lunes 8:00 AM Perú (13:00 UTC) -> Reporte Semanal

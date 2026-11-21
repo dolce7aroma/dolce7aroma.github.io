@@ -1701,6 +1701,102 @@ Máximo 300 palabras.`;
   }
 }
 
+
+async function generateVisitasReport(chatId, env, customHeader = null) {
+  await sendTelegramMessage(chatId, '🌐 <i>Consultando métricas de tráfico en vivo desde Cloudflare Analytics...</i>', env);
+
+  const zoneId = env.CF_ZONE_ID || 'ad33e3a6436f0874c04c5c8dbcf966a4';
+  const token = env.CF_API_TOKEN;
+
+  if (!token) {
+    await sendTelegramMessage(chatId, '⚠️ <b>Alerta:</b> El token de analítica (<code>CF_API_TOKEN</code>) no está configurado en las variables secretas del Worker.', env);
+    return;
+  }
+
+  const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
+  const query = `{
+    viewer {
+      zones(filter: { zoneTag: "${zoneId}" }) {
+        httpRequests1dGroups(
+          limit: 7,
+          filter: { date_geq: "${sevenDaysAgo}" },
+          orderBy: [date_DESC]
+        ) {
+          dimensions { date }
+          sum { pageViews requests }
+          uniq { uniques }
+        }
+      }
+    }
+  }`;
+
+  try {
+    const res = await fetch('https://api.cloudflare.com/client/v4/graphql', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'User-Agent': 'DolceBot'
+      },
+      body: JSON.stringify({ query })
+    });
+
+    const data = await res.json();
+    const groups = data?.data?.viewer?.zones?.[0]?.httpRequests1dGroups || [];
+
+    if (!groups.length) {
+      await sendTelegramMessage(chatId, '⚠️ No se encontraron datos de tráfico para los últimos 7 días en Cloudflare.', env);
+      return;
+    }
+
+    const today = groups[0] || { dimensions: { date: 'Hoy' }, uniq: { uniques: 0 }, sum: { pageViews: 0, requests: 0 } };
+    const yesterday = groups[1] || { dimensions: { date: 'Ayer' }, uniq: { uniques: 0 }, sum: { pageViews: 0, requests: 0 } };
+
+    let totalUniques = 0;
+    let totalPageViews = 0;
+    let breakdown = '';
+
+    for (const g of groups) {
+      const u = g.uniq?.uniques || 0;
+      const pv = g.sum?.pageViews || 0;
+      totalUniques += u;
+      totalPageViews += pv;
+      breakdown += `• <b>${g.dimensions.date}:</b> <code>${u}</code> visitantes | <code>${pv}</code> vistas\n`;
+    }
+
+    const avgDaily = groups.length ? Math.round(totalUniques / groups.length) : 0;
+    const header = customHeader || '🌐 <b>TRÁFICO WEB EN VIVO (Cloudflare Analytics)</b> 📊';
+
+    const msg = `${header}
+<i>Monitoreo de Visitantes en dolce7aroma.com</i>
+
+⚡ <b>HOY EN CURSO (${today.dimensions.date}):</b>
+• <b>Visitantes únicos:</b> <code>${today.uniq?.uniques || 0}</code> personas
+• <b>Páginas vistas:</b> <code>${today.sum?.pageViews || 0}</code>
+• <b>Peticiones totales:</b> <code>${today.sum?.requests || 0}</code>
+
+📅 <b>AYER (${yesterday.dimensions.date}):</b>
+• <b>Visitantes únicos:</b> <code>${yesterday.uniq?.uniques || 0}</code> personas
+• <b>Páginas vistas:</b> <code>${yesterday.sum?.pageViews || 0}</code>
+
+📈 <b>RESUMEN ÚLTIMOS 7 DÍAS:</b>
+• <b>Total visitantes:</b> <code>${totalUniques}</code>
+• <b>Total páginas vistas:</b> <code>${totalPageViews}</code>
+• <b>Promedio diario:</b> <code>${avgDaily}</code> personas/día
+
+🗓️ <b>DETALLE DIARIO:</b>
+${breakdown}
+💡 <b>LECTURA ESTRATÉGICA:</b>
+${avgDaily >= 100 
+  ? '🔥 Tráfico sólido por encima de 100 visitas diarias. El catálogo tiene volumen suficiente para escalar conversiones directas en WhatsApp.' 
+  : '🌱 Tráfico en crecimiento. Enfocar publicaciones locales en TikTok y Google Maps para superar los 150 visitantes diarios.'}`;
+
+    await sendTelegramMessage(chatId, msg, env);
+  } catch (err) {
+    await sendTelegramMessage(chatId, `⚠️ Error al consultar analítica de Cloudflare: ${err.message}`, env);
+  }
+}
+
 async function handleScheduledReports(event, env) {
   const cron = event?.cron || '';
   const chatId = (env.TELEGRAM_CHAT_ID || '8616800327').split(',')[0].trim();
@@ -1894,6 +1990,7 @@ async function handleTelegramWebhook(request, env) {
 • <b>/campana</b> — Reloj comercial (Usa <code>/campana plan</code> para armar estrategia).
 
 🌐 <b>TRÁFICO WEB:</b>
+• <b>/visitas</b> — Tráfico real de visitantes y páginas vistas en Cloudflare.
 • <b>/seo</b> — Salud de indexación en Google y distritos más activos.
 
 ℹ️ <b>/help</b> — Ver este menú organizado.
@@ -2095,6 +2192,12 @@ Máximo 320 palabras.`;
     await generateWeeklyReport(chatId, env, '⚡ <b>[CRON SIMULADO: Lunes 8:00 AM]</b> 🌸');
     await generateCroReport(chatId, env, '🌓 <b>[CRON SIMULADO: Día 16 6:00 AM]</b> 🌸');
     await generateMonthlyReport(chatId, env, '🗓️ <b>[CRON SIMULADO: Día 1 6:00 AM]</b> 🌸', false);
+    return json({ ok: true });
+  }
+
+  // Comando /visitas o /trafico (Cloudflare Analytics en vivo)
+  if (command === '/visitas' || command === '/trafico' || command === '/visita') {
+    await generateVisitasReport(chatId, env);
     return json({ ok: true });
   }
 
