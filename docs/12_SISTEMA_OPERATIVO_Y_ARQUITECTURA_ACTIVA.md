@@ -44,7 +44,7 @@ flowchart LR
 * **Estructura Oficial por Categorías Padre:**
   1. **📦 PEDIDOS & CAJA:** `/resumen` (o `/hoy`), `/pedidos` (rescate WhatsApp), `/pagado [ID]` (descuenta stock), `/cancelar [ID]`.
   2. **🏷️ CATÁLOGO & STOCK:** `/precios [aroma]` (consulta rápida de stock y precios de 10ml, 50ml y 110ml para mostrador).
-  3. **🌐 TRÁFICO, SEO & DEMANDA:** `/visitas` (tráfico real Cloudflare sin AdBlock), `/demanda` (aromas más clickeados y carritos abandonados), `/seo` (indexación y salud web).
+  3. **🌐 TRÁFICO, SEO & DEMANDA:** `/visitas` (tráfico real Cloudflare sin AdBlock), `/demanda` (radiografía de audiencia real, qué sexo son, perfumes más vistos y recomendación comercial), `/seo` (indexación y salud web).
   4. **🎯 ESTRATEGIA & CAMPAÑAS:** `/semana` (balance semanal unificado + top ventas + CRO), `/campana` (reloj comercial y planificador de fechas clave).
   5. **⚙️ SISTEMA & DEV (Comandos Ocultos de Mantenimiento):** `/sheets sync`, `/probar_cron`, `/limpiar_pruebas`.
 
