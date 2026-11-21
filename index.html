@@ -906,6 +906,58 @@
   }
 
 
+
+  /* ───────── 4K Luxury Trust Pillars ───────── */
+  .trust-bar{
+    max-width:1440px;margin:0 auto;padding:24px 40px 10px;
+  }
+  .trust-bar-inner{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:18px;
+    background:#ffffff;border:1px solid rgba(36,24,43,0.08);border-radius:18px;
+    padding:22px 28px;
+    box-shadow:0 8px 24px -6px rgba(36,24,43,0.04);
+  }
+  .trust-item{
+    display:flex;align-items:center;gap:14px;
+  }
+  .trust-item + .trust-item{
+    border-left:1px solid rgba(36,24,43,0.08);padding-left:18px;
+  }
+  .trust-icon{
+    width:42px;height:42px;border-radius:50%;
+    background:radial-gradient(circle, #f9f6fc 0%, #ede6f5 100%);
+    border:1px solid rgba(184,149,82,0.35);
+    display:grid;place-items:center;flex-shrink:0;color:var(--plum);
+  }
+  .trust-icon svg{width:18px;height:18px;stroke:var(--gold);fill:none;stroke-width:1.8}
+  .trust-info{display:flex;flex-direction:column}
+  .trust-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--plum);line-height:1.15}
+  .trust-desc{font-size:11.5px;color:var(--plum-700);margin-top:2px;letter-spacing:0.02em}
+  @media(max-width:1024px){
+    .trust-bar{padding:16px 20px 8px}
+    .trust-bar-inner{grid-template-columns:repeat(2,1fr);gap:16px;padding:18px 20px}
+    .trust-item:nth-child(3){border-left:none;padding-left:0}
+  }
+  @media(max-width:640px){
+    .trust-bar-inner{grid-template-columns:1fr;gap:14px;padding:16px}
+    .trust-item + .trust-item{border-left:none;padding-left:0;border-top:1px dashed rgba(36,24,43,0.08);padding-top:12px}
+  }
+
+  /* ───────── Payment Trust Row in Footer ───────── */
+  .footer-trust-row{
+    padding:24px 0 20px;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.08);
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .footer-trust-left{display:flex;align-items:center;gap:10px;font-size:12.5px;color:rgba(255,255,255,0.75)}
+  .footer-trust-left svg{width:16px;height:16px;stroke:var(--gold);fill:none;stroke-width:2}
+  .footer-pay-badges{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .pay-pill{
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+    border-radius:6px;padding:4px 10px;font-size:10.5px;letter-spacing:0.12em;
+    text-transform:uppercase;color:#eae4f0;font-weight:500;
+  }
+  .pay-pill.gold{border-color:rgba(184,149,82,0.45);color:#ecd59b}
+
   /* ───────── Banner Campaña Navideña 2026 ───────── */
   .banner-navidad-wrap{
     padding:36px 40px 10px;
@@ -1164,10 +1216,52 @@
 </div>
 
 
-<!-- BANNER CAMPAÑA NAVIDAD & AMIGO SECRETO 2026 -->
+<!-- TRUST PILLARS BAR 4K BOUTIQUE -->
+<section class="trust-bar" data-screen-label="Garantías Boutique">
+  <div class="trust-bar-inner">
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="trust-info">
+        <span class="trust-title">Esencias de Francia</span>
+        <span class="trust-desc">Aceites puros importados de Grasse</span>
+      </div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="trust-info">
+        <span class="trust-title">Maceración Real</span>
+        <span class="trust-desc">Fijación de 8 a 12 horas reales</span>
+      </div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/></svg>
+      </div>
+      <div class="trust-info">
+        <span class="trust-title">Probadores de Regalo</span>
+        <span class="trust-desc">Muestras de cortesía en cada pedido</span>
+      </div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      </div>
+      <div class="trust-info">
+        <span class="trust-title">Delivery Gratis</span>
+        <span class="trust-desc">En compras desde S/ 100 en Lima</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BANNER CAMPAÑA NAVIDAD DOLCE 7 AROMA -->
 <section class="banner-navidad-wrap" data-screen-label="Campaña Navideña">
-  <a href="navidad.html" class="banner-navidad-card" aria-label="Especial Navidad y Amigo Secreto 2026">
-    <img src="assets/banner-navidad.jpg" alt="Especial Navidad y Amigo Secreto Dolce 7 Aroma" class="bn-bg-img" loading="lazy" />
+  <a href="navidad.html" class="banner-navidad-card" aria-label="Especial Navidad Dolce 7 Aroma">
+    <img src="assets/banner-navidad.jpg" alt="Especial Navidad Dolce 7 Aroma" class="bn-bg-img" loading="lazy" />
     <div class="bn-overlay"></div>
     <div class="bn-content">
       <span class="bn-badge">🎄 EDICIÓN ESPECIAL NAVIDAD 2026</span>
@@ -1258,22 +1352,6 @@
   </div>
 </section>
 
-<!-- BANNER ESPECIAL NAVIDAD Y REGALOS -->
-<section style="background:linear-gradient(135deg,#3c2f47 0%,#2a2033 100%);color:#f6f4ef;padding:26px 20px;border-top:2px solid #a8895a;border-bottom:2px solid #a8895a">
-  <div style="max-width:1160px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px">
-    <div style="display:flex;align-items:center;gap:14px">
-      <span style="font-size:32px">🎄</span>
-      <div>
-        <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#a8895a;font-weight:600">Campaña Navideña & Amigo Secreto</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:#f6f4ef">¿Buscando el regalo perfecto? Descubre nuestros combos con <em style="font-style:italic;color:#a8895a">Bolsa de Regalo Gratis</em></div>
-      </div>
-    </div>
-    <a href="navidad.html" style="background:#a8895a;color:#f6f4ef;padding:12px 22px;border-radius:999px;font-size:11.5px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;white-space:nowrap;transition:all .2s;display:inline-flex;align-items:center;gap:8px">
-      Ver Guía de Regalos →
-    </a>
-  </div>
-</section>
-
 <!-- OFERTAS -->
 <section class="block ofertas" id="ofertas" data-screen-label="Ofertas">
   <div class="container">
@@ -1315,7 +1393,7 @@
         <div class="oferta-foot">
           <div>
             <div class="oferta-tiers">
-              <div class="oferta-tier"><span>2 unidades</span><span><b>S/ 100</b><small>antes S/ 110</small></span></div>
+              <div class="oferta-tier"><span>2 unidades (Dúo Esencial)</span><span><b>S/ 100</b><small>antes S/ 110</small></span></div>
             </div>
             <div class="oferta-tier-label">3 unidades</div>
             <div class="oferta-price">S/ 150<small>antes S/ 165</small></div>
@@ -1334,7 +1412,7 @@
         <div class="oferta-foot">
           <div>
             <div class="oferta-tiers">
-              <div class="oferta-tier"><span>2 unidades</span><span><b>S/ 165</b><small>antes S/ 180</small></span></div>
+              <div class="oferta-tier"><span>2 unidades (Dúo Premium)</span><span><b>S/ 150</b><small>antes S/ 180</small></span></div>
             </div>
             <div class="oferta-tier-label">3 unidades</div>
             <div class="oferta-price">S/ 225<small>antes S/ 270</small></div>
@@ -1571,6 +1649,23 @@
 <!-- FOOTER -->
 <footer data-screen-label="Footer">
   <div class="footer-grid">
+    <!-- Fila de Confianza y Pasarelas de Pago -->
+    <div class="footer-trust-row" style="grid-column:1/-1">
+      <div class="footer-trust-left">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Pagos 100% seguros y respaldados con garantía de maceración</span>
+      </div>
+      <div class="footer-pay-badges">
+        <span class="pay-pill gold">Mercado Pago</span>
+        <span class="pay-pill">Yape</span>
+        <span class="pay-pill">Plin</span>
+        <span class="pay-pill">Visa</span>
+        <span class="pay-pill">Mastercard</span>
+        <span class="pay-pill">BCP / BBVA</span>
+        <span class="pay-pill">Recojo Tienda SMP</span>
+      </div>
+    </div>
+
     <div class="footer-brand">
       <img class="mark" src="assets/frascos-dolcearoma.jpg" alt="Frascos Dolce Aroma" loading="lazy" style="width:340px;max-width:100%;margin-bottom:18px;border-radius:14px;display:block;background:#f6f4ef;padding:8px" />
       <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:var(--gold);margin-bottom:14px">Perfumería equivalente · Lima, Perú</div>
@@ -1615,7 +1710,7 @@
   </div>
 
   <div class="footer-bottom">
-    <span>© 2024 Dolce Aroma · Lima, Perú · Fragancias que cautivan.</span>
+    <span>© 2026 Dolce 7 Aroma · Lima, Perú · Fragancias de Alta Fijación y Lujo Accesible.</span>
     <div class="legals">
       <a href="#" data-modal="terminos">Términos</a>
       <a href="#" data-modal="privacidad">Privacidad</a>

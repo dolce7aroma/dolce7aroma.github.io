@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dolce 7 Aroma — Fichas Publicitarias para WhatsApp</title>
+  <title>Dolce Aroma — Material Gráfico Oficial de Ventas</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,400&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
       --gold: #d4af37;
       --gold-light: #f7e096;
       --gold-dark: #aa8417;
+      --emerald: #2ecc71;
       --bg-dark: #070a12;
-      --card-bg: rgba(10, 14, 23, 0.85);
+      --card-bg: rgba(14, 18, 25, 0.95);
       --card-border: rgba(212, 175, 55, 0.4);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,401 +22,351 @@
       background: #04060a;
       color: #f8fafc;
       font-family: 'Montserrat', sans-serif;
-      padding: 20px 10px;
+      padding: 24px 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
     }
     header {
       text-align: center;
       margin-bottom: 25px;
-      max-width: 600px;
+      max-width: 680px;
+    }
+    .badge-top {
+      display: inline-block;
+      background: rgba(212, 175, 55, 0.15);
+      color: var(--gold-light);
+      border: 1px solid var(--gold);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
     }
     header h1 {
       font-family: 'Playfair Display', serif;
-      color: var(--gold);
-      font-size: 26px;
-      margin-bottom: 6px;
-      letter-spacing: 1px;
+      color: var(--gold-light);
+      font-size: 28px;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
     }
     header p {
       color: #94a3b8;
-      font-size: 13.5px;
-      line-height: 1.4;
-    }
-    .cards-container {
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-      width: 100%;
-      max-width: 540px;
-    }
-    .card-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: center;
-      width: 100%;
-    }
-    .btn-download {
-      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-      color: #000;
-      font-weight: 800;
       font-size: 14px;
-      padding: 14px 28px;
-      border: none;
-      border-radius: 999px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
-      transition: transform 0.2s, box-shadow 0.2s;
-      width: 100%;
+      line-height: 1.5;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
       justify-content: center;
-      max-width: 480px;
+      margin-bottom: 30px;
+      max-width: 700px;
     }
-    .btn-download:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 25px rgba(212, 175, 55, 0.5);
-    }
-
-    /* FLYER PUBLICITARIO CON FOTOGRAFÍA REAL DE FONDO (Proporción 4:5 vertical) */
-    .flyer-card {
-      width: 100%;
-      max-width: 540px;
-      height: 750px;
-      background: url('assets/flyer-dolce7aroma-luxury.jpg') center center / cover no-repeat;
-      border: 2px solid var(--gold);
+    .tab-btn {
+      background: #0f172a;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #cbd5e1;
+      padding: 8px 16px;
       border-radius: 20px;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 24px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
-    /* Capa de degradado elegante para asegurar máxima legibilidad de los textos */
-    .flyer-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        180deg,
-        rgba(5, 7, 12, 0.92) 0%,
-        rgba(5, 7, 12, 0.4) 30%,
-        rgba(5, 7, 12, 0.4) 50%,
-        rgba(5, 7, 12, 0.92) 80%,
-        rgba(5, 7, 12, 0.98) 100%
-      );
-      z-index: 1;
-    }
-    .flyer-content {
-      position: relative;
-      z-index: 2;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .flyer-header {
-      text-align: center;
-      padding-bottom: 8px;
-    }
-    .flyer-header .brand {
-      font-family: 'Playfair Display', serif;
-      font-size: 26px;
-      color: var(--gold-light);
-      letter-spacing: 3px;
-      font-weight: 800;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.9);
-    }
-    .flyer-header .tagline {
-      font-size: 10.5px;
-      text-transform: uppercase;
-      letter-spacing: 3.5px;
-      color: #e2e8f0;
-      margin-top: 2px;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.9);
-    }
-    .flyer-header .promo-tag {
-      display: inline-block;
-      margin-top: 8px;
-      background: linear-gradient(90deg, #aa8417, var(--gold));
-      color: #000;
-      font-size: 11px;
-      font-weight: 900;
-      padding: 4px 14px;
-      border-radius: 999px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    /* Grilla de Presentaciones Superpuesta */
-    .flyer-pricing {
-      display: flex;
-      gap: 10px;
-      margin: 15px 0;
-    }
-    .flyer-price-col {
-      flex: 1;
-      background: rgba(10, 14, 23, 0.85);
-      border: 1.5px solid var(--card-border);
-      backdrop-filter: blur(8px);
-      border-radius: 14px;
-      padding: 12px 6px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-      position: relative;
-    }
-    .flyer-price-col.featured {
-      border: 2px solid var(--gold);
-      background: rgba(20, 26, 40, 0.92);
-      transform: scale(1.03);
-    }
-    .flyer-price-col .badge {
-      position: absolute;
-      top: -10px;
-      left: 50%;
-      transform: translateX(-50%);
+    .tab-btn:hover, .tab-btn.active {
       background: var(--gold);
-      color: #000;
-      font-size: 8px;
-      font-weight: 900;
-      padding: 2px 8px;
-      border-radius: 999px;
-      white-space: nowrap;
+      color: #04060a;
+      border-color: var(--gold);
     }
-    .flyer-price-col .size {
-      font-size: 16px;
-      font-weight: 900;
-      color: #fff;
-    }
-    .flyer-price-col .desc {
-      font-size: 9.5px;
-      color: #94a3b8;
-      margin-bottom: 4px;
-    }
-    .flyer-price-col .price {
-      font-size: 24px;
-      font-weight: 900;
-      color: var(--gold-light);
-      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-    }
-    .flyer-price-col .price span {
-      font-size: 13px;
-      color: var(--gold);
-    }
-    .flyer-price-col .sub {
-      font-size: 9px;
-      color: #cbd5e1;
-      margin-top: 4px;
-    }
-
-    /* Caja de Ofertas de Temporada */
-    .flyer-combos {
-      background: rgba(10, 14, 23, 0.9);
-      border: 1.5px solid var(--gold);
-      backdrop-filter: blur(10px);
-      border-radius: 14px;
-      padding: 12px 14px;
-      margin-bottom: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-    }
-    .flyer-combos .title {
-      font-size: 11px;
-      font-weight: 900;
-      color: var(--gold);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      text-align: center;
-      margin-bottom: 6px;
-    }
-    .flyer-combos .combo-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11.5px;
-      padding: 4px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    .flyer-combos .combo-row:last-child { border-bottom: none; }
-    .flyer-combos .name { font-weight: 700; color: #fff; }
-    .flyer-combos .val { font-weight: 900; color: var(--gold-light); }
-
-    /* Garantías */
-    .flyer-badges {
+    .gallery-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px 10px;
-      font-size: 10px;
-      color: #e2e8f0;
-      background: rgba(0, 0, 0, 0.65);
-      border-radius: 10px;
-      padding: 8px 12px;
-      margin-bottom: 10px;
+      grid-template-columns: 1fr;
+      gap: 36px;
+      width: 100%;
+      max-width: 600px;
     }
-    .flyer-badges div { display: flex; align-items: center; gap: 5px; }
-    .flyer-badges span { color: var(--gold); font-size: 11px; }
-
-    /* Footer */
-    .flyer-footer {
-      border-top: 1px solid rgba(212, 175, 55, 0.3);
-      padding-top: 10px;
+    @media (min-width: 880px) {
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        max-width: 1040px;
+      }
+    }
+    .image-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .image-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--gold);
+    }
+    .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 9.5px;
-      color: #cbd5e1;
     }
-    .flyer-footer strong { color: #fff; display: block; font-size: 10px; }
-    .badge-yape {
-      background: #742284;
-      color: #fff;
+    .card-title {
+      font-size: 16px;
       font-weight: 800;
+      color: var(--gold-light);
+    }
+    .card-format {
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.08);
       padding: 3px 8px;
       border-radius: 6px;
-      display: inline-block;
-      font-size: 10px;
+      color: #94a3b8;
     }
-
-    /* SECCIÓN 2: FOTO DIRECTA PUBLICITARIA LIMPIA */
-    .clean-photo-wrapper {
+    .preview-container {
+      position: relative;
       width: 100%;
-      border: 2px solid var(--gold);
-      border-radius: 20px;
+      border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    .clean-photo-wrapper img {
+    .preview-img {
       width: 100%;
       height: auto;
       display: block;
+      object-fit: contain;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .preview-img:hover {
+      opacity: 0.92;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.45;
+    }
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+    }
+    .btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    .btn-download {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #04060a;
+    }
+    .btn-download:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    }
+    .btn-whatsapp {
+      background: #15803d;
+      color: #ffffff;
+    }
+    .btn-whatsapp:hover {
+      background: #16a34a;
+    }
+    .quick-tips {
+      margin-top: 50px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px dashed rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 720px;
+      width: 100%;
+    }
+    .quick-tips h3 {
+      color: var(--gold-light);
+      font-size: 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .quick-tips ul {
+      padding-left: 20px;
+      color: #cbd5e1;
+      font-size: 13.5px;
+      line-height: 1.7;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>🌸 Flyers Publicitarios Oficiales</h1>
-    <p>Diseños fotográficos de alta gama con frascos reales, bolsa de regalo y fondo de lujo. Toca el botón para descargarlos y adjuntarlos en tus chats de <b>WhatsApp, Estados e Instagram</b>.</p>
+    <div class="badge-top">Material Gráfico Digitalizado • 100% Listo para Compartir</div>
+    <h1>Imágenes Comerciales Dolce Aroma</h1>
+    <p>Diseños publicitarios en ultra-alta definición con tus botellas reales, bolsa metalizada, precios, promociones y datos de contacto. Listos para adjuntar en WhatsApp, Instagram y Facebook sin necesidad de escribir texto.</p>
   </header>
 
-  <div class="cards-container">
+  <div class="gallery-grid">
 
-    <!-- FLYER 1: CARTA MAESTRA CON FOTOGRAFÍA REAL Y PRECIOS -->
-    <div class="card-wrapper">
-      <div id="flyer-completo" class="flyer-card">
-        <div class="flyer-content">
-          
-          <div class="flyer-header">
-            <div class="brand">DOLCE 7 AROMA</div>
-            <div class="tagline">ALTA PERFUMERÍA · FIJACIÓN 8-12 HRS · LIMA</div>
-            <div class="promo-tag">✨ PROMOCIONES DE DICIEMBRE ✨</div>
-          </div>
-
-          <div>
-            <!-- Grilla de Precios -->
-            <div class="flyer-pricing">
-              <div class="flyer-price-col">
-                <div class="size">10 ML</div>
-                <div class="desc">Bolsillo / Pocket</div>
-                <div class="price"><span>S/</span> 20</div>
-                <div class="sub">Para cartera o viaje</div>
-              </div>
-
-              <div class="flyer-price-col featured">
-                <div class="badge">MÁS PEDIDO</div>
-                <div class="size">50 ML</div>
-                <div class="desc">Edición Diaria</div>
-                <div class="price"><span>S/</span> 55</div>
-                <div class="sub">Rinde 1 mes de uso</div>
-              </div>
-
-              <div class="flyer-price-col">
-                <div class="badge">MAX AHORRO</div>
-                <div class="size">110 ML</div>
-                <div class="desc">Edición Titán</div>
-                <div class="price"><span>S/</span> 90</div>
-                <div class="sub">Rinde más de 3 meses</div>
-              </div>
-            </div>
-
-            <!-- Combos de Temporada -->
-            <div class="flyer-combos">
-              <div class="title">🎁 COMBOS DE REGALO (AMIGO SECRETO)</div>
-              <div class="combo-row">
-                <span class="name">🎉 Trío Pocket (3 de 10ml)</span>
-                <span class="val">S/ 50 <span style="font-size:9px;color:#94a3b8">(Ahorra S/10)</span></span>
-              </div>
-              <div class="combo-row">
-                <span class="name">🚀 Dúo Diario (2 de 50ml) + Delivery</span>
-                <span class="val">S/ 100 <span style="font-size:9px;color:#94a3b8">(Envío Gratis)</span></span>
-              </div>
-              <div class="combo-row">
-                <span class="name">👑 Trío Titán (3 de 110ml) + Delivery</span>
-                <span class="val">S/ 225 <span style="font-size:9px;color:#94a3b8">(Ahorra S/45)</span></span>
-              </div>
-            </div>
-
-            <!-- Garantías -->
-            <div class="flyer-badges">
-              <div><span>✦</span> Concentración Parfum 33%</div>
-              <div><span>✦</span> 🎁 Incluye Bolsa de Regalo Gratis</div>
-              <div><span>✦</span> 66+ Dupes y Fragancias Árabes</div>
-              <div><span>✦</span> Fijación duradera 8 a 12 horas</div>
-            </div>
-          </div>
-
-          <div class="flyer-footer">
-            <div>
-              <strong>📍 Punto de Recojo Oficial:</strong>
-              Jr. Callao 482-A, San Martín de Porres (Bazar Shirley)
-            </div>
-            <div style="text-align:right">
-              <span class="badge-yape">💜 Yape · Plin</span>
-              <div style="font-size:8.5px;color:var(--gold-light);margin-top:2px">Delivery a toda Lima</div>
-            </div>
-          </div>
-
-        </div>
+    <!-- 1. FLYER MAESTRO -->
+    <div class="image-card">
+      <div class="card-header">
+        <span class="card-title">1. Flyer Maestro Oficial</span>
+        <span class="card-format">1080 x 1440 (3:4 Feed/Chat)</span>
       </div>
-      <button class="btn-download" onclick="downloadCard('flyer-completo', 'Dolce7Aroma_Flyer_Oficial_Precios.png')">
-        📸 Descargar Flyer Completo con Precios (PNG)
-      </button>
+      <div class="preview-container">
+        <a href="assets/flyer-precios-dolce7aroma.jpg" target="_blank">
+          <img class="preview-img" src="assets/flyer-precios-dolce7aroma.jpg" alt="Flyer Maestro Precios Dolce Aroma">
+        </a>
+      </div>
+      <p class="card-desc"><strong>Todo en uno:</strong> Presenta los 10ml, 50ml, 110ml y bolsa de regalo juntos sobre mármol negro, con precios unitarios, combos con envío gratis, retiro en Bazar Shirley y botón de WhatsApp.</p>
+      <div class="btn-group">
+        <a href="assets/flyer-precios-dolce7aroma.jpg" download="Flyer-Precios-DolceAroma.jpg" class="btn btn-download">
+          📥 Descargar JPG
+        </a>
+        <a href="https://api.whatsapp.com/send?text=¡Hola!%20Te%20comparto%20nuestra%20lista%20de%20precios%20y%20presentaciones%20de%20Dolce%20Aroma%20Perfumes:%20https://dolce7aroma.com/assets/flyer-precios-dolce7aroma.jpg" target="_blank" class="btn btn-whatsapp">
+          📲 Enviar Link
+        </a>
+      </div>
     </div>
 
-    <!-- SECCIÓN 2: LA FOTOGRAFÍA PUBLICITARIA PURA (FONDO Y BOTELLAS REALES) -->
-    <div class="card-wrapper">
-      <div class="clean-photo-wrapper">
-        <img src="assets/flyer-dolce7aroma-luxury.jpg" alt="Dolce 7 Aroma Perfumes Trilogía">
+    <!-- 2. STORY / ESTADO VERTICAL -->
+    <div class="image-card">
+      <div class="card-header">
+        <span class="card-title">2. Estado WhatsApp & Story</span>
+        <span class="card-format">1080 x 1920 (9:16 Pantalla Celular)</span>
       </div>
-      <a class="btn-download" style="text-decoration:none" href="assets/flyer-dolce7aroma-luxury.jpg" download="Dolce7Aroma_Fotografia_Publicitaria.jpg">
-        🖼️ Descargar Fotografía Publicitaria Limpia (HD)
-      </a>
+      <div class="preview-container">
+        <a href="assets/story-precios-dolce7aroma.jpg" target="_blank">
+          <img class="preview-img" src="assets/story-precios-dolce7aroma.jpg" alt="Story WhatsApp Precios Dolce Aroma">
+        </a>
+      </div>
+      <p class="card-desc"><strong>Formato vertical completo:</strong> Diseñado especialmente para subir a Estados de WhatsApp, Historias de Instagram y TikTok. Las letras grandes y el contraste oscuro llaman la atención al instante.</p>
+      <div class="btn-group">
+        <a href="assets/story-precios-dolce7aroma.jpg" download="Story-Precios-DolceAroma.jpg" class="btn btn-download">
+          📥 Descargar JPG
+        </a>
+        <a href="https://api.whatsapp.com/send?text=¡Mira%20nuestras%20promos%20del%20mes%20en%20Dolce%20Aroma!%20https://dolce7aroma.com/assets/story-precios-dolce7aroma.jpg" target="_blank" class="btn btn-whatsapp">
+          📲 Enviar Link
+        </a>
+      </div>
+    </div>
+
+    <!-- 3. FICHA 10ML POCKET -->
+    <div class="image-card">
+      <div class="card-header">
+        <span class="card-title">3. Ficha 10ml Pocket</span>
+        <span class="card-format">1080 x 1080 (Cuadrado 1:1)</span>
+      </div>
+      <div class="preview-container">
+        <a href="assets/ficha-10ml-pocket.jpg" target="_blank">
+          <img class="preview-img" src="assets/ficha-10ml-pocket.jpg" alt="Ficha 10ml Pocket Dolce Aroma">
+        </a>
+      </div>
+      <p class="card-desc"><strong>Respuesta rápida para bolsillo:</strong> Destaca los atomizadores metálicos azul y magenta a <strong>S/ 20</strong> y la súper promoción <strong>3 x S/ 50</strong> ideal para Amigo Secreto.</p>
+      <div class="btn-group">
+        <a href="assets/ficha-10ml-pocket.jpg" download="Ficha-10ml-Pocket.jpg" class="btn btn-download">
+          📥 Descargar JPG
+        </a>
+        <a href="https://api.whatsapp.com/send?text=Aquí%20tienes%20la%20presentación%20Pocket%20de%2010ml%20a%20S/%2020%20(y%20promo%203%20x%20S/%2050):%20https://dolce7aroma.com/assets/ficha-10ml-pocket.jpg" target="_blank" class="btn btn-whatsapp">
+          📲 Enviar Link
+        </a>
+      </div>
+    </div>
+
+    <!-- 4. FICHA 50ML CLÁSICO -->
+    <div class="image-card">
+      <div class="card-header">
+        <span class="card-title">4. Ficha 50ml Clásico</span>
+        <span class="card-format">1080 x 1080 (Cuadrado 1:1)</span>
+      </div>
+      <div class="preview-container">
+        <a href="assets/ficha-50ml-clasico.jpg" target="_blank">
+          <img class="preview-img" src="assets/ficha-50ml-clasico.jpg" alt="Ficha 50ml Clásico Dolce Aroma">
+        </a>
+      </div>
+      <p class="card-desc"><strong>Respuesta rápida para 50ml:</strong> Destaca el frasco de vidrio rectangular con tapa verde esmeralda a <strong>S/ 55</strong>, incluye 2 probadores gratis y el combo Dúo <strong>2 x S/ 100 con Envío Gratis</strong>.</p>
+      <div class="btn-group">
+        <a href="assets/ficha-50ml-clasico.jpg" download="Ficha-50ml-Clasico.jpg" class="btn btn-download">
+          📥 Descargar JPG
+        </a>
+        <a href="https://api.whatsapp.com/send?text=Aquí%20tienes%20el%20frasco%20de%2050ml%20a%20S/%2055%20(incluye%202%20probadores%20gratis):%20https://dolce7aroma.com/assets/ficha-50ml-clasico.jpg" target="_blank" class="btn btn-whatsapp">
+          📲 Enviar Link
+        </a>
+      </div>
+    </div>
+
+    <!-- 5. FICHA 110ML SIGNATURE -->
+    <div class="image-card">
+      <div class="card-header">
+        <span class="card-title">5. Ficha 110ml Signature</span>
+        <span class="card-format">1080 x 1080 (Cuadrado 1:1)</span>
+      </div>
+      <div class="preview-container">
+        <a href="assets/ficha-110ml-signature.jpg" target="_blank">
+          <img class="preview-img" src="assets/ficha-110ml-signature.jpg" alt="Ficha 110ml Signature Dolce Aroma">
+        </a>
+      </div>
+      <p class="card-desc"><strong>Respuesta rápida para el frasco grande:</strong> Destaca el frasco de 110ml a <strong>S/ 90</strong>, incluye atomizador de 10ml + 2 probadores gratis, recarga a S/ 80 y combo <strong>3 x S/ 225 con Envío Gratis</strong>.</p>
+      <div class="btn-group">
+        <a href="assets/ficha-110ml-signature.jpg" download="Ficha-110ml-Signature.jpg" class="btn btn-download">
+          📥 Descargar JPG
+        </a>
+        <a href="https://api.whatsapp.com/send?text=Aquí%20tienes%20el%20frasco%20grande%20de%20110ml%20a%20S/%2090%20(incluye%20atomizador%2010ml%20de%20regalo):%20https://dolce7aroma.com/assets/ficha-110ml-signature.jpg" target="_blank" class="btn btn-whatsapp">
+          📲 Enviar Link
+        </a>
+      </div>
+    </div>
+
+    <!-- 6. FOTOGRAFÍA DIGITAL LIMPIA (SIN TEXTO) -->
+    <div class="image-card">
+      <div class="card-header">
+        <span class="card-title">6. Fotografía Publicitaria Limpia</span>
+        <span class="card-format">896 x 1200 (Foto de Producto)</span>
+      </div>
+      <div class="preview-container">
+        <a href="assets/flyer-dolce-aroma-real-digital.jpg" target="_blank">
+          <img class="preview-img" src="assets/flyer-dolce-aroma-real-digital.jpg" alt="Fotografía Real Digitalizada Dolce Aroma">
+        </a>
+      </div>
+      <p class="card-desc"><strong>Composición limpia sin texto:</strong> Ideal si deseas usarla en Canva, editarla tú mismo, agregarle un diseño especial por Navidad o ponerle frases personalizadas en cualquier red social.</p>
+      <div class="btn-group">
+        <a href="assets/flyer-dolce-aroma-real-digital.jpg" download="Foto-Limpia-DolceAroma.jpg" class="btn btn-download">
+          📥 Descargar JPG
+        </a>
+        <a href="assets/flyer-dolce-aroma-real-digital.jpg" target="_blank" class="btn btn-whatsapp">
+          🔍 Ver en Grande
+        </a>
+      </div>
     </div>
 
   </div>
 
-  <script>
-    function downloadCard(elementId, filename) {
-      const card = document.getElementById(elementId);
-      html2canvas(card, {
-        scale: 2.5,
-        useCORS: true,
-        allowTaint: true
-      }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      });
-    }
-  </script>
+  <div class="quick-tips">
+    <h3>💡 Guía de Uso Comercial para WhatsApp y Redes</h3>
+    <ul>
+      <li><strong>Si te preguntan "¿Precios?" o "¿Qué modelos tienen?":</strong> Adjunta directamente la imagen <strong>1. Flyer Maestro Oficial</strong>. No tienes que escribir nada; el cliente ve los 3 tamaños, los precios, los combos, la bolsa de regalo gratis y la dirección de retiro.</li>
+      <li><strong>Para tus Estados de WhatsApp diarios:</strong> Sube la imagen <strong>2. Estado WhatsApp & Story</strong>. Al estar en proporción 9:16, llena toda la pantalla del teléfono y se lee con total claridad.</li>
+      <li><strong>Si un cliente duda entre tamaños:</strong> Envíale la ficha individual correspondiente (10ml, 50ml o 110ml) para cerrar la venta destacando el obsequio o probador incluido.</li>
+      <li><strong>Para guardar en tu celular:</strong> Abre este enlace desde tu celular (<code>https://dolce7aroma.com/fichas-precios.html</code>), mantén presionada la imagen que quieras y pulsa <em>"Guardar en fotos"</em> o usa los botones dorados de descarga.</li>
+    </ul>
+  </div>
+
 </body>
 </html>
