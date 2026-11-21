@@ -475,6 +475,41 @@
       .da-hint-headline b{font-size:28px;color:#a8895a;font-weight:600}
       .da-confirm-id{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#a8895a;font-weight:600;margin-top:-6px}
 
+      .da-cart-float{
+        position:fixed;right:20px;bottom:20px;z-index:85;
+        display:flex;align-items:center;gap:9px;text-decoration:none;
+        background:#3c2f47;color:#f6f4ef;
+        padding:11px 18px 11px 14px;border-radius:999px;
+        box-shadow:0 8px 24px rgba(60,47,71,0.35);
+        cursor:pointer;transition:transform .2s, box-shadow .2s, background .2s, opacity .2s;
+        border:1.5px solid rgba(168,137,90,0.5);
+      }
+      .da-cart-float:hover{
+        transform:translateY(-2px);
+        box-shadow:0 12px 28px rgba(60,47,71,0.45);
+        background:#2a2033;
+        border-color:#a8895a;
+      }
+      .da-cart-float-icon{font-size:18px;line-height:1}
+      .da-cart-float-label{
+        font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;
+        letter-spacing:0.04em;text-transform:none;color:#f6f4ef;
+      }
+      .da-cart-float-count{
+        background:#a8895a;color:#f6f4ef;
+        font-family:'Jost',sans-serif;font-size:11px;font-weight:600;
+        min-width:20px;height:20px;border-radius:999px;
+        display:grid;place-items:center;padding:0 5px;box-sizing:border-box;
+      }
+      .da-cart.open ~ .da-cart-float,
+      .da-cart.open ~ .da-gift-float{
+        opacity:0;pointer-events:none;transform:scale(0.85);
+      }
+      @media (max-width:480px){
+        .da-cart-float{right:14px;bottom:14px;padding:9px 14px 9px 12px}
+        .da-cart-float-icon{font-size:16px}
+        .da-cart-float-label{font-size:15px}
+      }
       .da-gift-float{
         position:fixed;right:20px;bottom:86px;z-index:80;
         display:flex;align-items:center;gap:10px;text-decoration:none;
@@ -611,10 +646,16 @@
         <span class="da-gift-float-label">Regalar</span>
         <span class="da-gift-float-icon">🎁</span>
       </a>
+      <a href="#" class="da-cart-float" id="da-cart-float" data-cart-open aria-label="Ver bolsa de compras">
+        <span class="da-cart-float-icon">🛍️</span>
+        <span class="da-cart-float-label">Bolsa</span>
+        <span class="da-cart-float-count" data-cart-count>0</span>
+      </a>
     `);
     document.getElementById('da-bd').addEventListener('click', ()=>{ closeModal(); closeCart(); });
     document.getElementById('da-cart-close').addEventListener('click', closeCart);
     document.getElementById('da-gift-float').addEventListener('click', e => { e.preventDefault(); openGiftBuilder(); });
+    document.getElementById('da-cart-float')?.addEventListener('click', e => { e.preventDefault(); openCart(); });
     document.getElementById('da-cart-share').addEventListener('click', shareCart);
     document.getElementById('da-cart-expand').addEventListener('click', toggleCartExpand);
     document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); closeCart(); } });

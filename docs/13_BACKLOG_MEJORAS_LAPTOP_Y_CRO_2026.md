@@ -14,7 +14,7 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
 | **3** | En recomendación de Dúo Esencial (al llegar a S/ 100) debe mostrar "Delivery GRATIS". | CRO / Incentivo | ✅ RESUELTO |
 | **4** | En laptop, el footer/drawer inferior del carrito ocupa mucho alto y tapa los productos. | UI / Responsive | ✅ RESUELTO |
 | **5** | Ajuste de curva de descuento 110ml: Primero S/ 15 y luego S/ 30 (temporal hasta 2027). | Precios / Promos | ✅ RESUELTO |
-| **6** | Bolsa flotante visible en todo tipo de ventana (incluso si no está maximizada). | UI / Accesibilidad | ⏳ Pendiente |
+| **6** | Bolsa flotante visible en todo tipo de ventana (incluso si no está maximizada). | UI / Accesibilidad | ✅ RESUELTO |
 | **7** | Sincronización del video del perfume flotando en el home. | Visual / Rendimiento | ⏳ Pendiente |
 | **8** | Banner de campaña navideña debe estar en lugar TOP (inmediatamente visible). | Marketing / Hero | ⏳ Pendiente |
 | **9** | Desglose visible de "Descuento por promociones: -S/ XX" cuando hay varios descuentos. | Checkout / Transparencia | ⏳ Pendiente |
@@ -146,5 +146,25 @@ Este documento consolida las 12 observaciones identificadas en la prueba de escr
    * Actualizado en la grilla de promociones de `index.html#ofertas` (`2 unidades S/ 165`).
    * Actualizado en los packs de campaña de `navidad.html` (`Dúo Premium S/ 165`).
 4. **Cache-Buster v11:** Desplegado en todas las páginas clave.
+
+---
+
+## 🛠️ Detalle de Resolución: Punto 6 (Bolsa Flotante Visible en Todo Tipo de Ventana)
+
+### Causa & Diagnóstico
+* En ventanas no maximizadas, laptops en media pantalla, tablets o al hacer scroll profundo en el catálogo, el botón de acceso al carrito solo existía en el navbar superior. El cliente debía desplazarse hasta la cima de la página para consultar su bolsa o ver cuántos perfumes llevaba.
+
+### Solución Implementada:
+1. **Botón Flotante de Bolsa (`.da-cart-float`):**
+   * Botón permanente en la esquina inferior derecha (`bottom: 20px; right: 20px; z-index: 85`), apilado elegantemente debajo del botón de regalo (`.da-gift-float`, `bottom: 86px`).
+   * Diseño boutique de alta gama: Fondo ciruela oscuro (`#3c2f47`), borde dorado tenue, icono de compras (`🛍️`), texto serif (*Bolsa*) y pastilla contadora dorada vinculada a `data-cart-count`.
+2. **Interactividad & Animación:**
+   * Al agregar perfumes a la bolsa, la pastilla contadora ejecuta automáticamente la animación de rebote sutil (`bumpCount`).
+   * Al hacer clic, abre inmediatamente el panel lateral del carrito (`openCart`).
+   * Cuando el panel del carrito se abre (`.da-cart.open`), tanto la bolsa flotante como el botón de regalo se desvanecen con opacidad 0 para no obstaculizar la vista ni el cierre del carrito.
+3. **Responsive Total:**
+   * Adaptado tanto para monitores 4K/Desktop, laptops con ventanas restauradas/no maximizadas, tablets en vertical/horizontal y dispositivos móviles (`max-width: 480px`).
+4. **Cache-Buster v12:** Desplegado en `index.html`, `catalogo.html`, `faq.html` y `navidad.html`.
+
 
 
