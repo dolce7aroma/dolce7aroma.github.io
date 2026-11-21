@@ -37,15 +37,16 @@ flowchart LR
   * `POST /api/update-order-status`: Actualiza estado (nuevo, pagado, cancelado).
 
 ### Componente 3: Bot de Telegram (`@dolce7aroma-pedidos-bot`)
-* **Seguridad:** Restringido exclusivamente al Chat ID del administrador (`8616800327`).
-* **Comandos Operativos Activos:**
-  * `/resumen`: Balance del día, pedidos pendientes y balance de 7 días.
-  * `/pedidos`: Lista los pedidos pendientes con enlaces directos para chatear con cada cliente.
-  * `/pagado [ID]`: Marca un pedido como pagado y descuenta automáticamente el stock en el catálogo.
-  * `/cancelar [ID]`: Anula un pedido no concretado.
-  * `/limpiar_pruebas`: Cambia en masa todas las pruebas pasadas a `cancelado` para resetear el contador a 0.
-  * `/top`: Ranking de los 5 perfumes más vendidos.
-  * `/campana`: Planificador de campañas comerciales con IA.
+* **Seguridad & Roles:**
+  * **Rol 2 (Dueño / Administrador General):** Tu cuenta personal (Chat ID: `8616800327`), con acceso al 100% de los módulos financieros, estratégicos y operativos.
+  * **Rol 1 (Operativo / Mostrador):** *Por definir* (previsto para colaboradores en tienda física o atención de mostrador; restringido solo a consulta de stock y validación de entregas, sin acceso a finanzas).
+
+* **Estructura Oficial por Categorías Padre:**
+  1. **📦 PEDIDOS & CAJA:** `/resumen` (o `/hoy`), `/pedidos` (rescate WhatsApp), `/pagado [ID]` (descuenta stock), `/cancelar [ID]`.
+  2. **🏷️ CATÁLOGO & STOCK:** `/precios [aroma]` (consulta rápida de stock y precios de 10ml, 50ml y 110ml para mostrador).
+  3. **🌐 TRÁFICO, SEO & DEMANDA:** `/visitas` (tráfico real Cloudflare sin AdBlock), `/demanda` (aromas más clickeados y carritos abandonados), `/seo` (indexación y salud web).
+  4. **🎯 ESTRATEGIA & CAMPAÑAS:** `/semana` (balance semanal unificado + top ventas + CRO), `/campana` (reloj comercial y planificador de fechas clave).
+  5. **⚙️ SISTEMA & DEV (Comandos Ocultos de Mantenimiento):** `/sheets sync`, `/probar_cron`, `/limpiar_pruebas`.
 
 ---
 

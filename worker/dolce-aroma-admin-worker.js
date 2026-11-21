@@ -1875,33 +1875,30 @@ async function handleTelegramWebhook(request, env) {
 
   // 1. Comando /help o /start
   if (command === '/help' || command === '/ayuda' || command === '/start') {
-    const helpMsg = `🌸 <b>DOLCE 7 AROMA — ASISTENTE INTELIGENTE</b> 🌸
-<i>Sistema de Control & Reportería Comercial</i>
+    const helpMsg = `🌸 <b>DOLCE 7 AROMA — PANEL DE CONTROL</b> 🌸
+<i>Gestión Comercial y Operativa</i>
 
-¡Hola! Aquí tienes los mandos disponibles para gestionar tu negocio:
+📦 <b>PEDIDOS & CAJA (Operación Diaria):</b>
+• <b>/resumen</b> — Caja del día, pedidos cobrados y balance en soles.
+• <b>/pedidos</b> — Pedidos pendientes con botón directo a WhatsApp.
+• <b>/pagado [ID]</b> — Confirmar cobro de Yape y descontar stock.
+• <b>/cancelar [ID]</b> — Cancelar pedido no concretado.
 
-⚡ <b>COMANDOS OPERATIVOS:</b>
-• <b>/pedidos</b> — Ver pedidos pendientes con link directo a WhatsApp para rescate.
-• <b>/pagado [ID]</b> — Marcar pedido como pagado y descontar stock automáticamente.
-• <b>/cancelar [ID]</b> — Cancelar un pedido abandonado o no concretado.
-• <b>/limpiar_pruebas</b> — Purgar en masa las pruebas anteriores para poner el contador en 0.
-• <b>/resumen</b> — Ventas de hoy, pedidos pendientes y balance general.
-• <b>/top</b> — Ranking de los 5 perfumes más vendidos en el sitio.
-• <b>/campana</b> — Reloj de campañas comerciales (Usa <code>/campana plan</code> para diseñar la estrategia con IA).
+🏷️ <b>MOSTRADOR & CONSULTA RÁPIDA:</b>
+• <b>/precios [aroma]</b> — Consultar stock y precios en 1 segundo (ej: <code>/precios asad</code>).
 
-📊 <b>REPORTES & ANÁLISIS:</b>
-• <b>/semana</b> — Reporte semanal con gráfico comparativo de barras.
-• <b>/cro</b> — Embudo de conversión y checkout.
-• <b>/mes</b> — Reporte mensual estratégico con gráfico de categorías.
-• <b>/probar_cron</b> — Simula los 3 reportes automáticos programados.
-• <b>/seo</b> — Auditoría SEO, palabras clave de alta conversión y fuentes de tráfico.
-• <b>/precios</b> — Consulta de precios, presentaciones y stock en vivo (ej. <code>/precios asad</code>).
-• <b>/sheets</b> — Estado y sincronización con Google Sheets (Usa <code>/sheets sync</code> para sincronizar todo).
+📊 <b>ESTRATEGIA & CRECIMIENTO (Revisión Semanal):</b>
+• <b>/semana</b> — Rendimiento semanal con gráfico comparativo de barras.
+• <b>/cro</b> — Embudo de conversión y carritos abandonados.
+• <b>/top</b> — Los 5 perfumes más vendidos en la web.
+• <b>/campana</b> — Reloj comercial (Usa <code>/campana plan</code> para armar estrategia).
 
-ℹ️ <b>AYUDA:</b>
-• <b>/help</b> — Ver este menú de comandos.
+🌐 <b>TRÁFICO WEB:</b>
+• <b>/seo</b> — Salud de indexación en Google y distritos más activos.
 
-<i>🔒 Modo Seguro: Respuestas exclusivas para tu cuenta administradora.</i>`;
+ℹ️ <b>/help</b> — Ver este menú organizado.
+
+<i>🔒 Modo Seguro: Acceso exclusivo para la cuenta administradora.</i>`;
     await sendTelegramMessage(chatId, helpMsg, env);
     return json({ ok: true });
   }
