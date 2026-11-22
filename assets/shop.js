@@ -976,7 +976,12 @@
       </div>
       ${deliveryStatusHtml}
       ${progressHtml}
-      <button class="da-btn da-btn-primary" style="width:100%;padding:13px 20px;font-size:12px;letter-spacing:0.16em" id="da-checkout">Continuar con el pedido</button>
+      <button class="da-btn da-btn-primary" style="width:100%;padding:13px 20px;font-size:12px;letter-spacing:0.16em" id="da-checkout">Continuar con el pedido →</button>
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:#6b5e75;margin-top:8px;margin-bottom:2px;flex-wrap:wrap;background:rgba(212,175,55,0.08);padding:6px 10px;border-radius:6px;border:1px solid rgba(212,175,55,0.2)">
+        <span>💳 <b>Tarjeta Crédito / Débito</b> (Mercado Pago)</span>
+        <span style="color:#a8895a">·</span>
+        <span>📱 <b>Yape / Plin</b></span>
+      </div>
       <div class="da-foot-actions-row">
         <button type="button" class="da-foot-link" id="da-keep-shopping">+ Seguir comprando</button>
         <span class="da-foot-sep">·</span>
