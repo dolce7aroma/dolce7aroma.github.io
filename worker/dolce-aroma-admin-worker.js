@@ -1026,6 +1026,118 @@ async function handleChargeCulqi(request, env) {
   }
 }
 
+// ─── Mercado Pago Checkout Pro & Webhook ───
+
+async function handleCreateMPPreference(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ ok: false, error: 'JSON inválido' }, 400);
+  const { orderId, items, total, payer } = body;
+
+  if (!env.MP_ACCESS_TOKEN) {
+    return json({ ok: false, fallback: true, message: 'Mercado Pago token no configurado en Cloudflare' }, 200);
+  }
+  if (!orderId || !total) return json({ ok: false, error: 'Faltan datos de la orden' }, 400);
+
+  try {
+    const mpItems = (items && items.length) ? items.map(it => ({
+      title: `Perfume Dolce 7 Aroma - ${it.name} (${it.ml}ml)`,
+      unit_price: Number((it.subtotal / (it.qty || 1)).toFixed(2)),
+      quantity: Number(it.qty) || 1,
+      currency_id: 'PEN'
+    })) : [{
+      title: `Pedido Dolce 7 Aroma #${orderId}`,
+      unit_price: Number(total),
+      quantity: 1,
+      currency_id: 'PEN'
+    }];
+
+    const preferencePayload = {
+      items: mpItems,
+      payer: {
+        name: payer?.nombre || '',
+        email: payer?.email || 'cliente@dolce7aroma.com',
+        phone: { number: payer?.telefono || '' }
+      },
+      back_urls: {
+        success: `https://dolce7aroma.com/pago-exitoso.html?orderId=${orderId}&status=approved`,
+        pending: `https://dolce7aroma.com/pago-exitoso.html?orderId=${orderId}&status=pending`,
+        failure: `https://dolce7aroma.com/catalogo.html?status=failure`
+      },
+      auto_return: 'approved',
+      external_reference: orderId,
+      statement_descriptor: 'DOLCE7AROMA',
+      notification_url: 'https://dolce7aroma-pedidos-bot.cesarfernandezh7.workers.dev/api/mp-webhook'
+    };
+
+    const res = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.MP_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(preferencePayload)
+    });
+
+    const mpData = await res.json().catch(() => null);
+    if (!res.ok || !mpData) {
+      return json({ ok: false, error: mpData?.message || 'Error al crear preferencia en Mercado Pago' }, 502);
+    }
+
+    return json({ ok: true, id: mpData.id, init_point: mpData.init_point, sandbox_init_point: mpData.sandbox_init_point });
+  } catch (e) {
+    return json({ ok: false, error: String(e.message || e) }, 502);
+  }
+}
+
+async function handleMPWebhook(request, env) {
+  const url = new URL(request.url);
+  let topic = url.searchParams.get('topic') || url.searchParams.get('type');
+  let id = url.searchParams.get('id') || url.searchParams.get('data.id');
+
+  if (request.method === 'POST') {
+    const body = await request.json().catch(() => ({}));
+    if (body.type) topic = body.type;
+    if (body.data?.id) id = body.data.id;
+  }
+
+  if (topic === 'payment' && id && env.MP_ACCESS_TOKEN) {
+    try {
+      const payRes = await fetch(`https://api.mercadopago.com/v1/payments/${id}`, {
+        headers: { 'Authorization': `Bearer ${env.MP_ACCESS_TOKEN}` }
+      });
+      const payment = await payRes.json().catch(() => null);
+      if (payment && payment.status === 'approved') {
+        const orderId = payment.external_reference;
+        if (orderId && env.ORDERS) {
+          const raw = await env.ORDERS.get(`order:${orderId}`);
+          if (raw) {
+            const record = JSON.parse(raw);
+            record.estado = 'pagado';
+            record.actualizadoEn = new Date().toISOString();
+            record.mpPaymentId = id;
+            record.metodoPago = 'mercadopago';
+            await env.ORDERS.put(`order:${orderId}`, JSON.stringify(record));
+            await syncOrderToGoogleSheets(record, env, 'update').catch(() => {});
+          }
+        }
+        if (env.TELEGRAM_CHAT_ID && env.TELEGRAM_BOT_TOKEN) {
+          const msg = `💳 <b>¡PAGO ACREDITADO (MERCADO PAGO)!</b>\n\n` +
+                      `🔖 <b>Pedido:</b> #${payment.external_reference || 'N/A'}\n` +
+                      `💰 <b>Monto:</b> S/ ${payment.transaction_amount}\n` +
+                      `👤 <b>Pagador:</b> ${payment.payer?.first_name || ''} ${payment.payer?.last_name || ''} (${payment.payer?.email || ''})\n` +
+                      `🆔 <b>ID Pago:</b> <code>${id}</code>\n` +
+                      `✅ <b>Estado:</b> Acreditado / Listo para despacho`;
+          await sendTelegramMessage(env.TELEGRAM_CHAT_ID, msg, env);
+        }
+      }
+    } catch (e) {
+      console.error('Error procesando webhook MP:', e);
+    }
+  }
+
+  return new Response('OK', { status: 200, headers: corsHeaders() });
+}
+
 // ─── Bot de Telegram Interactivo (Reportería & Comandos) ───
 
 async function sendTelegramMessage(chatId, text, env, extra = {}) {
@@ -2659,6 +2771,12 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/api/charge-culqi') {
       return handleChargeCulqi(request, env);
+    }
+    if (request.method === 'POST' && url.pathname === '/api/create-mp-preference') {
+      return handleCreateMPPreference(request, env);
+    }
+    if ((request.method === 'POST' || request.method === 'GET') && url.pathname === '/api/mp-webhook') {
+      return handleMPWebhook(request, env);
     }
     if (request.method === 'POST' && url.pathname === '/api/create-gift') {
       return handleCreateGift(request, env);

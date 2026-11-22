@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comprobante de Pago Digital — Dolce 7 Aroma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-light: #f7e096;
+      --gold-dark: #aa8417;
+      --emerald: #2ecc71;
+      --bg-dark: #070a12;
+      --card-bg: rgba(14, 18, 25, 0.95);
+      --card-border: rgba(212, 175, 55, 0.4);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #06080d;
+      color: #f8fafc;
+      font-family: 'Montserrat', sans-serif;
+      padding: 24px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .receipt-wrapper {
+      width: 100%;
+      max-width: 620px;
+      background: #0d121c;
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px 22px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.65);
+      position: relative;
+    }
+    .brand-header {
+      text-align: center;
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    }
+    .brand-logo {
+      height: 48px;
+      margin-bottom: 6px;
+      filter: drop-shadow(0 2px 8px rgba(212,175,55,0.3));
+    }
+    .brand-slogan {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      font-weight: 600;
+    }
+    .status-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .check-icon {
+      width: 60px;
+      height: 60px;
+      background: rgba(46, 204, 113, 0.15);
+      border: 2px solid var(--emerald);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      color: var(--emerald);
+      margin-bottom: 12px;
+      box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
+    }
+    .status-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+    .status-sub {
+      font-size: 13px;
+      color: var(--gold-light);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .order-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 18px;
+      font-size: 13px;
+    }
+    .order-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .order-row:last-child {
+      margin-bottom: 0;
+    }
+    .order-label {
+      color: #94a3b8;
+    }
+    .order-val {
+      color: #ffffff;
+      font-weight: 600;
+      text-align: right;
+    }
+    .items-table {
+      width: 100%;
+      margin: 16px 0;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .items-table th {
+      text-align: left;
+      padding: 8px 0;
+      color: #94a3b8;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .items-table td {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      color: #e2e8f0;
+    }
+    .items-table td:last-child {
+      text-align: right;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0 6px;
+      border-top: 1.5px solid var(--gold);
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .total-amount {
+      font-size: 22px;
+      font-family: 'Playfair Display', serif;
+      color: var(--gold-light);
+    }
+    .trust-box {
+      background: rgba(46, 204, 113, 0.08);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      border-radius: 10px;
+      padding: 14px;
+      margin: 18px 0;
+      font-size: 12.5px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+    .trust-box strong {
+      color: #2ecc71;
+    }
+    .security-badges-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin: 20px 0 24px;
+      padding: 12px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .sec-pill {
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .btn {
+      width: 100%;
+      padding: 13px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #04060a;
+    }
+    .btn-gold:hover {
+      filter: brightness(1.1);
+    }
+    .btn-whatsapp {
+      background: #15803d;
+      color: #ffffff;
+    }
+    .btn-whatsapp:hover {
+      background: #16a34a;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: #94a3b8;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .btn-ghost:hover {
+      color: #ffffff;
+      border-color: #ffffff;
+    }
+    @media print {
+      body { background: #fff; color: #000; padding: 0; }
+      .receipt-wrapper { border: none; box-shadow: none; background: #fff; color: #000; }
+      .btn-actions, .security-badges-bar { display: none; }
+      .order-box { background: #f8f8f8; border: 1px solid #ddd; }
+      .order-label { color: #666; }
+      .order-val, .status-title, .total-row { color: #000; }
+      .status-sub { color: #aa8417; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="receipt-wrapper">
+    
+    <!-- ENCABEZADO OFICIAL -->
+    <div class="brand-header">
+      <img src="assets/logo-gold-cropped.png" alt="Dolce 7 Aroma" class="brand-logo">
+      <div class="brand-slogan">Comprobante Digital de Pago & Resumen Oficial</div>
+    </div>
+
+    <!-- ESTADO DE LA TRANSACCIÓN -->
+    <div class="status-badge">
+      <div class="check-icon">✓</div>
+      <h1 class="status-title">¡Pago Acreditado con Éxito!</h1>
+      <span class="status-sub">Transacción Segura · Mercado Pago Perú</span>
+    </div>
+
+    <!-- DATOS DE LA TRANSACCIÓN -->
+    <div class="order-box">
+      <div class="order-row">
+        <span class="order-label">Número de Pedido:</span>
+        <span class="order-val" id="disp-order-id">#DA-PENDIENTE</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Fecha y Hora:</span>
+        <span class="order-val" id="disp-date">-</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Método de Pago:</span>
+        <span class="order-val">Tarjeta de Crédito / Débito (Mercado Pago)</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Estado:</span>
+        <span class="order-val" style="color:var(--emerald)">🟢 Acreditado / En Preparación</span>
+      </div>
+    </div>
+
+    <!-- DATOS DEL CLIENTE -->
+    <div class="order-box">
+      <div class="order-row">
+        <span class="order-label">Cliente:</span>
+        <span class="order-val" id="disp-cliente">-</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Teléfono:</span>
+        <span class="order-val" id="disp-telefono">-</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Correo electrónico:</span>
+        <span class="order-val" id="disp-email">-</span>
+      </div>
+      <div class="order-row">
+        <span class="order-label">Destino / Entrega:</span>
+        <span class="order-val" id="disp-direccion">-</span>
+      </div>
+    </div>
+
+    <!-- PRODUCTOS -->
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Presentación</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody id="disp-items">
+        <tr>
+          <td>Fragancia Seleccionada</td>
+          <td>50 ml</td>
+          <td>S/ 55.00</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- INCLUSIONES DE REGALO GRATIS -->
+    <div style="font-size:12px;color:var(--gold-light);background:rgba(212,175,55,0.08);padding:10px 14px;border-radius:8px;margin-bottom:14px;border-left:3px solid var(--gold)">
+      🎁 <strong>Incluido sin costo adicional:</strong> Bolsa de Regalo Metalizada Dolce Aroma + Muestras de probadores oficiales.
+    </div>
+
+    <!-- TOTAL -->
+    <div class="total-row">
+      <span>Total Pagado:</span>
+      <span class="total-amount" id="disp-total">S/ 0.00</span>
+    </div>
+
+    <!-- MENSAJE DE TRANQUILIDAD -->
+    <div class="trust-box">
+      ✉️ <strong>Comprobante enviado a tu correo:</strong> Hemos remitido una copia digital completa de esta transacción a tu correo electrónico.<br>
+      📦 <strong>Preparación y Despacho:</strong> Tu pedido ya se encuentra registrado en nuestro taller. Te notificaremos vía WhatsApp cuando el paquete sea asignado para entrega.
+    </div>
+
+    <!-- SELLOS DE SEGURIDAD (SIN GARANTÍA FÍSICA) -->
+    <div class="security-badges-bar">
+      <span class="sec-pill">🛡️ Mercado Pago Protegido</span>
+      <span class="sec-pill">🔒 Cifrado SSL 256-Bit</span>
+      <span class="sec-pill">💳 Visa & Mastercard Secure</span>
+    </div>
+
+    <!-- BOTONES DE ACCIÓN -->
+    <div class="btn-actions">
+      <button onclick="window.print()" class="btn btn-gold">
+        📥 Imprimir o Guardar Comprobante (PDF)
+      </button>
+      <a id="btn-wa-support" href="https://wa.me/51930122014" target="_blank" class="btn btn-whatsapp">
+        📲 Coordinar Despacho por WhatsApp
+      </a>
+      <a href="catalogo.html" class="btn btn-ghost">
+        ← Volver al Catálogo
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    // Recuperar datos de la URL o de localStorage
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('orderId') || params.get('external_reference') || 'DA-' + Math.floor(1000 + Math.random() * 9000);
+    
+    document.getElementById('disp-order-id').innerText = '#' + orderId;
+    document.getElementById('disp-date').innerText = new Date().toLocaleString('es-PE', { 
+      day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true 
+    });
+
+    // Leer último pedido de localStorage si existe
+    try {
+      const raw = localStorage.getItem('da_last_order');
+      if (raw) {
+        const o = JSON.parse(raw);
+        if (o.nombre) document.getElementById('disp-cliente').innerText = o.nombre;
+        if (o.telefono) document.getElementById('disp-telefono').innerText = o.telefono;
+        if (o.email) document.getElementById('disp-email').innerText = o.email;
+        if (o.direccion) document.getElementById('disp-direccion').innerText = o.direccion + (o.distrito ? ', ' + o.distrito : '');
+        if (o.total) document.getElementById('disp-total').innerText = 'S/ ' + Number(o.total).toFixed(2);
+
+        if (Array.isArray(o.items) && o.items.length) {
+          const tbody = document.getElementById('disp-items');
+          tbody.innerHTML = o.items.map(it => `
+            <tr>
+              <td>${it.name || 'Perfume'} x${it.qty || 1}</td>
+              <td>${it.ml || 50} ml</td>
+              <td>S/ ${Number(it.subtotal || 0).toFixed(2)}</td>
+            </tr>
+          `).join('');
+        }
+
+        // WhatsApp Link con mensaje pre-armado
+        const waMsg = encodeURIComponent(`¡Hola Dolce 7 Aroma! 👋 Acabo de pagar con Mercado Pago en su web:\n\n📦 *Pedido:* #${orderId}\n👤 *Cliente:* ${o.nombre || ''}\n💰 *Monto:* S/ ${o.total || ''}\n\nQuedo atento a la coordinación de mi entrega. ¡Gracias!`);
+        document.getElementById('btn-wa-support').href = `https://wa.me/51930122014?text=${waMsg}`;
+      }
+    } catch(e) {}
+  </script>
+
+</body>
+</html>
