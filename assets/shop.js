@@ -1390,9 +1390,13 @@
               body: JSON.stringify({ orderId, items, total: offers.total, payer: { nombre: orderForm.nombre, email: orderForm.email, telefono: orderForm.telefono } })
             });
             const mpData = await mpRes.json().catch(()=>({ok:false}));
-            if (mpData.ok && mpData.init_point) {
-              window.location.href = mpData.init_point;
-              return;
+            if (mpData.ok) {
+              const isTestMode = window.location.search.includes('test') || window.location.search.includes('sandbox');
+              const redirectUrl = (isTestMode && mpData.sandbox_init_point) ? mpData.sandbox_init_point : (mpData.init_point || mpData.sandbox_init_point);
+              if (redirectUrl) {
+                window.location.href = redirectUrl;
+                return;
+              }
             }
           } catch(me){}
 
