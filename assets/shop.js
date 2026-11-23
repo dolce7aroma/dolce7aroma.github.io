@@ -1254,62 +1254,93 @@
         </div>
       </div>
 
-      <!-- Selector de métodos de pago -->
+      <!-- Selector de métodos de pago Temu / Apple Pay Style -->
       <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
         
-        <!-- Opción 1: Mercado Pago -->
-        <label id="lbl-pay-mp" style="display:block;border:2px solid ${selectedPaymentMethod === 'mercadopago' ? '#2ecc71' : 'rgba(60,47,71,0.18)'};border-radius:12px;padding:14px;background:${selectedPaymentMethod === 'mercadopago' ? '#f0fdf4' : '#fff'};cursor:pointer;transition:all .2s">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <!-- Opción 1: Mercado Pago Oficial -->
+        <label id="lbl-pay-mp" style="position:relative;display:block;border:2px solid ${selectedPaymentMethod === 'mercadopago' ? '#10b981' : 'rgba(60,47,71,0.14)'};border-radius:14px;padding:16px;background:${selectedPaymentMethod === 'mercadopago' ? '#f0fdf4' : '#fff'};cursor:pointer;transition:all .25s ease;box-shadow:${selectedPaymentMethod === 'mercadopago' ? '0 4px 20px rgba(16,185,129,0.12)' : '0 2px 8px rgba(0,0,0,0.03)'}">
+          
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
             <div style="display:flex;align-items:center;gap:10px">
-              <input type="radio" name="da_pay_method" value="mercadopago" ${selectedPaymentMethod === 'mercadopago' ? 'checked' : ''} style="accent-color:#2ecc71;width:18px;height:18px"/>
-              <strong style="font-size:14px;color:#1e293b">Tarjeta de Crédito / Débito</strong>
+              <input type="radio" name="da_pay_method" value="mercadopago" ${selectedPaymentMethod === 'mercadopago' ? 'checked' : ''} style="accent-color:#10b981;width:19px;height:19px"/>
+              <div>
+                <strong style="font-size:14.5px;color:#0f172a;display:block">Tarjeta de Crédito o Débito</strong>
+                <span style="font-size:11px;color:#64748b">Hasta en cuotas con tu banco preferido</span>
+              </div>
             </div>
-            <span style="font-size:10.5px;font-weight:700;background:rgba(46,204,113,0.15);color:#15803d;padding:3px 8px;border-radius:6px;border:1px solid rgba(46,204,113,0.3)">MERCADO PAGO</span>
+            ${svgMercadoPago}
           </div>
           
-          <div style="display:flex;align-items:center;gap:6px;margin:6px 0 10px 28px;flex-wrap:wrap">
-            <span style="font-size:10.5px;font-weight:700;background:#fff;color:#334155;padding:2px 7px;border-radius:4px;border:1px solid #cbd5e1">Visa</span>
-            <span style="font-size:10.5px;font-weight:700;background:#fff;color:#334155;padding:2px 7px;border-radius:4px;border:1px solid #cbd5e1">Mastercard</span>
-            <span style="font-size:10.5px;font-weight:700;background:#fff;color:#334155;padding:2px 7px;border-radius:4px;border:1px solid #cbd5e1">Amex</span>
-            <span style="font-size:10.5px;font-weight:700;background:#fff;color:#334155;padding:2px 7px;border-radius:4px;border:1px solid #cbd5e1">Diners</span>
+          <!-- Logos oficiales de tarjetas -->
+          <div style="display:flex;align-items:center;gap:6px;margin:8px 0 12px 29px;flex-wrap:wrap">
+            ${svgVisa}
+            ${svgMastercard}
+            ${svgAmex}
+            <span style="font-size:10px;font-weight:700;color:#64748b;background:#f1f5f9;padding:4px 8px;border-radius:4px;border:1px solid #cbd5e1">+ Débito</span>
           </div>
 
-          <ul style="margin:0 0 0 28px;padding:0;list-style:none;font-size:11.5px;color:#64748b;line-height:1.55">
-            <li>🔒 Cifrado bancario seguro SSL de 256 bits.</li>
-            <li>🛡️ Respaldado por Protección al Comprador Mercado Pago.</li>
-            <li>✉️ Comprobante digital remitido a tu correo al instante.</li>
-          </ul>
+          <!-- Micro-beneficios de seguridad -->
+          <div style="margin-left:29px;padding-top:10px;border-top:1px dashed rgba(0,0,0,0.08);display:flex;flex-direction:column;gap:5px;font-size:11.5px;color:#334155">
+            <div style="display:flex;align-items:center;gap:6px">
+              ${svgShield}
+              <span><b>Protección al Comprador:</b> Tu dinero está 100% asegurado.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;color:#64748b;font-size:11px">
+              <span>🔒 Cifrado Bancario SSL 256-Bit · Certificación PCI-DSS Nivel 1</span>
+            </div>
+          </div>
         </label>
 
         <!-- Opción 2: Yape / Plin Directo -->
-        <label id="lbl-pay-yape" style="display:block;border:2px solid ${selectedPaymentMethod === 'yape' ? '#7b1fa2' : 'rgba(60,47,71,0.18)'};border-radius:12px;padding:14px;background:${selectedPaymentMethod === 'yape' ? '#faf5ff' : '#fff'};cursor:pointer;transition:all .2s">
+        <label id="lbl-pay-yape" style="position:relative;display:block;border:2px solid ${selectedPaymentMethod === 'yape' ? '#7b1fa2' : 'rgba(60,47,71,0.14)'};border-radius:14px;padding:16px;background:${selectedPaymentMethod === 'yape' ? '#faf5ff' : '#fff'};cursor:pointer;transition:all .25s ease;box-shadow:${selectedPaymentMethod === 'yape' ? '0 4px 20px rgba(123,31,162,0.1)' : '0 2px 8px rgba(0,0,0,0.03)'}">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
             <div style="display:flex;align-items:center;gap:10px">
-              <input type="radio" name="da_pay_method" value="yape" ${selectedPaymentMethod === 'yape' ? 'checked' : ''} style="accent-color:#7b1fa2;width:18px;height:18px"/>
-              <strong style="font-size:14px;color:#1e293b">Yape / Plin Directo o Tienda</strong>
+              <input type="radio" name="da_pay_method" value="yape" ${selectedPaymentMethod === 'yape' ? 'checked' : ''} style="accent-color:#7b1fa2;width:19px;height:19px"/>
+              <div>
+                <strong style="font-size:14.5px;color:#0f172a;display:block">Yape / Plin Directo o Tienda</strong>
+                <span style="font-size:11px;color:#64748b">Transferencia instantánea sin comisiones</span>
+              </div>
             </div>
-            <span style="font-size:10.5px;font-weight:700;background:rgba(123,31,162,0.1);color:#7b1fa2;padding:3px 8px;border-radius:6px;border:1px solid rgba(123,31,162,0.25)">SIN COMISIONES</span>
+            <span style="font-size:10px;font-weight:800;background:#7b1fa2;color:#fff;padding:3px 8px;border-radius:6px;letter-spacing:0.5px">CERO COMISIÓN</span>
           </div>
 
-          <div style="display:flex;align-items:center;gap:6px;margin:6px 0 10px 28px">
-            <span style="font-size:10.5px;font-weight:700;background:#7b1fa2;color:#fff;padding:2px 7px;border-radius:4px">💜 Yape</span>
-            <span style="font-size:10.5px;font-weight:700;background:#00bcd4;color:#fff;padding:2px 7px;border-radius:4px">💙 Plin</span>
-            <span style="font-size:10.5px;font-weight:600;background:#fff;color:#475569;padding:2px 7px;border-radius:4px;border:1px solid #cbd5e1">🏬 Bazar Shirley</span>
+          <div style="display:flex;align-items:center;gap:6px;margin:8px 0 10px 29px">
+            <span style="font-size:11px;font-weight:800;background:#7b1fa2;color:#fff;padding:3px 9px;border-radius:5px">💜 Yape</span>
+            <span style="font-size:11px;font-weight:800;background:#00bcd4;color:#fff;padding:3px 9px;border-radius:5px">💙 Plin</span>
+            <span style="font-size:11px;font-weight:600;background:#f8fafc;color:#475569;padding:3px 9px;border-radius:5px;border:1px solid #cbd5e1">🏬 Bazar Shirley (SMP)</span>
           </div>
 
-          <ul style="margin:0 0 0 28px;padding:0;list-style:none;font-size:11.5px;color:#64748b;line-height:1.55">
-            <li>📲 Transfiere directo a nuestro número oficial sin recargos.</li>
-            <li>💬 Coordinación personalizada 1 a 1 por WhatsApp.</li>
-          </ul>
+          <div style="margin-left:29px;font-size:11.5px;color:#64748b">
+            💬 Atención personalizada y confirmación inmediata 1 a 1 por WhatsApp.
+          </div>
         </label>
 
       </div>
 
-      <!-- Sellos de Seguridad Digital Oficial (SIN garantía física) -->
-      <div style="display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;padding:10px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:16px;font-size:11px;color:#64748b;font-weight:600">
-        <span>🛡️ Mercado Pago Protegido</span>
-        <span>🔒 Cifrado SSL 256-Bit</span>
-        <span>💳 Visa & Mastercard Secure</span>
+      <!-- BANNER DE GARANTÍA ESTILO TEMU / SHOPPING GLOBAL -->
+      <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);border-radius:12px;padding:14px;margin-bottom:16px;color:#f8fafc;box-shadow:0 4px 15px rgba(0,0,0,0.15)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          ${svgShield}
+          <strong style="font-size:12.5px;letter-spacing:0.3px;color:#f8fafc">Garantía de Compra Protegida</strong>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:10.5px;color:#cbd5e1">
+          <div style="display:flex;align-items:center;gap:5px">
+            <span style="color:#10b981">✓</span>
+            <span>Pago Seguro Encriptado</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <span style="color:#10b981">✓</span>
+            <span>Seguimiento por WhatsApp</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <span style="color:#10b981">✓</span>
+            <span>Despacho Verificado</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px">
+            <span style="color:#10b981">✓</span>
+            <span>Privacidad Total</span>
+          </div>
+        </div>
       </div>
 
       <button class="da-btn da-btn-primary" style="width:100%" id="da-execute-pay">
