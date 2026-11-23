@@ -1098,6 +1098,8 @@ async function handleMPWebhook(request, env) {
     const body = await request.json().catch(() => ({}));
     if (body.type) topic = body.type;
     if (body.data?.id) id = body.data.id;
+    if (body.action && String(body.action).includes('payment')) topic = 'payment';
+    if (!id && body.id && (topic === 'payment' || String(body.action || '').includes('payment'))) id = body.id;
   }
 
   if (topic === 'payment' && id && env.MP_ACCESS_TOKEN) {
