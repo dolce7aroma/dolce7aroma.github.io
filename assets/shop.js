@@ -1277,6 +1277,14 @@
   }
 
   
+
+  // SVG Logos Oficiales de Tarjetas y Seguridad
+  const svgVisa = `<svg width="42" height="26" viewBox="0 0 48 30" fill="none" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.06))"><rect width="48" height="30" rx="4" fill="#fff" stroke="#e2e8f0"/><path d="M19.5 20.5H16.8L18.5 9.5H21.2L19.5 20.5Z" fill="#1A1F71"/><path d="M28.4 9.7C27.8 9.5 26.9 9.3 25.8 9.3C23.1 9.3 21.2 10.7 21.2 12.8C21.2 14.3 22.6 15.1 23.6 15.6C24.7 16.1 25.1 16.5 25.1 17C25.1 17.8 24.1 18.2 23.2 18.2C22.1 18.2 21.5 18 20.6 17.6L20.2 17.4L19.8 19.9C20.5 20.2 21.7 20.5 23 20.5C25.9 20.5 27.8 19.1 27.8 16.9C27.8 15.2 26.7 14.3 25.3 13.6C24.4 13.1 23.9 12.8 23.9 12.3C23.9 11.8 24.5 11.4 25.4 11.4C26.3 11.4 27 11.6 27.6 11.9L27.9 12L28.4 9.7Z" fill="#1A1F71"/><path d="M32.8 17C33 16.4 33.9 14.1 33.9 14.1C33.9 14.1 34.1 13.5 34.2 13.1L34.5 14.5C34.5 14.5 35.1 17.4 35.3 18.2H32.8V17ZM36.9 9.5H34.8C34.1 9.5 33.6 9.7 33.3 10.4L28.5 20.5H31.3L31.9 18.9H35.3L35.6 20.5H38.1L36.9 9.5Z" fill="#1A1F71"/><path d="M14.7 9.5L12.1 17.1L11.8 15.7C11.3 14 10 12.2 8.4 11.4L10.8 20.5H13.6L17.7 9.5H14.7Z" fill="#1A1F71"/><path d="M10 11.4C8.4 12.2 9.7 14 10.2 15.7L10.5 17.1L8.3 9.5H5.1L5 9.7C7.5 10.3 9.5 11.8 10.8 13.5L10 11.4Z" fill="#F7B600"/></svg>`;
+  const svgMastercard = `<svg width="42" height="26" viewBox="0 0 48 30" fill="none" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.06))"><rect width="48" height="30" rx="4" fill="#fff" stroke="#e2e8f0"/><circle cx="19" cy="15" r="8.5" fill="#EB001B"/><circle cx="29" cy="15" r="8.5" fill="#F79E1B"/><path d="M24 8.7C25.8 10.3 27 12.5 27 15C27 17.5 25.8 19.7 24 21.3C22.2 19.7 21 17.5 21 15C21 12.5 22.2 10.3 24 8.7Z" fill="#FF5F00"/></svg>`;
+  const svgAmex = `<svg width="42" height="26" viewBox="0 0 48 30" fill="none" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.06))"><rect width="48" height="30" rx="4" fill="#006FCF"/><text x="24" y="19" fill="#fff" font-family="Montserrat, Arial, sans-serif" font-weight="900" font-size="11" text-anchor="middle" letter-spacing="1">AMEX</text></svg>`;
+  const svgMercadoPago = `<svg width="60" height="26" viewBox="0 0 70 30" fill="none" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.06))"><rect width="70" height="30" rx="4" fill="#009ee3"/><text x="35" y="19" fill="#fff" font-family="Montserrat, Arial, sans-serif" font-weight="800" font-size="9" text-anchor="middle" letter-spacing="0.5">MERCADO PAGO</text></svg>`;
+  const svgShield = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z" fill="#10b981"/><path d="M10 15.5L6.5 12L7.91 10.59L10 12.67L16.09 6.58L17.5 8L10 15.5Z" fill="#fff"/></svg>`;
+
   // ─── Paso 2.5: Selección de Método de Pago & Sellos de Seguridad ───
   function renderCheckoutPayment(list, foot){
     const offers = computeOffers();
