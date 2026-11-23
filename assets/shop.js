@@ -1052,6 +1052,7 @@
           </label>
           <div class="da-zonas-info" id="da-zonas-info"></div>
         `}
+        <div id="da-form-error" style="display:none;background:#fee2e2;border:1.5px solid #ef4444;color:#991b1b;padding:10px 12px;border-radius:8px;font-size:12px;margin:12px 0;line-height:1.4"></div>
         <button type="submit" class="da-btn da-btn-primary" style="width:100%" id="da-form-submit">Continuar al Método de Pago →</button>
       </form>
     `;
@@ -1121,7 +1122,11 @@
         updateDistritos(selProv, selDist, orderForm);
       }
     }
-    document.getElementById('da-order-form').addEventListener('submit', onSubmitOrderForm);
+    document.getElementById('da-order-form')?.addEventListener('submit', onSubmitOrderForm);
+    document.getElementById('da-form-submit')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      onSubmitOrderForm(e);
+    });
   }
 
   // Info de envío: general por defecto, o específica en cuanto el distrito coincide con una zona gratis
@@ -1191,19 +1196,49 @@
   }
 
   async function onSubmitOrderForm(e){
-    e.preventDefault();
-    const nombre = document.getElementById('of-nombre').value.trim();
-    const telefono = document.getElementById('of-telefono').value.trim();
-    const email = (document.getElementById('of-email')?.value || '').trim();
+    if (e && e.preventDefault) e.preventDefault();
+    const errBox = document.getElementById('da-form-error');
+    if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
+
+    // Limpiar bordes rojos anteriores
+    ['of-nombre', 'of-telefono', 'of-email', 'of-provincia', 'of-distrito', 'of-direccion'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.borderColor = '';
+    });
+
+    const nombreEl = document.getElementById('of-nombre');
+    const telefonoEl = document.getElementById('of-telefono');
+    const emailEl = document.getElementById('of-email');
+
+    const nombre = (nombreEl?.value || '').trim();
+    const telefono = (telefonoEl?.value || '').trim();
+    const email = (emailEl?.value || '').trim();
     const offers = computeOffers();
     const isUnder50 = offers.total < 50;
 
-    if(!nombre || !telefono){
-      showToast('Por favor completa tu nombre y teléfono');
+    function reportFormError(msg, focusEl) {
+      if (errBox) {
+        errBox.innerHTML = '⚠️ <b>Atención:</b> ' + msg;
+        errBox.style.display = 'block';
+        errBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      if (focusEl) {
+        focusEl.style.borderColor = '#ef4444';
+        focusEl.focus();
+      }
+      showToast(msg);
+    }
+
+    if(!nombre){
+      reportFormError('Por favor ingresa tu nombre completo', nombreEl);
+      return;
+    }
+    if(!telefono || telefono.length < 9){
+      reportFormError('Por favor ingresa un teléfono o WhatsApp de 9 dígitos', telefonoEl);
       return;
     }
     if(!email || !email.includes('@')){
-      showToast('Ingresa un correo electrónico válido para enviarte tu comprobante digital');
+      reportFormError('Ingresa un correo electrónico válido (ej. tu_nombre@gmail.com) para tu comprobante', emailEl);
       return;
     }
 
@@ -1214,12 +1249,25 @@
       direccion = 'Recojo en Tienda SMP (Jr. Callao 482-A · Bazar Shirley)';
       referencia = 'Recojo en Tienda';
     } else {
-      provincia = document.getElementById('of-provincia').value;
-      distrito = document.getElementById('of-distrito').value.trim();
-      direccion = document.getElementById('of-direccion').value.trim();
-      referencia = document.getElementById('of-referencia').value.trim();
-      if(!provincia || !distrito || !direccion){
-        showToast('Por favor completa tu dirección y distrito de entrega');
+      const provEl = document.getElementById('of-provincia');
+      const distEl = document.getElementById('of-distrito');
+      const dirEl = document.getElementById('of-direccion');
+
+      provincia = provEl?.value || '';
+      distrito = (distEl?.value || '').trim();
+      direccion = (dirEl?.value || '').trim();
+      referencia = (document.getElementById('of-referencia')?.value || '').trim();
+
+      if(!provincia){
+        reportFormError('Por favor selecciona tu departamento / provincia', provEl);
+        return;
+      }
+      if(!distrito || distrito === '-'){
+        reportFormError('Por favor selecciona tu distrito de entrega en la lista', distEl);
+        return;
+      }
+      if(!direccion){
+        reportFormError('Por favor ingresa tu dirección exacta (calle, número)', dirEl);
         return;
       }
     }
