@@ -1399,8 +1399,10 @@
         </div>
       </div>
 
-      <button class="da-btn da-btn-primary" style="width:100%" id="da-execute-pay">
-        ${selectedPaymentMethod === 'mercadopago' ? `Pagar S/ ${offers.total} con Tarjeta (Mercado Pago)` : 'Confirmar Pedido y Enviar Yape por WhatsApp'}
+      <button id="da-execute-pay" style="width:100%;padding:16px 22px;border-radius:14px;background:${selectedPaymentMethod === 'mercadopago' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%)'};color:#ffffff;border:none;font-family:inherit;font-size:14px;font-weight:700;letter-spacing:0.3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:${selectedPaymentMethod === 'mercadopago' ? '0 6px 20px rgba(16,185,129,0.35)' : '0 6px 20px rgba(123,31,162,0.3)'};transition:all .25s ease">
+        ${selectedPaymentMethod === 'mercadopago' 
+          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="#fff"/></svg><span>Pagar S/ ${offers.total} con Tarjeta (Mercado Pago) →</span>` 
+          : '<span>📱 Confirmar Pedido y Enviar Yape por WhatsApp →</span>'}
       </button>
     `;
 
@@ -1417,9 +1419,15 @@
         selectedPaymentMethod = e.target.value;
         const btn = document.getElementById('da-execute-pay');
         if (btn) {
-          btn.textContent = selectedPaymentMethod === 'mercadopago'
-            ? `Pagar S/ ${offers.total} con Tarjeta (Mercado Pago)`
-            : 'Confirmar Pedido y Enviar Yape por WhatsApp';
+          if (selectedPaymentMethod === 'mercadopago') {
+            btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            btn.style.boxShadow = '0 6px 20px rgba(16,185,129,0.35)';
+            btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="#fff"/></svg><span>Pagar S/ ${offers.total} con Tarjeta (Mercado Pago) →</span>`;
+          } else {
+            btn.style.background = 'linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%)';
+            btn.style.boxShadow = '0 6px 20px rgba(123,31,162,0.3)';
+            btn.innerHTML = `<span>📱 Confirmar Pedido y Enviar Yape por WhatsApp →</span>`;
+          }
         }
         const lblMp = document.getElementById('lbl-pay-mp');
         const lblYape = document.getElementById('lbl-pay-yape');
