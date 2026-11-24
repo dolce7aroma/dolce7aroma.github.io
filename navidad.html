@@ -197,9 +197,37 @@
   .section-title em{font-style:italic;color:var(--gold-dark)}
   .section-sub{font-size:15px;color:var(--plum-700);max-width:620px;margin:0 auto}
 
-  .combos-grid{
-    display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:26px;margin-bottom:80px;
+  /* CARRUSEL DE COMBOS NAVIDEÑOS */
+  .combos-carousel-wrap{
+    position:relative;
+    margin:0 auto 60px;
+    max-width:1240px;
+    padding:0 24px;
+    box-sizing:border-box;
   }
+  .combos-track{
+    display:flex;
+    gap:24px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding:24px 8px 30px;
+    box-sizing:border-box;
+  }
+  .combos-track::-webkit-scrollbar{
+    display:none;
+  }
+  .combos-track .combo-card{
+    flex:0 0 310px;
+    max-width:320px;
+    scroll-snap-align:center;
+    scroll-snap-stop:always;
+    box-sizing:border-box;
+    transition:transform .35s cubic-bezier(.25,1,.5,1), opacity .35s ease, border-color .35s ease, box-shadow .35s ease;
+  }
+
   .combo-card{
     background:#ffffff;border:1.5px solid var(--rule);border-radius:24px;
     padding:36px 28px 28px;display:flex;flex-direction:column;position:relative;
@@ -217,6 +245,71 @@
     position:absolute;top:-12px;left:24px;background:var(--gold);color:#fff;
     font-size:10px;letter-spacing:0.2em;font-weight:700;padding:5px 16px;border-radius:999px;
     text-transform:uppercase;box-shadow:0 4px 12px rgba(168,137,90,0.4);z-index:10;
+  }
+
+  /* Flechas de Navegación */
+  .combos-arrow{
+    position:absolute;top:calc(50% - 24px);transform:translateY(-50%);
+    width:48px;height:48px;border-radius:50%;
+    background:#ffffff;color:var(--plum-800);border:1.5px solid var(--rule);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;z-index:25;box-shadow:0 8px 24px rgba(36,24,43,0.14);
+    transition:all .25s ease;
+  }
+  .combos-arrow:hover{
+    background:var(--plum);color:var(--ivory);border-color:var(--plum);
+    transform:translateY(-50%) scale(1.08);box-shadow:0 12px 28px rgba(36,24,43,0.24);
+  }
+  .combos-arrow:active{transform:translateY(-50%) scale(0.95)}
+  .combos-arrow.prev{left:-4px}
+  .combos-arrow.next{right:-4px}
+  .combos-arrow svg{width:20px;height:20px;stroke-width:2.4;display:block}
+
+  /* Indicadores de Puntos (Dots) */
+  .combos-dots{
+    display:flex;justify-content:center;align-items:center;gap:10px;margin-top:10px;
+  }
+  .combo-dot{
+    width:10px;height:10px;border-radius:50%;background:rgba(36,24,43,0.22);
+    border:none;padding:0;cursor:pointer;transition:all .3s cubic-bezier(.25,1,.5,1);
+  }
+  .combo-dot.active{
+    width:28px;border-radius:999px;background:var(--gold);
+    box-shadow:0 0 12px rgba(184,149,82,0.5);
+  }
+
+  .combos-swipe-hint{
+    display:none;text-align:center;font-size:11.5px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--gold-dark);font-weight:600;margin-top:14px;
+  }
+
+  /* Responsivo Móvil y Tablets */
+  @media(max-width:860px){
+    .combos-carousel-wrap{margin:0 -18px 46px;padding:0}
+    .combos-track{
+      padding:24px calc(50vw - 148px) 24px;
+      gap:16px;
+    }
+    .combos-track .combo-card{
+      flex:0 0 296px;
+      max-width:296px;
+      padding:32px 24px 24px;
+      transform:scale(0.94);
+      opacity:0.82;
+    }
+    .combos-track .combo-card.is-centered{
+      transform:scale(1);
+      opacity:1;
+      border-color:var(--gold);
+      box-shadow:0 18px 42px -8px rgba(36,24,43,0.16), 0 0 22px rgba(184,149,82,0.24);
+    }
+    .combos-arrow{
+      width:40px;height:40px;
+      background:rgba(255,255,255,0.94);backdrop-filter:blur(6px);
+    }
+    .combos-arrow.prev{left:6px}
+    .combos-arrow.next{right:6px}
+    .combos-swipe-hint{display:block}
   }
 
   .combo-tag{
@@ -501,7 +594,16 @@
     </p>
   </div>
 
-  <div class="combos-grid">
+  <div class="combos-carousel-wrap">
+    <!-- Flechas de Navegación del Carrusel -->
+    <button class="combos-arrow prev" id="combos-prev-btn" type="button" aria-label="Combo navideño anterior">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </button>
+    <button class="combos-arrow next" id="combos-next-btn" type="button" aria-label="Siguiente combo navideño">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </button>
+
+    <div class="combos-track" id="combos-track">
 
     <!-- COMBO 1: DÚO PREMIUM 110 ML -->
     <article class="combo-card featured">
@@ -614,6 +716,15 @@
       </button>
     </article>
 
+    </div>
+
+    <!-- Indicador de Puntos (Dots) -->
+    <div class="combos-dots" id="combos-dots"></div>
+
+    <!-- Indicador para Móvil -->
+    <div class="combos-swipe-hint">
+      <span>✦ Desliza para explorar todos los combos ✦</span>
+    </div>
   </div>
 </section>
 
@@ -950,6 +1061,7 @@
   };
 
   document.addEventListener('DOMContentLoaded', () => {
+    initCombosCarousel();
     if(window.DA && window.DA.init){
       window.DA.init({
         onReady: (cat) => {
@@ -959,6 +1071,133 @@
       });
     }
   });
+
+  /* ───────── Carrusel de Combos Navideños ───────── */
+  function initCombosCarousel(){
+    const track = document.getElementById('combos-track');
+    const dotsContainer = document.getElementById('combos-dots');
+    const prevBtn = document.getElementById('combos-prev-btn');
+    const nextBtn = document.getElementById('combos-next-btn');
+    if(!track) return;
+
+    const cards = Array.from(track.children);
+    if(!cards.length) return;
+
+    // Generar dots dinámicos
+    if(dotsContainer){
+      dotsContainer.innerHTML = cards.map((_, i) => 
+        `<button class="combo-dot${i===0?' active':''}" data-dot="${i}" type="button" aria-label="Ver combo ${i+1}"></button>`
+      ).join('');
+
+      dotsContainer.querySelectorAll('.combo-dot').forEach((dot, idx) => {
+        dot.addEventListener('click', () => {
+          scrollToCard(idx);
+        });
+      });
+    }
+
+    function scrollToCard(idx){
+      if(!cards[idx]) return;
+      const card = cards[idx];
+      const trackRect = track.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const currentOffsetInTrack = cardRect.left - trackRect.left + track.scrollLeft;
+      const targetLeft = currentOffsetInTrack - (track.clientWidth - card.clientWidth) / 2;
+      track.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+    }
+
+    function updateActive(){
+      const trackRect = track.getBoundingClientRect();
+      const trackCenter = trackRect.left + trackRect.width / 2;
+      let closestCard = cards[0];
+      let closestDist = Infinity;
+
+      cards.forEach(card => {
+        const cardRect = card.getBoundingClientRect();
+        const cardCenter = cardRect.left + cardRect.width / 2;
+        const dist = Math.abs(trackCenter - cardCenter);
+        if(dist < closestDist){
+          closestDist = dist;
+          closestCard = card;
+        }
+      });
+
+      cards.forEach((card, idx) => {
+        const isCentered = (card === closestCard);
+        card.classList.toggle('is-centered', isCentered);
+        if(dotsContainer && dotsContainer.children[idx]){
+          dotsContainer.children[idx].classList.toggle('active', isCentered);
+        }
+      });
+
+      // Opacidad visual y estado de flechas en extremos
+      if(prevBtn){
+        const atStart = (closestCard === cards[0] && track.scrollLeft <= 15);
+        prevBtn.style.opacity = atStart ? '0.35' : '1';
+        prevBtn.style.pointerEvents = atStart ? 'none' : 'auto';
+      }
+      if(nextBtn){
+        const maxScroll = track.scrollWidth - track.clientWidth - 15;
+        const atEnd = (closestCard === cards[cards.length - 1] || track.scrollLeft >= maxScroll);
+        nextBtn.style.opacity = atEnd ? '0.35' : '1';
+        nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
+      }
+    }
+
+    function scrollNext(dir){
+      const current = track.querySelector('.is-centered') || cards[0];
+      const curIdx = cards.indexOf(current);
+      const targetIdx = dir === 'next'
+        ? Math.min(curIdx + 1, cards.length - 1)
+        : Math.max(curIdx - 1, 0);
+      scrollToCard(targetIdx);
+    }
+
+    if(prevBtn) prevBtn.addEventListener('click', () => scrollNext('prev'));
+    if(nextBtn) nextBtn.addEventListener('click', () => scrollNext('next'));
+
+    // Soporte de arrastre suave con ratón (Mouse Drag) para Desktop
+    let isDown = false;
+    let startX = 0;
+    let scrollLeftPos = 0;
+
+    track.addEventListener('mousedown', (e) => {
+      if(e.target.closest('button') || e.target.closest('select') || e.target.closest('a')) return;
+      isDown = true;
+      track.style.cursor = 'grabbing';
+      track.style.userSelect = 'none';
+      startX = e.pageX - track.offsetLeft;
+      scrollLeftPos = track.scrollLeft;
+    });
+
+    window.addEventListener('mouseup', () => {
+      if(!isDown) return;
+      isDown = false;
+      track.style.cursor = '';
+      track.style.userSelect = '';
+    });
+
+    track.addEventListener('mousemove', (e) => {
+      if(!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - track.offsetLeft;
+      const walk = (x - startX) * 1.2;
+      track.scrollLeft = scrollLeftPos - walk;
+    });
+
+    let scrollTimeout;
+    track.addEventListener('scroll', () => {
+      updateActive();
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(updateActive, 60);
+    }, { passive: true });
+
+    // Sincronización inicial y tras redimensión
+    setTimeout(updateActive, 120);
+    window.addEventListener('resize', () => {
+      setTimeout(updateActive, 100);
+    });
+  }
 
   function populateComboDropdowns(){
     if(!perfumeCatalog.length) return;
