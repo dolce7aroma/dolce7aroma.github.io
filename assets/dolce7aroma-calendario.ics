@@ -1,0 +1,30 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Dolce 7 Aroma//SEO & Marketing Calendar//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Dolce 7 Aroma - Rutina SEO & Marketing
+X-WR-TIMEZONE:America/Lima
+BEGIN:VEVENT
+UID:reporte-lunes-dolce7aroma@dolce7aroma.com
+DTSTAMP:20261124T050000Z
+DTSTART:20261130T140000Z
+DTEND:20261130T143000Z
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:📊 Reporte Semanal SEO & Ventas (GSC + GA4 + Cloudflare)
+DESCRIPTION:Revision semanal de las 3 fuentes:\n1. Search Console (impresiones, clics, keywords).\n2. Google Analytics 4 (usuarios, carritos, WhatsApp).\n3. Cloudflare (visitas totales y estado de cache).
+LOCATION:Chat Antigravity / dolce7aroma.com
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:maps-miercoles-dolce7aroma@dolce7aroma.com
+DTSTAMP:20261124T050000Z
+DTSTART:20261125T150000Z
+DTEND:20261125T153000Z
+RRULE:FREQ=WEEKLY;BYDAY=WE
+SUMMARY:📍 Publicar Novedad en Google Maps (Google Business)
+DESCRIPTION:Subir foto y texto semanal en el Perfil de Negocio de Google Maps para mantener el algoritmo activo y capitalizar las busquedas locales en SMP.
+LOCATION:Google Perfil de Empresa
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
