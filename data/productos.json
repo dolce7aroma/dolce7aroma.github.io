@@ -506,9 +506,9 @@
     },
     {
       "id": "p-da-ini-ame-s3r",
-      "sku": "DA-INI-AME",
+      "sku": "DA-LAT-AME",
       "name": "Amethyst",
-      "inspiration": "Initio",
+      "inspiration": "Lattafa",
       "gender": "mujer",
       "family": "oriental",
       "notes_top": [
@@ -1866,9 +1866,9 @@
     },
     {
       "id": "p-da-ini-hc-vr9",
-      "sku": "DA-INI-HC",
+      "sku": "DA-LAT-HC",
       "name": "Her Confession",
-      "inspiration": "Initio",
+      "inspiration": "Lattafa",
       "gender": "mujer",
       "family": "floral",
       "notes_top": [
@@ -1915,9 +1915,9 @@
     },
     {
       "id": "p-da-afn-hg-cfg",
-      "sku": "DA-AFN-HG",
+      "sku": "DA-LAT-HG",
       "name": "Honor & Glory",
-      "inspiration": "Afnan",
+      "inspiration": "Lattafa",
       "gender": "hombre",
       "family": "amaderado",
       "notes_top": [

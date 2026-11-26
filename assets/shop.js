@@ -868,6 +868,11 @@
     if(!document.getElementById('da-modal')?.classList.contains('open')){
       document.getElementById('da-bd')?.classList.remove('open');
     }
+    if(checkoutStep === 'confirm'){
+      checkoutStep = 'cart';
+      lastOrder = null;
+      cart = []; saveCart();
+    }
   }
   function renderCart(){
     const list = document.getElementById('da-cart-list');
@@ -1496,6 +1501,7 @@
         orderPayload.orderId = orderId;
         lastOrder = orderPayload;
         try { localStorage.setItem('da_last_order', JSON.stringify(orderPayload)); } catch(e){}
+        cart = []; saveCart();
 
         if (selectedPaymentMethod === 'mercadopago') {
           try {
@@ -1524,6 +1530,7 @@
         orderPayload.orderId = fallbackId;
         lastOrder = orderPayload;
         try { localStorage.setItem('da_last_order', JSON.stringify(orderPayload)); } catch(e){}
+        cart = []; saveCart();
         if (selectedPaymentMethod === 'mercadopago') {
           window.location.href = `pago-exitoso.html?orderId=${fallbackId}&metodo=mercadopago`;
         } else {
@@ -1595,6 +1602,7 @@ Quedo a la espera de sus datos de Yape para transferir y coordinar la entrega. Â
       foot.innerHTML = '';
 
       document.getElementById('da-pay-wa')?.addEventListener('click', ()=>{
+        cart = []; saveCart();
         if(lastOrder) {
           try {
             trackGA4Event('purchase', {
