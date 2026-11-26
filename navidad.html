@@ -1033,7 +1033,7 @@
   </div>
 </div>
 
-<script src="assets/shop.js?v=20261126_v27"></script>
+<script src="assets/shop.js?v=20261126_v29"></script>
 <script>
   let currentComboType = 'duo110';
   let perfumeCatalog = [];
@@ -1258,6 +1258,7 @@
   }
 
   function openComboConfigurator(type){
+    if(window.DA && window.DA.track) window.DA.track('open_combo_builder', { type: type || 'duo110' });
     currentComboType = type || 'duo110';
     const cfg = COMBO_CONFIGS[currentComboType];
     if(!cfg) return;

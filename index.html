@@ -1949,8 +1949,8 @@
   </div>
 </footer>
 
-<script src="assets/site-modals.js?v=4"></script>
-<script src="assets/shop.js?v=20261126_v27"></script>
+<script src="assets/site-modals.js?v=20261126_v29"></script>
+<script src="assets/shop.js?v=20261126_v29"></script>
 <script>
   // ── Render perfumes destacados (featured:true) usando el catálogo compartido ──
   const FAMILY_LABEL_HOME = {floral:'Floral',oriental:'Oriental',amaderado:'Amaderado',citrico:'Cítrico',chipre:'Chipre',aromatico:'Aromático',frutal:'Frutal'};
@@ -2128,6 +2128,7 @@
         document.querySelectorAll('[data-gender-tab]').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         const g = tab.dataset.genderTab;
+        if(window.DA && window.DA.track) window.DA.track('gender_tab_click', { gender: g });
         if(g === 'todos'){
           if(groupMen) groupMen.classList.remove('is-hidden');
           if(groupWomen) groupWomen.classList.remove('is-hidden');
@@ -2552,19 +2553,33 @@
 
     const STORAGE_KEY = 'da_popup_smp_seen_v1';
 
+    let popupOpenedAt = null;
+
     function openPopup(){
+      popupOpenedAt = Date.now();
       overlay.style.display = 'flex';
       requestAnimationFrame(() => overlay.classList.add('show'));
       overlay.setAttribute('aria-hidden', 'false');
+      if (window.DA && window.DA.track) window.DA.track('popup_smp_open');
     }
 
-    function closePopup(){
+    function closePopup(reason){
+      const durationMs = popupOpenedAt ? (Date.now() - popupOpenedAt) : 0;
+      const durationSec = +(durationMs / 1000).toFixed(1);
       overlay.classList.remove('show');
       overlay.setAttribute('aria-hidden', 'true');
       setTimeout(() => { overlay.style.display = 'none'; }, 250);
       try {
         sessionStorage.setItem(STORAGE_KEY, '1');
       } catch(e){}
+      if (window.DA && window.DA.track) {
+        window.DA.track('popup_smp_close', {
+          durationMs: durationMs,
+          durationSec: durationSec,
+          reason: reason || 'click_other',
+          readQuickly: durationSec < 2.0
+        });
+      }
     }
 
     // Auto-abrir a los 2.5s si no se ha visto en esta sesión
@@ -2577,19 +2592,19 @@
     }
 
     [btnClose, btnDismiss].forEach(btn => {
-      btn?.addEventListener('click', closePopup);
+      btn?.addEventListener('click', () => closePopup(btn === btnClose ? 'click_x' : 'click_dismiss'));
     });
 
     overlay.addEventListener('click', (e) => {
-      if(e.target === overlay) closePopup();
+      if(e.target === overlay) closePopup('click_backdrop');
     });
 
     document.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape' && overlay.classList.contains('show')) closePopup();
+      if(e.key === 'Escape' && overlay.classList.contains('show')) closePopup('escape_key');
     });
 
     btnAction?.addEventListener('click', () => {
-      closePopup();
+      closePopup('action_see_aromas');
       const secBoutique = document.getElementById('boutique');
       const btnAromas = document.getElementById('btn-tab-aromas');
       if(btnAromas) btnAromas.click();
