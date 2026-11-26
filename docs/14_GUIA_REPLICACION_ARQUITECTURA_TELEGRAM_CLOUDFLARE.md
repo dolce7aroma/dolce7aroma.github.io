@@ -269,7 +269,42 @@ Debe responder: `{"ok":true,"result":true,"description":"Webhook was set"}`.
 
 ---
 
-## 5. El Embudo de Conversión CRO: Fórmula y Cálculo
+## 5. Radiografía de Audiencia y Demanda Real (País, Dispositivo y Productos Top)
+
+Además del embudo de conversión general, la arquitectura permite consultar a nivel de servidor la **radiografía real de la demanda** sin depender de cookies ni extensiones de navegador:
+
+```javascript
+// Consulta GraphQL en Cloudflare para desglose por País y Dispositivo
+const queryAudience = `{
+  viewer {
+    zones(filter: { zoneTag: "${zoneId}" }) {
+      httpRequestsAdaptiveGroups(
+        limit: 15,
+        filter: { date_geq: "${startDate}" },
+        orderBy: [count_DESC]
+      ) {
+        count
+        dimensions {
+          clientCountryName
+          clientDeviceType
+        }
+      }
+    }
+  }
+}`;
+```
+
+### Estructura de Tabla Estándar de Demanda (Aplicable a Cualquier E-Commerce):
+| Dimensión | Métrica Clave | Interpretación Estratégica |
+| :--- | :--- | :--- |
+| **País (Geolocalización)** | % Tráfico Nacional (ej: PE) vs Internacional | Filtra rastreadores extranjeros (Googlebot en US/NL) y aísla clientes reales con poder de compra local. |
+| **Dispositivo** | Móvil vs Computadora vs Tablet | Define la prioridad de diseño (en retail local, >80% móvil exige botones de WhatsApp flotantes). |
+| **Preferencia de Género** | Damas vs Caballeros vs Unisex | Permite balancear el stock en tienda física y orientar las pautas publicitarias. |
+| **Top Productos Más Vistos** | Peticiones a assets/imágenes de productos | Revela la demanda latente: qué producto quieren comprar aunque no hayan concretado la orden. |
+
+---
+
+## 6. El Embudo de Conversión CRO: Fórmula y Cálculo
 
 El sistema calcula automáticamente la Tasa de Conversión Real del negocio:
 
@@ -285,7 +320,7 @@ $$\text{Conversión Neta Final} = \left(\frac{\text{Pedidos Cobrados}}{\text{Vis
 
 ---
 
-## 6. Checklist de Replicación para un Nuevo Dominio
+## 7. Checklist de Replicación para un Nuevo Dominio
 
 Para instalar esta arquitectura en un nuevo cliente o proyecto:
 * [ ] **1. Cloudflare:** Dominio delegado con proxy activo (nube naranja).

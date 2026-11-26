@@ -2807,9 +2807,9 @@
     },
     {
       "id": "p-da-kil-pg-fru",
-      "sku": "DA-KIL-PG",
-      "name": "Paradise Garden",
-      "inspiration": "Kilian",
+      "sku": "DA-JPG-LBPG",
+      "name": "Le Beau Paradise Garden",
+      "inspiration": "Jean Paul Gaultier",
       "gender": "hombre",
       "family": "floral",
       "notes_top": [
@@ -2826,7 +2826,7 @@
         "almizcle",
         "sándalo"
       ],
-      "description": "Un jardín de lujo en plena floración.",
+      "description": "Inspirado en Le Beau Paradise Garden de Jean Paul Gaultier. Un paraíso tropical, fresco y seductor.",
       "photo": "assets/perfumes/Paradise Garden.jpg",
       "sizes": [
         {
