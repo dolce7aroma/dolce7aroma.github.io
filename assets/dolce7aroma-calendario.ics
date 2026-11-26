@@ -1,30 +1,56 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Dolce 7 Aroma//SEO & Marketing Calendar//ES
+PRODID:-//Dolce 7 Aroma//SEO Marketing & Operations Calendar//ES
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Dolce 7 Aroma - Rutina SEO & Marketing
+X-WR-CALNAME:Dolce 7 Aroma - Rutinas de Negocio & Crecimiento
 X-WR-TIMEZONE:America/Lima
 BEGIN:VEVENT
 UID:reporte-lunes-dolce7aroma@dolce7aroma.com
-DTSTAMP:20261124T050000Z
+DTSTAMP:20261126T110000Z
 DTSTART:20261130T140000Z
 DTEND:20261130T143000Z
 RRULE:FREQ=WEEKLY;BYDAY=MO
-SUMMARY:📊 Reporte Semanal SEO & Ventas (GSC + GA4 + Cloudflare)
-DESCRIPTION:Revision semanal de las 3 fuentes:\n1. Search Console (impresiones, clics, keywords).\n2. Google Analytics 4 (usuarios, carritos, WhatsApp).\n3. Cloudflare (visitas totales y estado de cache).
-LOCATION:Chat Antigravity / dolce7aroma.com
+SUMMARY:📊 Reporte Semanal Tríada (GSC + Cloudflare + Ventas)
+DESCRIPTION:Rutina semanal del Lunes a las 9:00 AM:\n1. Enviar /semana y /cro al Bot de Telegram.\n2. Revisar visitantes únicos en Cloudflare vs pedidos.\n3. Auditar top palabras clave en Google Search Console.\n4. Si el Worker automatizado ya envió el reporte, revisar las recomendaciones de Gemini.
+LOCATION:Telegram Bot (@dolce7aroma_bot) / Antigravity
 STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: 📊 Reporte Semanal Tríada Dolce 7 Aroma
+TRIGGER:-PT15M
+END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:maps-miercoles-dolce7aroma@dolce7aroma.com
-DTSTAMP:20261124T050000Z
+DTSTAMP:20261126T110000Z
 DTSTART:20261125T150000Z
 DTEND:20261125T153000Z
 RRULE:FREQ=WEEKLY;BYDAY=WE
-SUMMARY:📍 Publicar Novedad en Google Maps (Google Business)
-DESCRIPTION:Subir foto y texto semanal en el Perfil de Negocio de Google Maps para mantener el algoritmo activo y capitalizar las busquedas locales en SMP.
-LOCATION:Google Perfil de Empresa
+SUMMARY:📍 Novedad Semanal en Google Maps (Perfil de Negocio)
+DESCRIPTION:Rutina semanal del Miércoles a las 10:00 AM:\n1. Abrir Google Maps / Perfil de Empresa (Dolce Aroma - Perfumes & Dupes).\n2. Publicar una foto del frasco o tienda con el texto semanal preparado.\n3. Responder a nuevas reseñas de clientes en SMP.\nEsto mantiene el algoritmo de búsqueda local activo.
+LOCATION:Google Perfil de Negocio (SMP - Jr. Callao 482-A)
 STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: 📍 Publicar en Google Maps Dolce Aroma
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cierre-viernes-dolce7aroma@dolce7aroma.com
+DTSTAMP:20261126T110000Z
+DTSTART:20261127T210000Z
+DTEND:20261127T213000Z
+RRULE:FREQ=WEEKLY;BYDAY=FR
+SUMMARY:📦 Control de Stock & Cierre Pre-Fin de Semana
+DESCRIPTION:Rutina semanal del Viernes a las 4:00 PM:\n1. Verificar stock de frascos disponibles (10ml, 50ml, 110ml).\n2. Revisar pedidos pendientes de entrega o recojo en Bazar Shirley.\n3. Enviar /resumen en Telegram para cuadre de caja de la semana.
+LOCATION:Boutique / Taller Dolce 7 Aroma
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Recordatorio: 📦 Control de Stock & Fin de Semana
+TRIGGER:-PT15M
+END:VALARM
 END:VEVENT
 END:VCALENDAR

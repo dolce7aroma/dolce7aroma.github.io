@@ -531,6 +531,7 @@
       <a class="nav-link" href="index.html">Inicio</a>
       <a class="nav-link active" href="catalogo.html">Perfumes</a>
       <a class="nav-link" href="index.html#ofertas">Ofertas</a>
+      <a class="nav-link" href="navidad.html" style="color:var(--gold,#a8895a);font-weight:600">Navidad 🎁</a>
       <a class="nav-link" href="index.html#boutique">Boutique</a>
     </div>
     <a href="index.html" class="nav-logo-wrap"><img class="nav-logo" src="assets/logo-perfumes.png" alt="Dolce 7 Aroma Perfumes" /></a>
@@ -768,11 +769,28 @@ function priceOf(p){
 }
 
 function filtered(){
-  const q = state.q.toLowerCase().trim();
+  const rawQ = (state.q || '').toLowerCase().trim();
+  const norm = str => (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const cleanQ = norm(rawQ);
+  const isGeneric = ['dupe', 'dupes', 'perfume', 'perfumes', 'aroma', 'aromas', 'fragancia', 'fragancias', 'contratipo', 'contratipos', 'equivalencia', 'equivalencias'].includes(cleanQ);
+
   let arr = perfumes.filter(p => {
-    if(q){
-      const blob = [p.name, p.inspiration, ...(p.notes_top||[]), ...(p.notes_heart||[]), ...(p.notes_base||[])].join(' ').toLowerCase();
-      if(!blob.includes(q)) return false;
+    if(cleanQ && !isGeneric){
+      const blob = norm([
+        p.name,
+        p.inspiration,
+        p.gender,
+        p.family,
+        p.description,
+        p.tag,
+        p.intensity,
+        p.sku,
+        ...(p.occasion || []),
+        ...(p.notes_top || []),
+        ...(p.notes_heart || []),
+        ...(p.notes_base || [])
+      ].join(' '));
+      if(!blob.includes(cleanQ)) return false;
     }
     if(state.gender && p.gender !== state.gender) return false;
     if(state.family && p.family !== state.family) return false;
@@ -988,6 +1006,7 @@ function wire(){
   <div class="imlist">
     <a class="imitem" href="index.html"><div><div class="l">Inicio</div><div class="s">Página principal</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <a class="imitem" href="catalogo.html"><div><div class="l">Perfumes</div><div class="s">Catálogo completo</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="imitem is-festive" href="navidad.html" style="background:linear-gradient(135deg, rgba(168,137,90,0.18), rgba(60,47,71,0.08));border:1.5px solid rgba(168,137,90,0.45)"><div><div class="l" style="color:#a8895a">🎄 Especial Navidad</div><div class="s">Estuches y regalos premium</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <a class="imitem" href="index.html#ofertas"><div><div class="l">Ofertas</div><div class="s">Combos del momento</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <a class="imitem" href="index.html#boutique"><div><div class="l">Boutique</div><div class="s">Punto de venta físico</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <a class="imitem" href="faq.html"><div><div class="l">FAQ</div><div class="s">Preguntas frecuentes</div></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
