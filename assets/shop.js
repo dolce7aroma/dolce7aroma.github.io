@@ -273,7 +273,13 @@
     const n = cartCount();
     document.querySelectorAll('[data-cart-count]').forEach(el => { el.textContent = n; });
     const cf = document.getElementById('da-cart-float');
-    if(cf) cf.style.display = (n > 0 ? 'flex' : 'none');
+    if(cf){
+      if(n > 0){
+        cf.classList.add('has-items');
+      } else {
+        cf.classList.remove('has-items');
+      }
+    }
   }
   function bumpCount(){
     document.querySelectorAll('[data-cart-count]').forEach(el=>{
@@ -478,43 +484,38 @@
       .da-hint-headline b{font-size:28px;color:#a8895a;font-weight:600}
       .da-confirm-id{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#a8895a;font-weight:600;margin-top:-6px}
 
-      .da-wa-float{
-        position:fixed;right:20px;bottom:20px;z-index:90;
+      .da-gift-float{
+        position:fixed;right:20px;bottom:20px;z-index:85;
         display:flex;align-items:center;gap:10px;text-decoration:none;
         transition:transform .2s, box-shadow .2s;
       }
-      .da-wa-float:hover{
+      .da-gift-float:hover{
         transform:scale(1.04);
       }
-      .da-wa-float .da-wa-float-label{
+      .da-gift-float .da-gift-float-label{
         background:#ffffff;color:#1a1620;font-size:13px;font-weight:600;font-family:'Jost',sans-serif;
-        padding:9px 15px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:nowrap;
-        display:flex;align-items:center;gap:7px;border:1.5px solid rgba(37,211,102,0.4);
+        padding:9px 16px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:nowrap;
+        display:flex;align-items:center;gap:7px;border:1.5px solid rgba(168,137,90,0.45);
       }
-      .da-wa-float .da-wa-dot{
-        width:9px;height:9px;border-radius:50%;background:#25D366;display:inline-block;
-        box-shadow:0 0 0 0 rgba(37,211,102,0.7);animation:daWaPulse 1.8s infinite;
-      }
-      @keyframes daWaPulse{
-        0%{box-shadow:0 0 0 0 rgba(37,211,102,0.7)}
-        70%{box-shadow:0 0 0 7px rgba(37,211,102,0)}
-        100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}
-      }
-      .da-wa-float .da-wa-float-icon{
-        width:54px;height:54px;border-radius:50%;background:#25D366;flex-shrink:0;
-        display:grid;place-items:center;box-shadow:0 8px 24px rgba(37,211,102,0.45);
+      .da-gift-float .da-gift-sparkle{font-size:15px}
+      .da-gift-float .da-gift-float-icon{
+        width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg, #a8895a, #3c2f47);flex-shrink:0;
+        display:grid;place-items:center;box-shadow:0 8px 24px rgba(168,137,90,0.5);
         transition:transform .2s;
       }
-      .da-wa-float:hover .da-wa-float-icon{transform:scale(1.06)}
+      .da-gift-float:hover .da-gift-float-icon{transform:scale(1.06)}
 
       .da-cart-float{
-        position:fixed;right:20px;bottom:84px;z-index:89;
-        display:none;align-items:center;gap:9px;text-decoration:none;
+        position:fixed;right:20px;bottom:84px;z-index:84;
+        display:none !important;align-items:center;gap:9px;text-decoration:none;
         background:#3c2f47;color:#f6f4ef;
         padding:11px 18px 11px 14px;border-radius:999px;
         box-shadow:0 8px 24px rgba(60,47,71,0.35);
         cursor:pointer;transition:transform .2s, box-shadow .2s, background .2s, opacity .2s;
         border:1.5px solid rgba(168,137,90,0.5);
+      }
+      .da-cart-float.has-items{
+        display:flex !important;
       }
       .da-cart-float:hover{
         transform:translateY(-2px);
@@ -534,13 +535,13 @@
         display:grid;place-items:center;padding:0 5px;box-sizing:border-box;
       }
       .da-cart.open ~ .da-cart-float,
-      .da-cart.open ~ .da-wa-float{
+      .da-cart.open ~ .da-gift-float{
         opacity:0;pointer-events:none;transform:scale(0.85);
       }
       @media (max-width:480px){
-        .da-wa-float{right:14px;bottom:14px}
-        .da-wa-float .da-wa-float-label{font-size:12px;padding:8px 12px}
-        .da-wa-float .da-wa-float-icon{width:48px;height:48px}
+        .da-gift-float{right:14px;bottom:14px}
+        .da-gift-float .da-gift-float-label{font-size:12px;padding:8px 12px}
+        .da-gift-float .da-gift-float-icon{width:48px;height:48px}
         .da-cart-float{right:14px;bottom:72px;padding:9px 14px 9px 12px}
         .da-cart-float-icon{font-size:16px}
         .da-cart-float-label{font-size:15px}
@@ -659,15 +660,19 @@
         <div class="da-cart-foot" id="da-cart-foot"></div>
       </aside>
       <div class="da-toast" id="da-toast"></div>
-      <a href="https://wa.me/51930122014?text=Hola%20Dolce%207%20Aroma%2C%20quisiera%20consultar%20por%20un%20perfume%20o%20hacer%20un%20pedido." target="_blank" rel="noopener" class="da-wa-float" id="da-wa-float" aria-label="Consultar por WhatsApp">
-        <span class="da-wa-float-label"><span class="da-wa-dot"></span>¿Consultas? WhatsApp</span>
-        <span class="da-wa-float-icon">
-          <svg viewBox="0 0 32 32" width="28" height="28" fill="#ffffff">
-            <path d="M16 2a13.9 13.9 0 0 0-12 21L2 30l7.2-1.9A13.9 13.9 0 1 0 16 2zm0 25.5a11.6 11.6 0 0 1-5.9-1.6l-.4-.3-4.4 1.1 1.2-4.3-.3-.5A11.6 11.6 0 1 1 16 27.5zm6.4-8.7c-.3-.2-2-1-2.3-1.1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a9 9 0 0 1-2.7-1.7 9.8 9.8 0 0 1-1.9-2.3c-.2-.3 0-.5.2-.7s.3-.4.5-.6l.3-.4c.1-.2 0-.4 0-.5s-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.7 3.7 0 0 0-1.1 2.7c0 1.6 1.2 3.2 1.4 3.4.2.3 2.4 3.7 5.8 5.2.8.4 1.4.6 1.9.8.8.3 1.6.2 2.2.1.7-.1 2-.8 2.3-1.6.3-.8.3-1.5.2-1.6s-.3-.2-.6-.3z"/>
+      <a href="#" class="da-gift-float" id="da-gift-float" aria-label="Arma tu Regalo Navideño">
+        <span class="da-gift-float-label"><span class="da-gift-sparkle">🎁</span>Arma tu Regalo · Estuches & Packs</span>
+        <span class="da-gift-float-icon">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#f6f4ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 12 20 22 4 22 4 12"></polyline>
+            <rect x="2" y="7" width="20" height="5"></rect>
+            <line x1="12" y1="22" x2="12" y2="7"></line>
+            <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+            <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
           </svg>
         </span>
       </a>
-      <a href="#" class="da-cart-float" id="da-cart-float" data-cart-open aria-label="Ver bolsa de compras" style="display:none">
+      <a href="#" class="da-cart-float" id="da-cart-float" data-cart-open aria-label="Ver bolsa de compras">
         <span class="da-cart-float-icon">🛍️</span>
         <span class="da-cart-float-label">Bolsa</span>
         <span class="da-cart-float-count" data-cart-count>0</span>
@@ -675,7 +680,7 @@
     `);
     document.getElementById('da-bd').addEventListener('click', ()=>{ closeModal(); closeCart(); });
     document.getElementById('da-cart-close').addEventListener('click', closeCart);
-    document.getElementById('da-wa-float')?.addEventListener('click', ()=>{ trackGA4Event('click_whatsapp', { source: 'floating_button' }); });
+    document.getElementById('da-gift-float')?.addEventListener('click', e => { e.preventDefault(); openGiftBuilder(); });
     document.getElementById('da-cart-float')?.addEventListener('click', e => { e.preventDefault(); openCart(); });
     document.getElementById('da-cart-share').addEventListener('click', shareCart);
     document.getElementById('da-cart-expand').addEventListener('click', toggleCartExpand);
