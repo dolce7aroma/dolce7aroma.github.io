@@ -28,6 +28,113 @@ window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(argume
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   :root{
+    --lavender:#cfc8d8; --lavender-soft:#e8e3ed; --ivory:#f8f6f2; --cream:#f2ede4;
+    --plum:#2c2135; --plum-800:#1e1624; --plum-700:#4e3d5c; --ink:#120d17;
+    --gold:#c5a059; --gold-dark:#9c7836; --gold-light:#e8d5b5; --gold-soft:rgba(197,160,89,0.14);
+    --rule:rgba(60,47,71,0.12); --rule-soft:rgba(60,47,71,0.06);
+    --card-bg:#ffffff; --card-border:rgba(197,160,89,0.22);
+    --card-shadow:0 12px 32px -4px rgba(44,33,53,0.06), 0 4px 12px rgba(0,0,0,0.02);
+    --card-shadow-hover:0 20px 40px -4px rgba(44,33,53,0.12);
+    --ok:#10b981; --warn:#f59e0b; --danger:#ef4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--ivory);color:var(--plum);font-family:'Jost',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select,textarea{font-family:inherit;font-size:14px;color:var(--plum)}
+  .mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+  .serif{font-family:'Cormorant Garamond',serif}
+
+  /* ── Header Ejecutivo de Lujo ── */
+  header{
+    background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);
+    border-bottom:1px solid rgba(197,160,89,0.2);
+    padding:14px 32px;display:flex;justify-content:space-between;align-items:center;
+    position:sticky;top:0;z-index:40;box-shadow:0 4px 20px rgba(0,0,0,0.02);
+  }
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand img{height:38px;width:auto}
+  .brand .sep{width:1px;height:22px;background:rgba(197,160,89,0.3)}
+  .brand .label{font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:var(--gold-dark);font-weight:700}
+  
+  .top-actions{display:flex;gap:10px;align-items:center}
+  
+  .btn{
+    display:inline-flex;align-items:center;gap:7px;padding:9px 16px;
+    border-radius:10px;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;font-weight:600;
+    transition:all .25s cubic-bezier(0.4, 0, 0.2, 1);border:1px solid transparent;
+  }
+  .btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .btn-primary{
+    background:linear-gradient(135deg, var(--plum) 0%, var(--plum-800) 100%);
+    color:#fff;box-shadow:0 4px 14px rgba(44,33,53,0.25);border:1px solid rgba(255,255,255,0.1);
+  }
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(44,33,53,0.35);background:#1a1320}
+  .btn-ghost{
+    background:#ffffff;border:1px solid rgba(60,47,71,0.14);color:var(--plum);
+    box-shadow:0 2px 6px rgba(0,0,0,0.02);
+  }
+  .btn-ghost:hover{background:#faf8f5;border-color:var(--gold);color:var(--gold-dark)}
+  .btn-danger{color:var(--danger);border-color:rgba(239,68,68,0.25);background:#fff}
+  .btn-danger:hover{background:#fef2f2}
+
+  /* ── Segmented Control: Pestañas Principales ── */
+  .admin-tabs-nav{
+    display:flex;gap:6px;padding:6px;background:rgba(255,255,255,0.9);
+    border:1px solid rgba(197,160,89,0.25);border-radius:14px;
+    margin-bottom:28px;flex-wrap:wrap;box-shadow:0 4px 16px rgba(44,33,53,0.03);
+  }
+  .admin-tab{
+    padding:8px 16px;border-radius:10px;font-size:12.5px;font-weight:600;
+    color:var(--plum-700);transition:all .2s;border:none;display:flex;align-items:center;gap:6px;
+  }
+  .admin-tab:hover{color:var(--plum);background:rgba(197,160,89,0.08)}
+  .admin-tab.active{
+    background:linear-gradient(135deg, var(--plum) 0%, #3e2e4b 100%) !important;
+    color:#fff !important;box-shadow:0 4px 12px rgba(44,33,53,0.2) !important;
+  }
+
+  /* ── Segmented Control: Subpestañas del Dashboard (SIN SEPARACIÓN) ── */
+  .dash-subtabs-unified{
+    display:inline-flex;gap:4px;padding:5px;background:#ede7de;
+    border:1px solid rgba(197,160,89,0.3);border-radius:12px;
+    margin:18px 0 26px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.04);
+  }
+  .dash-subtab{
+    padding:9px 18px;border-radius:9px;font-size:12.5px;font-weight:700;
+    color:var(--plum-700);transition:all .2s;border:none;background:transparent;
+    display:flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer;
+  }
+  .dash-subtab:hover{color:var(--plum);background:rgba(255,255,255,0.4)}
+  .dash-subtab.active{
+    background:#ffffff !important;color:var(--plum) !important;
+    box-shadow:0 3px 10px rgba(44,33,53,0.1) !important;border:1px solid rgba(197,160,89,0.25) !important;
+  }
+
+  /* ── Tarjetas de Lujo ── */
+  .luxury-card{
+    background:var(--card-bg);border:1px solid var(--card-border);
+    border-radius:18px;padding:24px 26px;box-shadow:var(--card-shadow);
+    transition:all .3s ease;position:relative;
+  }
+  .luxury-card:hover{box-shadow:var(--card-shadow-hover)}
+  
+  .kpi-tile{
+    background:linear-gradient(145deg, #ffffff 0%, #fdfbf9 100%);
+    border:1px solid rgba(197,160,89,0.25);border-radius:14px;
+    padding:18px 20px;box-shadow:0 4px 14px rgba(0,0,0,0.02);
+  }
+  .kpi-tile .label{font-size:11.5px;text-transform:uppercase;letter-spacing:0.14em;color:var(--gold-dark);font-weight:700;margin-bottom:6px}
+  .kpi-tile .val{font-size:32px;font-weight:700;color:var(--plum);line-height:1}
+  .kpi-tile .sub{font-size:12px;color:var(--plum-700);margin-top:6px}
+
+  @media (max-width:780px){
+    .dash-subtabs-unified{width:100%;overflow-x:auto}
+    header{padding:12px 18px}
+  }
+
+  :root{
     --lavender:#cfc8d8; --lavender-soft:#e8e3ed; --ivory:#f6f2ec; --cream:#efe7d9;
     --plum:#3c2f47; --plum-700:#5a4868; --ink:#1a1620; --gold:#a8895a;
     --rule:rgba(60,47,71,0.18); --rule-soft:rgba(60,47,71,0.08);
@@ -322,38 +429,22 @@ window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(argume
 
 <header>
   <div class="brand">
-    <a href="index.html"><img src="assets/logo-perfumes.png" alt="Dolce Aroma" /></a>
+    <a href="index.html"><img src="assets/logo-perfumes.png" alt="Dolce 7 Aroma" /></a>
     <div class="sep"></div>
-    <span class="label">Panel · Catálogo</span>
+    <span class="label">Centro Ejecutivo · Dolce 7 Aroma</span>
   </div>
   <div class="top-actions">
-    <a class="btn btn-ghost" href="catalogo.html">
-      <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
-      Ver catálogo
+    <div style="display:flex;align-items:center;gap:8px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);padding:5px 12px;border-radius:999px;font-size:11.5px;color:#065f46;font-weight:700">
+      <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981"></span>
+      Cloudflare Worker Conectado
+    </div>
+    <a class="btn btn-ghost" href="catalogo.html" target="_blank" title="Abrir tienda pública">
+      <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      Ver Tienda
     </a>
-    <a class="btn btn-ghost" href="data/plantilla-perfumes.csv" download>
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
-      Plantilla CSV
-    </a>
-    <button class="btn btn-ghost" id="btn-bulk">
-      <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
-      Carga masiva
-    </button>
-    <button class="btn btn-ghost" id="btn-import" title="Importar JSON">
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15l3 3 3-3"/></svg>
-      Importar JSON
-    </button>
-    <button class="btn btn-ghost" id="btn-export" title="Descarga el archivo productos.json para subir a GitHub">
-      <svg viewBox="0 0 24 24"><path d="M12 21V9M7 14l5-5 5 5M5 3h14"/></svg>
-      Exportar productos.json
-    </button>
-    <button class="btn btn-primary" id="btn-publish" title="Publica el catálogo directo a la web, sin pasos manuales">
-      <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
-      Publicar cambios
-    </button>
-    <button class="btn btn-primary" id="btn-new">
-      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-      Nuevo perfume
+    <button class="btn btn-ghost" id="btn-logout" title="Cerrar sesión de administrador" onclick="localStorage.removeItem('da-admin-session-v1');localStorage.removeItem('da_admin_key');sessionStorage.clear();window.location.replace('index.html');">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      Salir
     </button>
   </div>
 </header>
@@ -368,16 +459,16 @@ window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(argume
   </div>
 
   <!-- Section tabs -->
-  <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap" id="admin-tabs">
-    <button class="btn btn-primary admin-tab active" data-section="dashboard">📊 Dashboard</button>
-    <button class="btn btn-ghost admin-tab" data-section="catalogo">📚 Catálogo</button>
-    <button class="btn btn-ghost admin-tab" data-section="resenas">⭐ Reseñas</button>
-    <button class="btn btn-ghost admin-tab" data-section="anuncios">📢 Anuncios</button>
-    <button class="btn btn-ghost admin-tab" data-section="envios">🚚 Envíos</button>
-    <button class="btn btn-ghost admin-tab" data-section="pedidos">🧾 Pedidos</button>
-    <button class="btn btn-ghost admin-tab" data-section="pago">💳 Pago</button>
-    <button class="btn btn-ghost admin-tab" data-section="regalo">🎁 Extras Regalo</button>
-    <button class="btn btn-ghost admin-tab" data-section="contacto">📱 Contacto</button>
+  <div class="admin-tabs-nav" id="admin-tabs">
+    <button class="admin-tab active" data-section="dashboard">📊 Dashboard</button>
+    <button class="admin-tab" data-section="catalogo">📚 Catálogo</button>
+    <button class="admin-tab" data-section="resenas">⭐ Reseñas</button>
+    <button class="admin-tab" data-section="anuncios">📢 Anuncios</button>
+    <button class="admin-tab" data-section="envios">🚚 Envíos</button>
+    <button class="admin-tab" data-section="pedidos">🧾 Pedidos</button>
+    <button class="admin-tab" data-section="pago">💳 Pago</button>
+    <button class="admin-tab" data-section="regalo">🎁 Extras Regalo</button>
+    <button class="admin-tab" data-section="contacto">📱 Contacto</button>
   </div>
 
   <!-- ─────────── DASHBOARD ─────────── -->
@@ -401,20 +492,22 @@ window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(argume
     </div>
 
     <!-- SUBTABS DE NAVEGACIÓN EJECUTIVA (LAS 3 ÁREAS CLAVE) -->
-    <div class="dash-subtabs" style="display:flex;gap:10px;margin:22px 0 28px;border-bottom:2px solid var(--rule,#e5dfd5);padding-bottom:12px;overflow-x:auto">
-      <button class="btn btn-primary dash-subtab active" data-dash-tab="ventas" type="button" style="font-size:13.5px;padding:10px 18px">
+    <div style="display:flex;justify-content:flex-start;margin:16px 0 24px">
+    <div class="dash-subtabs-unified">
+      <button class="dash-subtab active" data-dash-tab="ventas" type="button">
         💰 1. Ventas & Facturación
       </button>
-      <button class="btn btn-ghost dash-subtab" data-dash-tab="comportamiento" type="button" style="font-size:13.5px;padding:10px 18px">
-        🔍 2. Comportamiento en Web (Adentro)
+      <button class="dash-subtab" data-dash-tab="comportamiento" type="button">
+        🔍 2. Comportamiento en Web
       </button>
-      <button class="btn btn-ghost dash-subtab" data-dash-tab="radar" type="button" style="font-size:13.5px;padding:10px 18px">
-        🌍 3. Radar de Mercado (Afuera)
+      <button class="dash-subtab" data-dash-tab="radar" type="button">
+        🌍 3. Radar de Mercado
       </button>
-      <button class="btn btn-ghost dash-subtab" data-dash-tab="inventario" type="button" style="font-size:13.5px;padding:10px 18px;margin-left:auto">
+      <button class="dash-subtab" data-dash-tab="inventario" type="button">
         📦 4. Inventario & Stock
       </button>
     </div>
+  </div>
 
     <!-- ════════════════════════════════════════════════════════════════════════ -->
     <!-- PANEL 1: VENTAS & FACTURACIÓN                                           -->
@@ -713,6 +806,22 @@ window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(argume
 
   <!-- ─────────── CATÁLOGO ─────────── -->
   <section class="admin-section" data-section="catalogo" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;background:#fff;padding:16px 20px;border-radius:14px;border:1px solid rgba(197,160,89,0.25)">
+    <div>
+      <h3 class="serif" style="font-size:24px;color:var(--plum);margin:0">Gestión de Catálogo & Fragancias</h3>
+      <p style="font-size:12px;color:var(--plum-700);margin:2px 0 0">Modifica precios, notas olfativas y stock de la colección.</p>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" id="btn-publish" title="Publica el catálogo directo a la web">
+        <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
+        Publicar Cambios
+      </button>
+      <button class="btn btn-primary" id="btn-new" style="background:#c5a059;border-color:#b38c47">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        + Nuevo Perfume
+      </button>
+    </div>
+  </div>
     <div class="page-head">
       <div>
         <h1>Catálogo de <em>perfumes</em></h1>
@@ -3208,38 +3317,68 @@ function renderExecutiveDashboard(data) {
         </div>
       </div>
 
-      <!-- Comparativa de Elección y Clic Final: Visa vs Yape -->
-      <div style="background:#fcfbf9;border:1.5px solid #dcd4e0;padding:16px 20px;border-radius:14px">
-        <div style="font-size:13px;font-weight:700;color:var(--plum);margin-bottom:12px">5. Elección de Pago & Clic Final: ¿Usan Tarjeta/Visa o Yape?</div>
+      <!-- Comparativa Fintech de Lujo: Visa vs Yape -->
+      <div style="background:linear-gradient(145deg, #ffffff 0%, #faf8f5 100%);border:1px solid rgba(197,160,89,0.3);padding:22px 24px;border-radius:16px;box-shadow:0 8px 24px rgba(44,33,53,0.04)">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+          <div>
+            <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-dark);font-weight:700">ANÁLISIS DE INTENCIÓN DE PAGO</div>
+            <h4 class="serif" style="font-size:22px;color:var(--plum);margin:2px 0 0">5. Fase Crítica de Checkout: ¿Prefieren Tarjeta o WhatsApp?</h4>
+          </div>
+          <span style="background:rgba(197,160,89,0.12);color:var(--gold-dark);border:1px solid rgba(197,160,89,0.3);padding:5px 12px;border-radius:999px;font-size:11.5px;font-weight:700">
+            📊 Comparativa en Vivo
+          </span>
+        </div>
         
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <div style="background:#ffffff;border:1px solid #93c5fd;border-radius:10px;padding:14px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-              <span style="font-weight:700;color:#1e40af;font-size:13px">💳 Tarjeta / Visa (Mercado Pago)</span>
-              <span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700">${payMpSelected} eligieron</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" class="dashboard-charts">
+          
+          <!-- Tarjeta Visa / Mercado Pago -->
+          <div style="background:#ffffff;border:1.5px solid #bfdbfe;border-radius:14px;padding:18px 20px;box-shadow:0 6px 18px rgba(37,99,235,0.05);position:relative;overflow:hidden">
+            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #2563eb, #3b82f6)"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:20px">💳</span>
+                <strong style="color:#1e40af;font-size:14px">Tarjeta (Visa / Mastercard)</strong>
+              </div>
+              <span style="background:#eff6ff;color:#1d4ed8;border:1px solid #dbeafe;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:800">${payMpSelected} intenciones</span>
             </div>
-            <div style="font-size:12px;color:var(--plum-700);margin-bottom:8px">Clics al botón verde de pago seguro:</div>
-            <div style="display:flex;align-items:baseline;gap:8px">
-              <span style="font-size:26px;font-weight:800;color:#2563eb">${payMpExecute}</span>
-              <span style="font-size:12px;color:var(--muted)">usuarios dieron clic en pagar</span>
+            
+            <div style="font-size:12px;color:var(--plum-700);margin-bottom:6px">Clics efectivos al botón de cobro:</div>
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:12px">
+              <span class="serif" style="font-size:38px;font-weight:700;color:#1e40af;line-height:1">${payMpExecute}</span>
+              <span style="font-size:12px;color:var(--muted)">usuarios presionaron Pagar</span>
+            </div>
+            
+            <div style="background:#f8fafc;border-radius:8px;padding:8px 12px;font-size:11.5px;color:#475569;line-height:1.4">
+              ℹ️ <em>Nota de Pasarela:</em> Para cobrar a tarjetas en producción, asegúrate de ingresar tu <strong>Access Token</strong> de Mercado Pago en Cloudflare.
             </div>
           </div>
 
-          <div style="background:#ffffff;border:1px solid #d8b4fe;border-radius:10px;padding:14px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-              <span style="font-weight:700;color:#6b21a8;font-size:13px">📱 Yape / WhatsApp</span>
-              <span style="background:#f3e8ff;color:#6b21a8;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700">${payYapeSelected} eligieron</span>
+          <!-- Yape / WhatsApp -->
+          <div style="background:#ffffff;border:1.5px solid #e9d5ff;border-radius:14px;padding:18px 20px;box-shadow:0 6px 18px rgba(124,58,237,0.05);position:relative;overflow:hidden">
+            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #7c3aed, #a855f7)"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:20px">📱</span>
+                <strong style="color:#6b21a8;font-size:14px">Yape / Plin por WhatsApp</strong>
+              </div>
+              <span style="background:#faf5ff;color:#6b21a8;border:1px solid #f3e8ff;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:800">${payYapeSelected} intenciones</span>
             </div>
-            <div style="font-size:12px;color:var(--plum-700);margin-bottom:8px">Clics al botón de confirmación por chat:</div>
-            <div style="display:flex;align-items:baseline;gap:8px">
-              <span style="font-size:26px;font-weight:800;color:#7c3aed">${payYapeExecute}</span>
+            
+            <div style="font-size:12px;color:var(--plum-700);margin-bottom:6px">Clics al botón de confirmación en chat:</div>
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:12px">
+              <span class="serif" style="font-size:38px;font-weight:700;color:#6b21a8;line-height:1">${payYapeExecute}</span>
               <span style="font-size:12px;color:var(--muted)">usuarios abrieron WhatsApp</span>
             </div>
+            
+            <div style="background:#faf5ff;border-radius:8px;padding:8px 12px;font-size:11.5px;color:#6b21a8;line-height:1.4">
+              💬 <em>Atención Inmediata:</em> Canal directo al WhatsApp oficial de Dolce 7 Aroma para resolver dudas y confirmar captura de Yape.
+            </div>
           </div>
+
         </div>
 
-        <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #dcd4e0;font-size:12px;color:var(--plum-800)">
-          💡 <strong>Hallazgo Clave:</strong> El <strong>${Math.round((payMpExecute / (payMpExecute + payYapeExecute || 1)) * 100)}%</strong> de los usuarios en fase final prefiere Tarjeta/Visa con Mercado Pago, mientras el <strong>${Math.round((payYapeExecute / (payMpExecute + payYapeExecute || 1)) * 100)}%</strong> prefiere cerrar con Yape por WhatsApp.
+        <div style="margin-top:16px;padding:12px 16px;background:rgba(197,160,89,0.08);border-left:4px solid var(--gold);border-radius:8px;font-size:12.5px;color:var(--plum)">
+          💡 <strong>Diagnóstico Gerencial:</strong> El <strong>${Math.round((payMpExecute / (payMpExecute + payYapeExecute || 1)) * 100)}%</strong> de tus visitantes listos para comprar busca inmediatez con Tarjeta/Visa (Mercado Pago), mientras el <strong>${Math.round((payYapeExecute / (payMpExecute + payYapeExecute || 1)) * 100)}%</strong> prefiere cerrar mediante chat humano con Yape.
         </div>
       </div>
     </div>`;
