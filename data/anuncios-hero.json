@@ -4,6 +4,15 @@
   },
   "anuncios": [
     {
+      "id": "trio-maestro",
+      "activo": true,
+      "titulo": "Colección Exclusiva Dolce Aroma",
+      "subtitulo": "Frascos de 10ml, 50ml y 110ml macerados con esencias francesas",
+      "imagen": "assets/molde-trio-maestro-dolcearoma.jpg",
+      "textoBoton": "Ver Colección",
+      "link": "catalogo.html"
+    },
+    {
       "id": "navidad-2026",
       "activo": true,
       "titulo": "Especial Navidad 2026",
