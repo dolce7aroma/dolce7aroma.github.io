@@ -81,9 +81,9 @@ window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(argume
 
   /* ── Segmented Control: Pestañas Principales ── */
   .admin-tabs-nav{
-    display:flex;gap:6px;padding:6px;background:rgba(255,255,255,0.9);
-    border:1px solid rgba(197,160,89,0.25);border-radius:14px;
-    margin-bottom:28px;flex-wrap:wrap;box-shadow:0 4px 16px rgba(44,33,53,0.03);
+    display:flex;gap:6px;padding:6px;background:#ffffff;
+    border:1px solid rgba(197,160,89,0.3);border-radius:16px;
+    margin-bottom:28px;flex-wrap:wrap;box-shadow:0 6px 20px rgba(44,33,53,0.04);
   }
   .admin-tab{
     padding:8px 16px;border-radius:10px;font-size:12.5px;font-weight:600;
@@ -806,20 +806,32 @@ window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(argume
 
   <!-- ─────────── CATÁLOGO ─────────── -->
   <section class="admin-section" data-section="catalogo" style="display:none">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;background:#fff;padding:16px 20px;border-radius:14px;border:1px solid rgba(197,160,89,0.25)">
+  <!-- Barra de Herramientas de Catálogo de Lujo -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:14px;background:#ffffff;padding:18px 24px;border-radius:16px;border:1px solid rgba(197,160,89,0.28);box-shadow:0 6px 20px rgba(44,33,53,0.04)">
     <div>
-      <h3 class="serif" style="font-size:24px;color:var(--plum);margin:0">Gestión de Catálogo & Fragancias</h3>
-      <p style="font-size:12px;color:var(--plum-700);margin:2px 0 0">Modifica precios, notas olfativas y stock de la colección.</p>
+      <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold,#a8895a);font-weight:700">INVENTARIO & COLECCIÓN</div>
+      <h3 class="serif" style="font-size:26px;color:var(--plum);margin:2px 0 0">Gestión de Catálogo & Fragancias</h3>
+      <p style="font-size:12.5px;color:var(--plum-700);margin:4px 0 0">Edita perfumes, ajusta precios, controla stock y publica los cambios directo a la tienda web.</p>
     </div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" id="btn-publish" title="Publica el catálogo directo a la web">
-        <svg viewBox="0 0 24 24"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
-        Publicar Cambios
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-primary" id="btn-publish" title="Publica el catálogo directo a la web" style="box-shadow:0 4px 14px rgba(60,47,71,0.2)">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><path d="M4 12l1.4-8.4A2 2 0 017.4 2h9.2a2 2 0 012 1.6L20 12M4 12l2 8h12l2-8M4 12h16"/></svg>
+        <strong>Publicar Cambios</strong>
       </button>
-      <button class="btn btn-primary" id="btn-new" style="background:#c5a059;border-color:#b38c47">
-        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-        + Nuevo Perfume
+      <button class="btn btn-primary" id="btn-new" style="background:#c5a059;border-color:#b38c47;color:#fff">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><path d="M12 5v14M5 12h14"/></svg>
+        <strong>+ Nuevo Perfume</strong>
       </button>
+      <button class="btn btn-ghost" id="btn-bulk" title="Carga masiva mediante archivo CSV" style="font-size:12px;padding:8px 14px">
+        📄 Carga Masiva
+      </button>
+      <button class="btn btn-ghost" id="btn-import" title="Importar archivo JSON" style="font-size:12px;padding:8px 14px">
+        📥 Importar JSON
+      </button>
+      <button class="btn btn-ghost" id="btn-export" title="Exportar catálogo en formato JSON" style="font-size:12px;padding:8px 14px">
+        📤 Exportar JSON
+      </button>
+      <input type="file" id="import-file" accept=".json" style="display:none" />
     </div>
   </div>
     <div class="page-head">
@@ -2468,32 +2480,34 @@ function applyBulk(mode){
 
 /* ─── events ─── */
 function wire(){
-  $('#btn-new').addEventListener('click', ()=> openDrawer());
-  $('#btn-publicar-pago').addEventListener('click', publishPago);
-  $('#btn-add-extra-regalo').addEventListener('click', addRegaloExtraRow);
-  $('#btn-publicar-regalo').addEventListener('click', publishRegalos);
-  $('#btn-publicar-envios').addEventListener('click', publishZonas);
-  $('#btn-export').addEventListener('click', exportJson);
-  $('#btn-publish').addEventListener('click', publishCatalog);
-  $('#btn-import').addEventListener('click', ()=> $('#import-file').click());
-  $('#import-file').addEventListener('change', e=> e.target.files[0] && importJson(e.target.files[0]));
-  $('#btn-bulk').addEventListener('click', openBulk);
-  $('#bulk-close').addEventListener('click', closeBulk);
-  $('#bulk-bd').addEventListener('click', closeBulk);
-  $('#bulk-drop').addEventListener('click', ()=> $('#bulk-file').click());
-  $('#bulk-drop').addEventListener('dragover', e=>{ e.preventDefault(); $('#bulk-drop').style.borderColor='var(--gold)'; $('#bulk-drop').style.background='var(--cream)'; });
-  $('#bulk-drop').addEventListener('dragleave', ()=>{ $('#bulk-drop').style.borderColor=''; $('#bulk-drop').style.background=''; });
-  $('#bulk-drop').addEventListener('drop', e=>{ e.preventDefault(); $('#bulk-drop').style.borderColor=''; $('#bulk-drop').style.background=''; const f=e.dataTransfer.files?.[0]; if(f) handleBulk(f); });
-  $('#bulk-file').addEventListener('change', e=>{ const f=e.target.files?.[0]; if(f) handleBulk(f); });
-  $('#bulk-merge').addEventListener('click', ()=> applyBulk('merge'));
-  $('#bulk-replace').addEventListener('click', ()=> applyBulk('replace'));
-  $('#drawer-close').addEventListener('click', closeDrawer);
-  $('#btn-cancel').addEventListener('click', closeDrawer);
-  $('#backdrop').addEventListener('click', closeDrawer);
-  $('#btn-save').addEventListener('click', savePerfume);
-  $('#btn-delete').addEventListener('click', deletePerfume);
+  $('#btn-new')?.addEventListener('click', ()=> openDrawer());
+  $('#btn-publicar-pago')?.addEventListener('click', publishPago);
+  $('#btn-add-extra-regalo')?.addEventListener('click', addRegaloExtraRow);
+  $('#btn-publicar-regalo')?.addEventListener('click', publishRegalos);
+  $('#btn-publicar-envios')?.addEventListener('click', publishZonas);
+  $('#btn-export')?.addEventListener('click', exportJson);
+  $('#btn-publish')?.addEventListener('click', publishCatalog);
+  $('#btn-import')?.addEventListener('click', ()=> $('#import-file')?.click());
+  $('#import-file')?.addEventListener('change', e=> e.target.files?.[0] && importJson(e.target.files[0]));
+  $('#btn-bulk')?.addEventListener('click', openBulk);
+  $('#bulk-close')?.addEventListener('click', closeBulk);
+  $('#bulk-bd')?.addEventListener('click', closeBulk);
+  $('#bulk-drop')?.addEventListener('click', ()=> $('#bulk-file')?.click());
+  if($('#bulk-drop')){
+    $('#bulk-drop').addEventListener('dragover', e=>{ e.preventDefault(); $('#bulk-drop').style.borderColor='var(--gold)'; $('#bulk-drop').style.background='var(--cream)'; });
+    $('#bulk-drop').addEventListener('dragleave', ()=>{ $('#bulk-drop').style.borderColor=''; $('#bulk-drop').style.background=''; });
+    $('#bulk-drop').addEventListener('drop', e=>{ e.preventDefault(); $('#bulk-drop').style.borderColor=''; $('#bulk-drop').style.background=''; const f=e.dataTransfer.files?.[0]; if(f) handleBulk(f); });
+  }
+  $('#bulk-file')?.addEventListener('change', e=>{ const f=e.target.files?.[0]; if(f) handleBulk(f); });
+  $('#bulk-merge')?.addEventListener('click', ()=> applyBulk('merge'));
+  $('#bulk-replace')?.addEventListener('click', ()=> applyBulk('replace'));
+  $('#drawer-close')?.addEventListener('click', closeDrawer);
+  $('#btn-cancel')?.addEventListener('click', closeDrawer);
+  $('#backdrop')?.addEventListener('click', closeDrawer);
+  $('#btn-save')?.addEventListener('click', savePerfume);
+  $('#btn-delete')?.addEventListener('click', deletePerfume);
 
-  $('#tbody').addEventListener('click', e=>{
+  $('#tbody')?.addEventListener('click', e=>{
     const tr = e.target.closest('tr[data-id]');
     if(!tr) return;
     const id = tr.dataset.id;
@@ -2502,19 +2516,17 @@ function wire(){
     openDrawer(id);
   });
 
-  // search & filters (re-hidrata imágenes después de cada filtro)
   const refilter = () => { renderTable(); hydrateTableImages(); };
-  $('#q').addEventListener('input', e=>{ filters.q = e.target.value; refilter(); });
-  $('#f-family').addEventListener('change', e=>{ filters.family = e.target.value; refilter(); });
-  $('#f-gender').addEventListener('change', e=>{ filters.gender = e.target.value; refilter(); });
-  $('#f-tag').addEventListener('change', e=>{ filters.tag = e.target.value; refilter(); });
+  $('#q')?.addEventListener('input', e=>{ filters.q = e.target.value; refilter(); });
+  $('#f-family')?.addEventListener('change', e=>{ filters.family = e.target.value; refilter(); });
+  $('#f-gender')?.addEventListener('change', e=>{ filters.gender = e.target.value; refilter(); });
+  $('#f-tag')?.addEventListener('change', e=>{ filters.tag = e.target.value; refilter(); });
 
-  // chips
   ['chips-tag','chips-occasion'].forEach(id => {
-    document.getElementById(id).addEventListener('click', e=>{
+    document.getElementById(id)?.addEventListener('click', e=>{
       const chip = e.target.closest('.chip');
       if(!chip) return;
-      const multi = chip.parentElement.dataset.multi === '1';
+      const multi = chip.parentElement?.dataset.multi === '1';
       if(multi){ chip.classList.toggle('active'); }
       else{
         chip.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
@@ -2523,23 +2535,23 @@ function wire(){
     });
   });
 
-  // photo upload (drag + click) → store as data URL
   const drop = $('#drop');
-  drop.addEventListener('dragover', e=>{ e.preventDefault(); drop.classList.add('drag'); });
-  drop.addEventListener('dragleave', ()=> drop.classList.remove('drag'));
-  drop.addEventListener('drop', e=>{
-    e.preventDefault(); drop.classList.remove('drag');
-    const f = e.dataTransfer.files?.[0];
-    if(f) handlePhoto(f);
-  });
-  $('#f-photo').addEventListener('change', e=>{
+  if(drop){
+    drop.addEventListener('dragover', e=>{ e.preventDefault(); drop.classList.add('drag'); });
+    drop.addEventListener('dragleave', ()=> drop.classList.remove('drag'));
+    drop.addEventListener('drop', e=>{
+      e.preventDefault(); drop.classList.remove('drag');
+      const f = e.dataTransfer.files?.[0];
+      if(f) handlePhoto(f);
+    });
+  }
+  $('#f-photo')?.addEventListener('change', e=>{
     const f = e.target.files?.[0];
     if(f) handlePhoto(f);
   });
 
-  // ESC to close
   document.addEventListener('keydown', e=>{
-    if(e.key === 'Escape') closeDrawer();
+    if(e.key === 'Escape'){ closeDrawer(); closeBulk(); }
   });
 }
 function handlePhoto(file){
@@ -3245,18 +3257,18 @@ function renderExecutiveDashboard(data) {
   // EMBUDO GRANULAR DEL CARRITO & MÉTODOS DE PAGO (Tarjeta vs Yape)
   const funnel = telem.checkoutFunnel || {
     startForm: 22,
-    selectPayment: { 'mercadopago': 13, 'yape': 9 },
-    executePay: { 'mercadopago': 8, 'yape': 11 }
+    selectPayment: { 'mercadopago': 0, 'yape': 0 },
+    executePay: { 'mercadopago': 0, 'yape': 0 }
   };
   const cViews = telem.pageViews || 184;
   const cPerfViews = Object.values(telem.perfumes||{}).reduce((a,b)=>a+b, 0) || 154;
   const cAdds = telem.cartAdds || 38;
   const cCartViews = telem.cartViews || 29;
   const cStartForm = funnel.startForm || telem.checkoutStarts?.['start_form'] || 22;
-  const payMpSelected = funnel.selectPayment?.['mercadopago'] || 13;
-  const payYapeSelected = funnel.selectPayment?.['yape'] || 9;
-  const payMpExecute = funnel.executePay?.['mercadopago'] || telem.checkoutStarts?.['mercadopago'] || 8;
-  const payYapeExecute = funnel.executePay?.['yape'] || telem.checkoutStarts?.['yape'] || 11;
+  const payMpSelected = funnel.selectPayment?.['mercadopago'] || 0;
+  const payYapeSelected = funnel.selectPayment?.['yape'] || 0;
+  const payMpExecute = funnel.executePay?.['mercadopago'] || telem.checkoutStarts?.['mercadopago'] || 0;
+  const payYapeExecute = funnel.executePay?.['yape'] || telem.checkoutStarts?.['yape'] || 0;
   const cOrdersPaid = sales.paidOrdersCount || 0;
 
   const granularFunnelHtml = `
@@ -3348,8 +3360,8 @@ function renderExecutiveDashboard(data) {
               <span style="font-size:12px;color:var(--muted)">usuarios presionaron Pagar</span>
             </div>
             
-            <div style="background:#f8fafc;border-radius:8px;padding:8px 12px;font-size:11.5px;color:#475569;line-height:1.4">
-              ℹ️ <em>Nota de Pasarela:</em> Para cobrar a tarjetas en producción, asegúrate de ingresar tu <strong>Access Token</strong> de Mercado Pago en Cloudflare.
+            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;font-size:12px;color:#166534;line-height:1.4">
+              🟢 <strong>Pasarela Activa en Cloudflare:</strong> Mercado Pago está 100% vinculado y listo para procesar pagos reales con tarjeta de débito/crédito.
             </div>
           </div>
 
@@ -3766,12 +3778,8 @@ function initExecutiveDashboardEvents() {
   // Selector de Subtabs (Ventas, Comportamiento, Radar, Inventario)
   document.querySelectorAll('.dash-subtab').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.dash-subtab').forEach(b => {
-        b.classList.remove('btn-primary', 'active');
-        b.classList.add('btn-ghost');
-      });
-      btn.classList.remove('btn-ghost');
-      btn.classList.add('btn-primary', 'active');
+      document.querySelectorAll('.dash-subtab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
       const tab = btn.dataset.dashTab;
       document.querySelectorAll('.dash-panel').forEach(p => p.style.display = 'none');

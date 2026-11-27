@@ -1,3 +1,28 @@
+
+// ─── APERTURA DIRECTA DE WHATSAPP APP (MÓVILES, TABLETS & ESCRITORIO) ───
+function openWhatsAppDirect(phone, text) {
+  const cleanPhone = String(phone || '51930122014').replace(/\D/g, '');
+  const encText = encodeURIComponent(text || '');
+  const isMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent)
+    || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+
+  if (isMobileOrTablet) {
+    // 1. Abrir directamente la APP nativa de WhatsApp usando el protocolo whatsapp://
+    const nativeUri = 'whatsapp://send?phone=' + cleanPhone + '&text=' + encText;
+    window.location.href = nativeUri;
+
+    // 2. Si la app no responde tras 1.2s y la ventana sigue visible, fallback a api.whatsapp.com
+    setTimeout(function() {
+      if (document.visibilityState === 'visible') {
+        window.open('https://api.whatsapp.com/send?phone=' + cleanPhone + '&text=' + encText, '_blank');
+      }
+    }, 1200);
+  } else {
+    // Computadora de escritorio: abrir en pestaña nueva de WhatsApp Web
+    window.open('https://api.whatsapp.com/send?phone=' + cleanPhone + '&text=' + encText, '_blank');
+  }
+}
+
 /* ───────────────────────────────────────────────────────────
    Dolce Aroma · tienda compartida
    - Carga de catálogo (data/productos.json con fallback a perfumes.json y localStorage del admin)
@@ -733,7 +758,7 @@
           </svg>
         </span>
       </a>
-      <a href="https://wa.me/51930122014?text=Hola%20Dolce%207%20Aroma%2C%20quisiera%20consultar%20por%20un%20perfume%20o%20hacer%20un%20pedido." target="_blank" rel="noopener" class="da-wa-float" id="da-wa-float" aria-label="Consultar por WhatsApp">
+      <a href="whatsapp://send?phone=51930122014&text=Hola%20Dolce%207%20Aroma%2C%20quisiera%20consultar%20por%20un%20perfume%20o%20hacer%20un%20pedido." target="_blank" rel="noopener" class="da-wa-float" id="da-wa-float" aria-label="Consultar por WhatsApp">
         <span class="da-wa-float-label"><span class="da-wa-dot"></span>¿Consultas? WhatsApp</span>
         <span class="da-wa-float-icon">
           <svg viewBox="0 0 32 32" width="28" height="28" fill="#ffffff">
@@ -885,7 +910,7 @@
         items: [ga4Item]
       });
       const msg = buildWhatsAppMessage([{id:p.id, ml:targetMl, qty}], true);
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+      openWhatsAppDirect(WHATSAPP_NUMBER, msg);
     });
     document.getElementById('da-share').addEventListener('click', ()=> shareProduct(p));
     wireWaFallback('da-detail', () => {
@@ -2620,3 +2645,21 @@ Quedo a la espera de sus datos de Yape para transferir y coordinar la entrega. �
     constants: { FAMILY_LABEL, TAG_LABEL, GENDER_LABEL, WHATSAPP_NUMBER }
   };
 })();
+
+
+  // da-wa-float-interceptor-v2: asegurar apertura directa en app nativa
+  document.addEventListener('click', function(e) {
+    const floatBtn = e.target.closest('#da-wa-float, .da-wa-float');
+    if (floatBtn) {
+      e.preventDefault();
+      openWhatsAppDirect(WHATSAPP_NUMBER, 'Hola Dolce 7 Aroma, quisiera consultar por un perfume o hacer un pedido.');
+    }
+    const confirmWa = e.target.closest('#da-confirm-wa');
+    if (confirmWa) {
+      e.preventDefault();
+      const href = confirmWa.getAttribute('href') || '';
+      const textMatch = href.match(/text=([^&]+)/);
+      const decodedText = textMatch ? decodeURIComponent(textMatch[1]) : 'Hola Dolce 7 Aroma, envío mi confirmación de pedido.';
+      openWhatsAppDirect(WHATSAPP_NUMBER, decodedText);
+    }
+  });
