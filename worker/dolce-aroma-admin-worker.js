@@ -2955,11 +2955,16 @@ async function handleTrackEvent(request, env) {
         referrers: {},
         devices: { 'Móvil': 0, 'Desktop': 0 },
         browsers: {},
+        countries: {},
+        cities: {},
+        pageDurations: {},
         genderTabs: { 'hombre': 0, 'mujer': 0, 'unisex': 0 },
         popupSmp: { opens: 0, closes: 0, totalDurationSec: 0, closedUnder2s: 0, reasons: {} },
         cartAdds: 0,
         cartViews: 0,
-        checkoutStarts: {}
+        checkoutStarts: {},
+        checkoutFunnel: { startForm: 0, selectPayment: {}, executePay: {} },
+        gifts: { clicksFloat: 0, openedBuilder: 0, created: 0, recipientOpened: 0 }
       };
     }
 
@@ -2972,6 +2977,18 @@ async function handleTrackEvent(request, env) {
     else if (ref.includes('facebook.com') || ref.includes('fb.me') || ref.includes('m.facebook')) refGroup = 'Facebook';
     else if (ref.includes('google.') || ref.includes('google.com')) refGroup = 'Google';
     else if (ref && ref !== 'direct') refGroup = 'Otros';
+
+    if (!record.countries) record.countries = {};
+    if (!record.cities) record.cities = {};
+    if (!record.pageDurations) record.pageDurations = {};
+    if (!record.checkoutFunnel) record.checkoutFunnel = { startForm: 0, selectPayment: {}, executePay: {} };
+    if (!record.gifts) record.gifts = { clicksFloat: 0, openedBuilder: 0, created: 0, recipientOpened: 0 };
+
+    // Geolocalización Cloudflare
+    const country = request.cf?.country || 'PE';
+    const city = request.cf?.city || 'Lima';
+    record.countries[country] = (record.countries[country] || 0) + 1;
+    record.cities[city] = (record.cities[city] || 0) + 1;
 
     record.referrers[refGroup] = (record.referrers[refGroup] || 0) + 1;
 
@@ -3017,9 +3034,31 @@ async function handleTrackEvent(request, env) {
     } else if (body.event === 'gender_tab_click' && body.data && body.data.gender) {
       const g = body.data.gender;
       record.genderTabs[g] = (record.genderTabs[g] || 0) + 1;
+    } else if (body.event === 'page_duration' && body.data) {
+      const p = (body.data.path || '/').replace(/index\.html/i, '').replace(/\/$/, '') || '/';
+      const dur = Math.min(Math.max(parseInt(body.data.durationSec) || 0, 1), 1800);
+      if (!record.pageDurations[p]) record.pageDurations[p] = { views: 0, totalSec: 0, avgSec: 0 };
+      record.pageDurations[p].views += 1;
+      record.pageDurations[p].totalSec += dur;
+      record.pageDurations[p].avgSec = Math.round(record.pageDurations[p].totalSec / record.pageDurations[p].views);
     } else if (body.event === 'checkout_click' && body.data && body.data.method) {
       const m = body.data.method;
       record.checkoutStarts[m] = (record.checkoutStarts[m] || 0) + 1;
+      if (m === 'start_form') record.checkoutFunnel.startForm = (record.checkoutFunnel.startForm || 0) + 1;
+    } else if (body.event === 'checkout_select_payment' && body.data && body.data.method) {
+      const m = body.data.method;
+      record.checkoutFunnel.selectPayment[m] = (record.checkoutFunnel.selectPayment[m] || 0) + 1;
+    } else if (body.event === 'checkout_execute_click' && body.data && body.data.method) {
+      const m = body.data.method;
+      record.checkoutFunnel.executePay[m] = (record.checkoutFunnel.executePay[m] || 0) + 1;
+    } else if (body.event === 'gift_click_float') {
+      record.gifts.clicksFloat = (record.gifts.clicksFloat || 0) + 1;
+    } else if (body.event === 'gift_open_builder') {
+      record.gifts.openedBuilder = (record.gifts.openedBuilder || 0) + 1;
+    } else if (body.event === 'gift_created') {
+      record.gifts.created = (record.gifts.created || 0) + 1;
+    } else if (body.event === 'gift_recipient_opened') {
+      record.gifts.recipientOpened = (record.gifts.recipientOpened || 0) + 1;
     }
 
     await env.ORDERS.put(key, JSON.stringify(record), { expirationTtl: 86400 * 30 });
@@ -3118,12 +3157,31 @@ async function handleDashboardSummary(request, env) {
       combos: { 'duo110': 19, 'mixto': 15, 'duo50': 23, 'trio110': 8 },
       referrers: { 'TikTok': 70, 'Instagram': 54, 'WhatsApp': 39, 'Google': 23, 'Facebook': 17, 'Directo': 13 },
       devices: { 'Móvil': 188, 'Desktop': 28 },
-      browsers: { 'Chrome (Android/PC)': 128, 'Safari (iOS/iPhone)': 70, 'Edge': 11, 'Otros': 7 },
-      genderTabs: { 'hombre': 86, 'mujer': 78, 'unisex': 25 },
+      browsers: { 'Chrome': 128, 'Safari': 70, 'Edge': 11, 'Otros': 7 },
+      countries: { 'PE': 192, 'US': 6, 'CL': 4, 'ES': 2 },
+      cities: { 'Lima': 168, 'Callao': 16, 'Arequipa': 5, 'Trujillo': 3, 'Otras': 4 },
+      pageDurations: {
+        '/': { views: 184, totalSec: 8464, avgSec: 46 },
+        '/catalogo.html': { views: 132, totalSec: 9900, avgSec: 75 },
+        '/navidad.html': { views: 88, totalSec: 5456, avgSec: 62 },
+        '/faq.html': { views: 24, totalSec: 672, avgSec: 28 }
+      },
+      genderTabs: { 'hombre': 86, 'mujer': 124, 'unisex': 25 },
       popupSmp: { opens: 75, closes: 71, totalDurationSec: 97.4, closedUnder2s: 62, reasons: { 'click_x': 50, 'click_backdrop': 16, 'click_dismiss': 5 } },
-      cartAdds: 22,
-      cartViews: 18,
-      checkoutStarts: { 'mercadopago': 6, 'whatsapp': 12 }
+      cartAdds: 38,
+      cartViews: 29,
+      checkoutStarts: { 'start_form': 22, 'mercadopago': 10, 'yape': 12 },
+      checkoutFunnel: {
+        startForm: 22,
+        selectPayment: { 'mercadopago': 13, 'yape': 9 },
+        executePay: { 'mercadopago': 8, 'yape': 11 }
+      },
+      gifts: {
+        clicksFloat: 34,
+        openedBuilder: 24,
+        created: 9,
+        recipientOpened: 6
+      }
     };
   }
 

@@ -749,7 +749,7 @@
     `);
     document.getElementById('da-bd').addEventListener('click', ()=>{ closeModal(); closeCart(); });
     document.getElementById('da-cart-close').addEventListener('click', closeCart);
-    document.getElementById('da-gift-float')?.addEventListener('click', e => { e.preventDefault(); openGiftBuilder(); });
+    document.getElementById('da-gift-float')?.addEventListener('click', e => { e.preventDefault(); trackWorkerEvent('gift_click_float'); openGiftBuilder(); });
     document.getElementById('da-wa-float')?.addEventListener('click', ()=>{ trackGA4Event('click_whatsapp', { source: 'floating_button' }); });
     document.getElementById('da-cart-float')?.addEventListener('click', e => { e.preventDefault(); openCart(); });
     document.getElementById('da-cart-share').addEventListener('click', shareCart);
@@ -924,6 +924,7 @@
     }
   }
   function openGiftBuilder(){
+    trackWorkerEvent('gift_open_builder');
     giftRole = 'comprador'; giftMode = true; giftStep = 'armar';
     giftList = []; giftExtras = []; giftDraft = { entregaPara:'regalada', compradorTelefono:'', compradorNombre:'', nombre:'', telefono:'', distrito:'', direccion:'', referencia:'' };
     giftArmarModo = null; giftTallaMl = null;
@@ -1520,6 +1521,7 @@
     document.querySelectorAll('input[name="da_pay_method"]').forEach(r => {
       r.addEventListener('change', (e) => {
         selectedPaymentMethod = e.target.value;
+        trackWorkerEvent('checkout_select_payment', { method: selectedPaymentMethod });
         const btn = document.getElementById('da-execute-pay');
         if (btn) {
           if (selectedPaymentMethod === 'mercadopago') {
@@ -1545,6 +1547,7 @@
 
     document.getElementById('da-execute-pay')?.addEventListener('click', async ()=>{
       trackWorkerEvent('checkout_click', { method: selectedPaymentMethod, total: offers.total });
+      trackWorkerEvent('checkout_execute_click', { method: selectedPaymentMethod, total: offers.total });
       const btn = document.getElementById('da-execute-pay');
       btn.disabled = true;
       btn.textContent = 'Procesando pedido...';
@@ -2158,6 +2161,7 @@ Quedo a la espera de sus datos de Yape para transferir y coordinar la entrega. Â
       const data = await r.json().catch(()=>({ok:false}));
       if(!r.ok || !data.ok) throw new Error(data.error || 'No se pudo generar el regalo');
       currentGift = { id: data.giftId, items, total, compradorTelefono, compradorNombre, elegido: false, pagado: false };
+      trackWorkerEvent('gift_created', { giftId: data.giftId, total });
       trackGA4Event('begin_checkout', {
         currency: 'PEN',
         value: total,
@@ -2305,6 +2309,7 @@ Quedo a la espera de sus datos de Yape para transferir y coordinar la entrega. Â
       currentGift = data.gift;
       giftClaimStep = data.gift.elegido ? 'gracias' : 'elegir';
       giftClaimChoice = null; giftClaimResult = null; giftClaimFilterText = '';
+      trackWorkerEvent('gift_recipient_opened', { giftId });
       giftRole = 'regalada'; giftMode = true;
       renderCart();
       document.getElementById('da-bd').classList.add('open');
@@ -2573,6 +2578,23 @@ Quedo a la espera de sus datos de Yape para transferir y coordinar la entrega. Â
       document.querySelectorAll('[data-cart-open]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); openCart(); }));
       if(opts?.onReady) opts.onReady(catalog);
       trackWorkerEvent('page_view', { path: location.pathname, ref: document.referrer || 'direct' });
+      const pageStartTime = Date.now();
+      let reportedLeave = false;
+      function reportPageLeave() {
+        if(reportedLeave) return;
+        reportedLeave = true;
+        const durSec = Math.round((Date.now() - pageStartTime) / 1000);
+        if(durSec >= 2) {
+          trackWorkerEvent('page_duration', {
+            path: location.pathname || '/',
+            durationSec: durSec
+          });
+        }
+      }
+      window.addEventListener('visibilitychange', () => {
+        if(document.visibilityState === 'hidden') reportPageLeave();
+      });
+      window.addEventListener('pagehide', reportPageLeave);
       const shareParams = new URLSearchParams(location.search);
       // Link compartido (?p=id) â†’ abre directo el detalle de ese perfume
       const sharedId = shareParams.get('p');

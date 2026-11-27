@@ -898,7 +898,7 @@ function wire(){
   document.getElementById('seg-gender').addEventListener('click', e=>{
     const b = e.target.closest('button'); if(!b) return;
     document.querySelectorAll('#seg-gender button').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active'); state.gender = b.dataset.v; renderCards();
+    b.classList.add('active'); state.gender = b.dataset.v; if(window.DA && window.DA.track) window.DA.track('gender_tab_click', { gender: b.dataset.v || 'todos' }); renderCards();
   });
   document.getElementById('seg-estilo').addEventListener('click', e=>{
     const b = e.target.closest('button'); if(!b) return;
