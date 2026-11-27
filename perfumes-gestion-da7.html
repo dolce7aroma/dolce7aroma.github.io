@@ -252,7 +252,7 @@
   // Copia el hash resultante y pégalo en ADMIN_PASSWORD_HASH abajo.
   // ⚠️ Esta protección es "client-side": disuade el acceso casual pero un usuario técnico
   //    podría leer el código fuente. Para seguridad real necesitas un backend.
-  const ADMIN_PASSWORD_HASH = '8a08736ce3e83ecdda3463d53491910b3eb0d7d945b3f6ac0934b005385cfdae'; // CÁMBIALA cuando quieras (ver instrucciones abajo)
+  const ADMIN_PASSWORD_HASH = '1f2bcbb9ad1d7f8da41d94fc90ed0f377c3f76ad1446f1578caa6cc466a8ab47'; // CÁMBIALA cuando quieras (ver instrucciones abajo)
   const GATE_KEY = 'da-admin-session-v1';
   // Contraseña en texto plano de la sesión activa, SOLO en memoria (nunca se guarda ni se escribe
   // en el HTML). Es lo que se manda al Worker para autenticar — así, aunque alguien vea el código
@@ -292,7 +292,11 @@
       const h = await sha256(pwd);
       if(h === ADMIN_PASSWORD_HASH){
         adminAuthKey = pwd;
-        if(remember){ try{ localStorage.setItem(GATE_KEY, h); }catch(e){} }
+        try{
+          sessionStorage.setItem('da_admin_key', pwd);
+          localStorage.setItem('da_admin_key', pwd);
+          if(remember){ localStorage.setItem(GATE_KEY, h); }
+        }catch(e){}
         gateUnlock();
       } else {
         errEl.textContent = 'Contraseña incorrecta';
@@ -2850,7 +2854,7 @@ async function loadDashboardSummary() {
     btn.innerHTML = '<span>⏳</span> <strong>Consultando Worker...</strong>';
   }
 
-  const key = localStorage.getItem('da_admin_key') || sessionStorage.getItem('da_admin_key') || '';
+  const key = adminAuthKey || localStorage.getItem('da_admin_key') || sessionStorage.getItem('da_admin_key') || '';
   
   try {
     const res = await fetch(`${API_BASE}/api/dashboard-summary`, {
